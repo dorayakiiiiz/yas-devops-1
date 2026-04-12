@@ -102,16 +102,13 @@ jobs:
       #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       #   with:
       #     args: --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
-      - name: Install Snyk CLI
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
-        run: npm install -g snyk
       - name: Run Snyk Scan
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        # Thay vì dùng action, mình dùng lệnh snyk trực tiếp trên máy runner đã có sẵn Java
         run: |
-          export JAVA_HOME=/opt/jdk
+          npm install -g snyk
+          snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk test --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Upload Snyk results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
