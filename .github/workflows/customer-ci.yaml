@@ -98,7 +98,7 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         run: |
           export JAVA_HOME=/opt/jdk
-          export MAVEN_HOME=/opt/maven 
+          export MAVEN_HOME=/opt/maven  
           snyk test --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
         env:
           JAVA_HOME: /opt/jdk
