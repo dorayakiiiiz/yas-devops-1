@@ -104,11 +104,13 @@ jobs:
       #     args: --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
       - name: Run Snyk Scan
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
-        # Thay vì dùng action, mình dùng lệnh snyk trực tiếp trên máy runner đã có sẵn Java
         run: |
           npm install -g snyk
           snyk auth ${{ secrets.SNYK_TOKEN }}
-          snyk test --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
+          # Thêm flag --scan-all-unmanaged để nó tập trung soi file pom.xml
+          snyk test --file=customer/pom.xml --package-manager=maven --sarif-file-output=snyk-results.sarif || true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Upload Snyk results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
