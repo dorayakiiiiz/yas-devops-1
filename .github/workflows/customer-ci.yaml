@@ -28,7 +28,9 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/workflows/actions
       - name: Run Maven Test
-        run: mvn -pl customer -am verify  # Chạy test và sinh JaCoCo report (bound ở verify phase)
+        run: mvn -pl customer -am verify  # Chạy test và sinh JaCoCo report
+      - name: Install Dependencies  # Thêm step này để install JARs cho job build
+        run: mvn -pl customer -am install -DskipTests
       - name: Test Results
         uses: dorny/test-reporter@v1
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && (success() || failure()) }}
