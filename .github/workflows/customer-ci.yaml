@@ -92,6 +92,7 @@ jobs:
       - name: Analyze with sonar cloud
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f customer
       - name: Run Snyk Scan  # Thêm Snyk
