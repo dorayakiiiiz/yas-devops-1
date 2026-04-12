@@ -94,17 +94,15 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f customer
-      - name: Run Snyk Scan  # Thêm Snyk
+      - name: Run Snyk Scan
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         run: |
           export JAVA_HOME=/opt/jdk
-          export MAVEN_HOME=/opt/maven  
+          export MAVEN_HOME=/opt/maven  # Thêm nếu cần
           snyk test --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
         env:
-          JAVA_HOME: /opt/jdk
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
+
       - name: Upload Snyk results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: github/codeql-action/upload-sarif@v3
