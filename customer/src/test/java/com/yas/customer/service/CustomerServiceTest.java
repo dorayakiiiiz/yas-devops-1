@@ -382,10 +382,10 @@ class CustomerServiceTest {
 
         UserRepresentation userRepresentation = new UserRepresentation();
         when(userResource.toRepresentation()).thenReturn(userRepresentation);
-        
+
         customerService.deleteCustomer(userId);
 
-        verify(userResource).remove();
+        verify(userResource).update(any(UserRepresentation.class));
     }
 
     @Test
