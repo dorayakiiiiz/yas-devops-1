@@ -56,7 +56,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: test  
+    needs: test  # Chỉ chạy nếu job test pass
     env:
       FROM_ORIGINAL_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.ref == 'refs/heads/main' }}
     steps:
@@ -103,9 +103,7 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          rm -f mvnw customer/mvnw
-          snyk test --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
+        run: snyk test --file=pom.xml --sarif-file-output=snyk-results.sarif -- -pl customer -am      
       # - name: Run Snyk Scan  # Thêm Snyk
       #   if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
       #   uses: snyk/actions/cli@master
@@ -116,7 +114,7 @@ jobs:
       #     args: --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
 
       - name: Upload Snyk results
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && !cancelled() }}
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk-results.sarif
