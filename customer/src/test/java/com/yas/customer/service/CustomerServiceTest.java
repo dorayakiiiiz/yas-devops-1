@@ -1,4 +1,3 @@
-// file-deepcode ignore HardcodedCredentials: False positive, using dynamic UUID/SecureRandom
 package com.yas.customer.service;
 
 import com.yas.commonlibrary.exception.AccessDeniedException;

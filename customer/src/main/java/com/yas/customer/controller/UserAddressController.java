@@ -1,4 +1,3 @@
-// file-deepcode ignore SpringCSRF: Stateless REST API using JWT token
 package com.yas.customer.controller;
 
 import com.yas.customer.service.UserAddressService;
