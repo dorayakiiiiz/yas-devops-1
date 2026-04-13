@@ -65,7 +65,7 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/workflows/actions
       - name: Run Maven Build
-        run: mvn -DskipTests install # build mà không chạy lại test
+        run: mvn -pl customer -am -DskipTests install # build mà không chạy lại test
       - name: Run Maven Checkstyle
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         run: mvn checkstyle:checkstyle -pl customer -am -Dcheckstyle.output.file=customer-checkstyle-result.xml
@@ -103,7 +103,7 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: snyk test --file=customer/pom.xml --sarif-file-output=snyk-results.sarif     
+        run: snyk test --sarif-file-output=../snyk-results.sarif -- -q   
       # - name: Run Snyk Scan  # Thêm Snyk
       #   if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
       #   uses: snyk/actions/cli@master
