@@ -395,4 +395,19 @@ class CustomerServiceTest {
 
         assertThrows(DuplicatedException.class, () -> customerService.create(customerPostVm));
     }
+
+    @Test
+    void testGenerateSafeString_isRandomAndCorrectLength() {
+        java.lang.reflect.Method method = null;
+        try {
+            method = CustomerService.class.getDeclaredMethod("generateSafeString");
+            method.setAccessible(true);
+            String result = (String) method.invoke(customerService);
+            
+            assertThat(result).isNotEmpty();
+            assertThat(result.length()).isGreaterThanOrEqualTo(16);
+        } catch (Exception e) {
+            org.junit.jupiter.api.Assertions.fail("Reflection failed: " + e.getMessage());
+        }
+    }
 }
