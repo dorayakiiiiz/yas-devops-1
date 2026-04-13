@@ -65,9 +65,7 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/workflows/actions
       - name: Run Maven Build
-        run: |
-          mvn -N install
-          mvn -pl customer -am -DskipTests install 
+        run: mvn -pl customer -am -DskipTests install
         # build mà không chạy lại test
 
       - name: Run Maven Checkstyle
@@ -99,17 +97,16 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f customer
 
-      - name: Setup Snyk
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
-        uses: snyk/actions/setup@master
-
       - name: Run Snyk Scan
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        uses: snyk/actions/maven@master
         env:
+          # Ép biến JAVA_HOME rỗng để tránh rò rỉ từ máy host vào Docker gây crash
+          JAVA_HOME: ""
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        # Đứng từ ngoài thư mục gốc, chỉ định đích danh file của customer
-        run: snyk test --file=customer/pom.xml --sarif-file-output=snyk-results.sarif      
-      # - name: Run Snyk Scan  # Thêm Snyk
+        with:
+          # Chỉ định đúng service customer (yêu cầu số 6)
+          args: --file=customer/pom.xml --sarif-file-output=snyk-results.sarif      # - name: Run Snyk Scan  # Thêm Snyk
       #   if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
       #   uses: snyk/actions/cli@master
       #   env:
