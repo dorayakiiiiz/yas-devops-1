@@ -98,16 +98,13 @@ jobs:
       - name: Setup Snyk
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: snyk/actions/setup@master
-        
+
       - name: Run Snyk Scan
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          # FIX GỐC RỄ: Cấp quyền thực thi cho Maven Wrapper để Snyk không bị lỗi EACCES (-13)
-          chmod +x mvnw
-          snyk test --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
-        continue-on-error: true # Cho phép pipeline xanh nếu Snyk xuất file thành công nhưng phát hiện lỗ hổng
+        working-directory: ./customer
+        run: snyk test --sarif-file-output=../snyk-results.sarif
       # - name: Run Snyk Scan  # Thêm Snyk
       #   if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
       #   uses: snyk/actions/cli@master
