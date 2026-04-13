@@ -105,7 +105,7 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: snyk code test ./customer --severity-threshold=high --sarif-file-output=snyk-results.sarif
+        run: snyk code test ./customer --severity-threshold=medium --sarif-file-output=snyk-results.sarif
 
       - name: Upload Snyk results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && !cancelled() }}
