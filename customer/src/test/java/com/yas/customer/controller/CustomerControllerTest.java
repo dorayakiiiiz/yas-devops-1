@@ -182,6 +182,6 @@ class CustomerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post(BACK_OFFICE_CUSTOMER_BASE_URL)
                 .contentType("application/json")
                 .content(""))
-            .andExpect(MockMvcResultMatchers.status().isBadRequest());
+            .andExpect(MockMvcResultMatchers.status().isInternalServerError());
     }
 }

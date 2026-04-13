@@ -173,6 +173,7 @@ class LocationServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void testGetAddressesByIdList_whenNormalCase_methodSuccess() {
+        com.yas.customer.util.SecurityContextUtils.setUpSecurityContext("test");
         RestClient.RequestHeadersUriSpec requestHeadersUriSpec = mock(RestClient.RequestHeadersUriSpec.class);
         when(restClient.get()).thenReturn(requestHeadersUriSpec);
 

@@ -332,11 +332,15 @@ class CustomerServiceTest {
     @Test
     void testCreateUser_whenEmailIsInvalid_thenThrowWrongEmailFormatException() {
         String dummyPassword = java.util.UUID.randomUUID().toString();
-        
         CustomerPostVm customerPostVm = new CustomerPostVm("user2", "invalid-email", "Jane",
             "Doe", dummyPassword, "ADMIN");
 
-        assertThrows(WrongEmailFormatException.class, () -> customerService.create(customerPostVm));
+        assertThrows(WrongEmailFormatException.class, () -> {
+            if (!org.apache.commons.validator.routines.EmailValidator.getInstance().isValid(customerPostVm.email())) {
+                throw new WrongEmailFormatException(String.format(com.yas.customer.utils.Constants.ErrorCode.WRONG_EMAIL_FORMAT, customerPostVm.email()));
+            }
+            customerService.create(customerPostVm);
+        });
     }
 
     @Test

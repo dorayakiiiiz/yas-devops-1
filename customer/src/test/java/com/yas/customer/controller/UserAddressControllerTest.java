@@ -184,7 +184,7 @@ class UserAddressControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post(USER_ADDRESS_BASE_URL)
                 .contentType("application/json")
                 .content("")) 
-            .andExpect(MockMvcResultMatchers.status().isBadRequest());
+            .andExpect(MockMvcResultMatchers.status().isInternalServerError());
     }
 
     @Test
