@@ -170,7 +170,7 @@ class CustomerControllerTest {
     @Test
     void testGetCustomerByEmail_whenCustomerNotFound_returnNotFound() throws Exception {
         when(customerService.getCustomerByEmail("notfound@gmail.com"))
-            .thenThrow(new com.yas.customer.exception.NotFoundException("Customer not found"));
+            .thenThrow(new com.yas.commonlibrary.exception.NotFoundException("Customer not found"));
 
         mockMvc.perform(MockMvcRequestBuilders.get(BACK_OFFICE_CUSTOMER_BASE_URL + "/{email}", "notfound@gmail.com")
                 .accept("application/json"))

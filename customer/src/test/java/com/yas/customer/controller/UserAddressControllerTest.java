@@ -190,7 +190,7 @@ class UserAddressControllerTest {
     @Test
     void testDeleteAddress_whenIdNotFound_returnNotFound() throws Exception {
         Long wrongId = 999L;
-        org.mockito.Mockito.doThrow(new com.yas.customer.exception.NotFoundException("Address not found"))
+        org.mockito.Mockito.doThrow(new com.yas.commonlibrary.exception.NotFoundException("Address not found"))
             .when(userAddressService).deleteAddress(wrongId);
 
         mockMvc.perform(MockMvcRequestBuilders.delete(USER_ADDRESS_BASE_URL + "/{id}", wrongId)
