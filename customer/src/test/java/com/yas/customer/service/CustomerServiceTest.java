@@ -380,6 +380,9 @@ class CustomerServiceTest {
         UserResource userResource = mock(UserResource.class);
         when(realmResource.users().get(userId)).thenReturn(userResource);
 
+        UserRepresentation userRepresentation = new UserRepresentation();
+        when(userResource.toRepresentation()).thenReturn(userRepresentation);
+        
         customerService.deleteCustomer(userId);
 
         verify(userResource).remove();
