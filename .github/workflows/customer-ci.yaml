@@ -101,16 +101,11 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: snyk/actions/setup@master
 
-      - name: Run Snyk Scan
+      - name: Run Snyk Scan (Code Quality & Security)
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          # Xóa mẹ file mvnw rác đi để Snyk bắt buộc dùng mvn hệ thống (chuẩn nhất)
-          rm -f mvnw customer/mvnw
-          
-          # Dùng --project-name để ép Server Snyk nhận cục data của module con, diệt lỗi 422
-          snyk test --file=customer/pom.xml --project-name=yas-customer-service --sarif-file-output=snyk-results.sarif      
+        run: snyk code test ./customer --sarif-file-output=snyk-results.sarif 
       # - name: Run Snyk Scan  # Thêm Snyk
       #   if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
       #   uses: snyk/actions/cli@master
