@@ -103,10 +103,6 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Run Snyk Scan
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         working-directory: ./customer
         run: |
           find ${{ github.workspace }} -name "mvnw" -exec chmod +x {} +
