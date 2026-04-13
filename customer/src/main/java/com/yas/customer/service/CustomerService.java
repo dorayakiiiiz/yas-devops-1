@@ -129,7 +129,6 @@ public class CustomerService {
         RealmResource realmResource = keycloak.realm(keycloakPropsConfig.getRealm());
         String randomGuestName = generateSafeString();
         String guestUserEmail = randomGuestName + "_guest@yas.com";
-        // CredentialRepresentation credential = createPasswordCredentials(GUEST);
 
         // Fix here: Use random password
         String guestPassword = generateSafeString();
@@ -154,7 +153,6 @@ public class CustomerService {
         userResource.roles().realmLevel().add(Collections.singletonList(guestRealmRole));
 
         // Fix here
-        // return new GuestUserVm(userId, guestUserEmail, GUEST);
         return new GuestUserVm(userId, guestUserEmail, guestPassword);
     }
 

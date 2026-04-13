@@ -271,15 +271,12 @@ class CustomerServiceTest {
         assertThat(guestUserVm.userId()).isEqualTo("1");
         assertThat(guestUserVm.email()).contains("_guest@yas.com");
         // Fix here
-        // assertThat(guestUserVm.password()).isEqualTo("GUEST");
         assertThat(guestUserVm.password()).isNotEmpty();
     }
 
     @Test
     void testCreateUser_isNormalCase_returnCustomerPostVm() {
         // Fix here
-        // CustomerPostVm customerPostVm = new CustomerPostVm("user1", "test@gmail.com", "John",
-        //     "Doe", "123", "ADMIN");
         String dummyPassword = java.util.UUID.randomUUID().toString(); 
         CustomerPostVm customerPostVm = new CustomerPostVm("user1", "test@gmail.com", "John",
             "Doe", dummyPassword, "ADMIN");
@@ -318,8 +315,6 @@ class CustomerServiceTest {
     @Test
     void testCreateUser_whenUsernameAlreadyExisted_thenThrowDuplicateException() {
         // Fix here
-        // CustomerPostVm customerPostVm = new CustomerPostVm("user1", "test@gmail.com", "John",
-        //     "Doe", "123", "ADMIN");
         String dummyPassword = java.util.UUID.randomUUID().toString();
         CustomerPostVm customerPostVm = new CustomerPostVm("user1", "test@gmail.com", "John",
             "Doe", dummyPassword, "ADMIN");
