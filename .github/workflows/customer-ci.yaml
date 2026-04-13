@@ -103,8 +103,9 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: snyk test --sarif-file-output=../snyk-results.sarif -- -q   
-      # - name: Run Snyk Scan  # Thêm Snyk
+        run: |
+          find . -name "mvnw" -exec chmod +x {} +
+          snyk test --file=customer/pom.xml --sarif-file-output=snyk-results.sarif      # - name: Run Snyk Scan  # Thêm Snyk
       #   if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
       #   uses: snyk/actions/cli@master
       #   env:
