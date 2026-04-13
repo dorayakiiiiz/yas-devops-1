@@ -97,16 +97,21 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f customer
 
+      - name: Setup Snyk
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        uses: snyk/actions/setup@master
+
       - name: Run Snyk Scan
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
-        uses: snyk/actions/maven@master
         env:
-          # Ép biến JAVA_HOME rỗng để tránh rò rỉ từ máy host vào Docker gây crash
-          JAVA_HOME: ""
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          # Chỉ định đúng service customer (yêu cầu số 6)
-          args: --file=customer/pom.xml --sarif-file-output=snyk-results.sarif      # - name: Run Snyk Scan  # Thêm Snyk
+        run: |
+          # Xóa mẹ file mvnw rác đi để Snyk bắt buộc dùng mvn hệ thống (chuẩn nhất)
+          rm -f mvnw customer/mvnw
+          
+          # Dùng --project-name để ép Server Snyk nhận cục data của module con, diệt lỗi 422
+          snyk test --file=customer/pom.xml --project-name=yas-customer-service --sarif-file-output=snyk-results.sarif      
+      # - name: Run Snyk Scan  # Thêm Snyk
       #   if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
       #   uses: snyk/actions/cli@master
       #   env:
