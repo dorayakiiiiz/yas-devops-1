@@ -169,4 +169,27 @@ class LocationServiceTest {
         );
     }
 
+    // New test
+    @Test
+    @SuppressWarnings("unchecked")
+    void testGetAddressesByIdList_whenNormalCase_methodSuccess() {
+        RestClient.RequestHeadersUriSpec requestHeadersUriSpec = mock(RestClient.RequestHeadersUriSpec.class);
+        when(restClient.get()).thenReturn(requestHeadersUriSpec);
+
+        RestClient.RequestHeadersSpec requestHeadersSpec = mock(RestClient.RequestHeadersSpec.class);
+        when(requestHeadersUriSpec.uri(any(URI.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.headers(any())).thenReturn(requestHeadersSpec);
+
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        
+        List<AddressDetailVm> expectedList = Collections.singletonList(getAddressDetailVm());
+        when(responseSpec.body(any(org.springframework.core.ParameterizedTypeReference.class))).thenReturn(expectedList);
+
+        List<AddressDetailVm> result = locationService.getAddressesByIdList(Collections.singletonList(101L));
+
+        assertEquals(expectedList, result);
+        assertThat(result).isNotEmpty();
+        assertThat(result.get(0).contactName()).isEqualTo("John Doe");
+    }
+
 }

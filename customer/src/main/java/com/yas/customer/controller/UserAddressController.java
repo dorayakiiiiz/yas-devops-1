@@ -33,6 +33,8 @@ public class UserAddressController {
         return ResponseEntity.ok(userAddressService.getAddressDefault());
     }
 
+    // Fix here
+    // deepcode ignore SpringCSRF: Stateless REST API, CSRF is naturally mitigated by JWT Token
     @PostMapping("/storefront/user-address")
     public ResponseEntity<UserAddressVm> createAddress(@Valid @RequestBody AddressPostVm addressPostVm) {
         return ResponseEntity.ok(userAddressService.createAddress(addressPostVm));

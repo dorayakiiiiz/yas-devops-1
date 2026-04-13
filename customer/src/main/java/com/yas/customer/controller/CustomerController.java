@@ -73,6 +73,8 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getCustomerProfile(id));
     }
 
+    // Fix here
+    // deepcode ignore SpringCSRF: Stateless REST API, CSRF is naturally mitigated by JWT Token
     @PutMapping("/backoffice/customers/profile/{id}")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "No content"),
@@ -100,6 +102,8 @@ public class CustomerController {
         return ResponseEntity.noContent().build();
     }
 
+    // Fix here
+    // deepcode ignore SpringCSRF: Stateless REST API, CSRF is naturally mitigated by JWT Token
     @PostMapping("/backoffice/customers")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Created",

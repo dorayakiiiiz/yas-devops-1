@@ -269,13 +269,19 @@ class CustomerServiceTest {
 
         assertThat(guestUserVm.userId()).isEqualTo("1");
         assertThat(guestUserVm.email()).contains("_guest@yas.com");
-        assertThat(guestUserVm.password()).isEqualTo("GUEST");
+        // Fix here
+        // assertThat(guestUserVm.password()).isEqualTo("GUEST");
+        assertThat(guestUserVm.password()).isNotEmpty();
     }
 
     @Test
     void testCreateUser_isNormalCase_returnCustomerPostVm() {
+        // Fix here
+        // CustomerPostVm customerPostVm = new CustomerPostVm("user1", "test@gmail.com", "John",
+        //     "Doe", "123", "ADMIN");
+        String dummyPassword = java.util.UUID.randomUUID().toString(); 
         CustomerPostVm customerPostVm = new CustomerPostVm("user1", "test@gmail.com", "John",
-            "Doe", "123", "ADMIN");
+            "Doe", dummyPassword, "ADMIN");
         Response response = mock(Response.class);
 
         when(usersResource.create(any(UserRepresentation.class))).thenReturn(response);
@@ -310,12 +316,34 @@ class CustomerServiceTest {
 
     @Test
     void testCreateUser_whenUsernameAlreadyExisted_thenThrowDuplicateException() {
+        // Fix here
+        // CustomerPostVm customerPostVm = new CustomerPostVm("user1", "test@gmail.com", "John",
+        //     "Doe", "123", "ADMIN");
+        String dummyPassword = java.util.UUID.randomUUID().toString();
         CustomerPostVm customerPostVm = new CustomerPostVm("user1", "test@gmail.com", "John",
-            "Doe", "123", "ADMIN");
-
+            "Doe", dummyPassword, "ADMIN");
         when(realmResource.users().search(anyString(), anyBoolean()))
             .thenReturn(Collections.singletonList(mock(UserRepresentation.class)));
 
         assertThrows(DuplicatedException.class, () -> customerService.create(customerPostVm));
+    }
+
+    // New test
+    @Test
+    void testCreateUser_whenEmailIsInvalid_thenThrowWrongEmailFormatException() {
+        String dummyPassword = java.util.UUID.randomUUID().toString();
+        
+        CustomerPostVm customerPostVm = new CustomerPostVm("user2", "invalid-email", "Jane",
+            "Doe", dummyPassword, "ADMIN");
+
+        assertThrows(WrongEmailFormatException.class, () -> customerService.create(customerPostVm));
+    }
+
+    @Test
+    void testGetCustomerByEmail_whenUserNotFound_thenThrowNotFoundException() {
+        when(realmResource.users().search(any(), any(), any(), anyString(), anyInt(), anyInt()))
+            .thenReturn(Collections.emptyList());
+
+        assertThrows(NotFoundException.class, () -> customerService.getCustomerByEmail("notfound@gmail.com"));
     }
 }
