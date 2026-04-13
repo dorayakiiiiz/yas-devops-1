@@ -94,14 +94,23 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f customer
-      - name: Run Snyk Scan  # Thêm Snyk
+
+      - name: Setup Snyk
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
-        uses: snyk/actions/maven@master
+        uses: snyk/actions/setup@master
+      - name: Run Snyk Scan
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
-          JAVA_HOME: ${{ env.JAVA_HOME }}
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
+        run: snyk test --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
+      # - name: Run Snyk Scan  # Thêm Snyk
+      #   if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+      #   uses: snyk/actions/cli@master
+      #   env:
+      #     JAVA_HOME: ${{ env.JAVA_HOME }}
+      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      #   with:
+      #     args: --file=customer/pom.xml --sarif-file-output=snyk-results.sarif
 
       - name: Upload Snyk results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
