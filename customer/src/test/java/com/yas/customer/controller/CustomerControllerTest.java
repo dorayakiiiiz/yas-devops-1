@@ -164,7 +164,7 @@ class CustomerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete(BACK_OFFICE_CUSTOMER_BASE_URL + "/profile" + "/test")
                 .contentType("application/json"))
             .andExpect(MockMvcResultMatchers.status().isNoContent());
-    }
+    } 
 
     // New test
     @Test
