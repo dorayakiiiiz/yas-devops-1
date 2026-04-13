@@ -369,9 +369,9 @@ class CustomerServiceTest {
         verify(userResource).update(captor.capture());
         
         UserRepresentation updatedUser = captor.getValue();
-        assertEquals("John", updatedUser.getFirstName());
-        assertEquals("Doe", updatedUser.getLastName());
-        assertEquals("john.new@gmail.com", updatedUser.getEmail());
+        assertThat(updatedUser.getFirstName()).isEqualTo("John");
+        assertThat(updatedUser.getLastName()).isEqualTo("Doe");
+        assertThat(updatedUser.getEmail()).isEqualTo("john.new@gmail.com");
     }
 
     @Test
