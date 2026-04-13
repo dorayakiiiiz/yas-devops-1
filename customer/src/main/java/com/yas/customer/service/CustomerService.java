@@ -129,7 +129,7 @@ public class CustomerService {
         String randomGuestName = generateSafeString();
         String guestUserEmail = randomGuestName + "_guest@yas.com";
 
-        // Fix here: Use random password
+        // Use random password
         String guestPassword = generateSafeString();
         CredentialRepresentation credential = createPasswordCredentials(guestPassword);
 
@@ -151,7 +151,6 @@ public class CustomerService {
         // Assign realm role GUEST to user
         userResource.roles().realmLevel().add(Collections.singletonList(guestRealmRole));
 
-        // Fix here
         return new GuestUserVm(userId, guestUserEmail, guestPassword);
     }
 

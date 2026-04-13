@@ -313,7 +313,6 @@ class CustomerServiceTest {
 
     @Test
     void testCreateUser_whenUsernameAlreadyExisted_thenThrowDuplicateException() {
-        // Fix here
         String dummyPassword = java.util.UUID.randomUUID().toString();
         CustomerPostVm customerPostVm = new CustomerPostVm("user1", "test@gmail.com", "John",
             "Doe", dummyPassword, "ADMIN");
