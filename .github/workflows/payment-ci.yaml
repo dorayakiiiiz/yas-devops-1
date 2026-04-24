@@ -108,8 +108,6 @@ jobs:
           format: 'HTML'
           out: 'reports'
           args: >
-            --retryCount 5
-            --retryWait 2000
             --enableRetired
             --failOnCVSS 7
       
