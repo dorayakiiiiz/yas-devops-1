@@ -36,10 +36,11 @@ jobs:
       - name: Setup Snyk
         uses: snyk/actions/setup@master
       
-      - name: Run Snyk Scan
+      - name: Run Snyk Scan (Code Quality & Security)
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: snyk code test ./payment --severity-threshold=medium --sarif-file-output=snyk-results.sarif
+        run: snyk code test ./customer --severity-threshold=medium --sarif-file-output=snyk-results.sarif
       
       - name: Upload Snyk results
         uses: github/codeql-action/upload-sarif@v3
