@@ -107,10 +107,11 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # ⭐ THÊM DÒNG NÀY
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
         run: |
           cd payment
           mvn clean verify sonar:sonar \
+            -Drevision=1.0-SNAPSHOT
             -Dsonar.pullrequest.key=${{ github.event.number }} \
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
             -Dsonar.pullrequest.base=${{ github.base_ref }}
