@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.yas</groupId>
@@ -8,14 +7,14 @@
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>location</artifactId>
+    <artifactId>payment</artifactId>
     <version>${revision}</version>
-    <name>location</name>
-    <description>YAS Location Service</description>
+    <name>payment</name>
+    <description>Payment Service for Yas Project</description>
     <properties>
-        <sonar.organization>yas-devops-1</sonar.organization>
+        <sonar.organization>nashtech-garage</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>dorayakiiiiz_yas-devops-1-customer</sonar.projectKey>
+        <sonar.projectKey>nashtech-garage_yas-payment</sonar.projectKey>
     </properties>
     <dependencies>
         <dependency>
@@ -40,17 +39,29 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-liquibase</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-security-adapter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-integration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-kafka</artifactId>
         </dependency>
         <dependency>
             <groupId>com.yas</groupId>
@@ -60,6 +71,19 @@
         <dependency>
             <groupId>com.yas</groupId>
             <artifactId>common-library</artifactId>
+            <version>${revision}</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.yas</groupId>
+            <artifactId>payment-paypal</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yas</groupId>
+            <artifactId>payment-paypal</artifactId>
             <version>${revision}</version>
             <classifier>tests</classifier>
             <type>test-jar</type>
