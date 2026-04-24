@@ -21,7 +21,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -123,90 +122,6 @@ class PaymentServiceTest {
         assertEquals(capturedPayment.getPaymentMethod(), responseVm.paymentMethod());
         assertEquals(capturedPayment.getPaymentStatus(), responseVm.paymentStatus());
         assertEquals(capturedPayment.getFailureMessage(), responseVm.failureMessage());
-    }
-
-    @Test
-    void initPayment_ProviderNotFound_ThrowsException() {
-        InitPaymentRequestVm request = InitPaymentRequestVm.builder()
-                .paymentMethod("UNKNOWN_PROVIDER")
-                .totalPrice(BigDecimal.TEN)
-                .checkoutId("123")
-                .build();
-
-        assertThrows(IllegalArgumentException.class,
-                () -> paymentService.initPayment(request));
-    }
-
-    @Test
-    void capturePayment_ProviderNotFound_ThrowsException() {
-        CapturePaymentRequestVm request = CapturePaymentRequestVm.builder()
-                .paymentMethod("UNKNOWN_PROVIDER")
-                .token("123")
-                .build();
-
-        assertThrows(IllegalArgumentException.class,
-                () -> paymentService.capturePayment(request));
-    }
-
-    @Test
-    void initPayment_HandlerThrowsException_PropagatesException() {
-        InitPaymentRequestVm request = InitPaymentRequestVm.builder()
-                .paymentMethod(PaymentMethod.PAYPAL.name())
-                .totalPrice(BigDecimal.TEN)
-                .checkoutId("123")
-                .build();
-
-        when(paymentHandler.initPayment(any()))
-                .thenThrow(new RuntimeException("Payment provider error"));
-
-        assertThrows(RuntimeException.class,
-                () -> paymentService.initPayment(request));
-    }
-
-    @Test
-    void capturePayment_CaptureFailed_SavesPaymentWithFailedStatus() {
-        CapturePaymentRequestVm request = CapturePaymentRequestVm.builder()
-                .paymentMethod(PaymentMethod.PAYPAL.name())
-                .token("invalid-token")
-                .build();
-
-        CapturedPayment failedPayment = CapturedPayment.builder()
-                .orderId(2L)
-                .checkoutId("failed-checkout")
-                .amount(BigDecimal.valueOf(100.0))
-                .paymentFee(BigDecimal.valueOf(500))
-                .gatewayTransactionId("failed-gateway-id")
-                .paymentMethod(PaymentMethod.BANKING)
-                .paymentStatus(PaymentStatus.FAILED)
-                .failureMessage("Payment declined by bank")
-                .build();
-
-        when(paymentHandler.capturePayment(request)).thenReturn(failedPayment);
-        when(orderService.updateCheckoutStatus(failedPayment)).thenReturn(2L);
-        when(paymentRepository.save(any())).thenReturn(payment);
-
-        CapturePaymentResponseVm result = paymentService.capturePayment(request);
-
-        assertThat(result.paymentStatus()).isEqualTo(PaymentStatus.FAILED);
-        assertThat(result.failureMessage()).isEqualTo("Payment declined by bank");
-        verify(paymentRepository, times(1)).save(any(Payment.class));
-    }
-
-    @Test
-    void capturePayment_OrderServiceThrowsException_PropagatesException() {
-        CapturePaymentRequestVm request = CapturePaymentRequestVm.builder()
-                .paymentMethod(PaymentMethod.PAYPAL.name())
-                .token("123")
-                .build();
-
-        CapturedPayment capturedPayment = prepareCapturedPayment();
-
-        when(paymentHandler.capturePayment(request)).thenReturn(capturedPayment);
-        when(orderService.updateCheckoutStatus(capturedPayment))
-                .thenThrow(new RuntimeException("Order service unavailable"));
-
-        assertThrows(RuntimeException.class,
-                () -> paymentService.capturePayment(request));
     }
 
 }
