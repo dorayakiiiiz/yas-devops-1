@@ -18,25 +18,28 @@ on:
   workflow_dispatch:
 
 jobs:
-  #Phần scan
+  # Phần scan
   security-scan:
     runs-on: ubuntu-latest
+    env:
+      FROM_ORIGINAL_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
-      #kiểm tra phát hiện secret/credential bị leak
+      # kiểm tra phát hiện secret/credential bị leak
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-      #Snyk scan
+      # Snyk scan
       - name: Setup Snyk
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: snyk/actions/setup@master
       
-      - name: Run Snyk Scan (Code Quality & Security)
+      - name: Run Snyk Scan
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -48,10 +51,10 @@ jobs:
         with:
           sarif_file: snyk-results.sarif
 
-  #Phần test 
+  # Phần test
   test:
     runs-on: ubuntu-latest
-    needs: security-scan  #chỉ chạy test sau khi chạy security scan
+    needs: security-scan
     env:
       FROM_ORIGINAL_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.ref == 'refs/heads/main' }}
     steps:
@@ -60,7 +63,7 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/workflows/actions
       
-      - name: Run Maven Test #chạy unit test
+      - name: Run Maven Test
         run: mvn -pl payment -am verify
       
       - name: Install Dependencies
@@ -90,21 +93,25 @@ jobs:
         with:
           name: payment-coverage-report
           path: ${{github.workspace}}/payment/target/site/jacoco/
+      
       - name: Run Maven Checkstyle
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         run: mvn checkstyle:check -pl payment -am
+      
       - name: Analyze with SonarCloud
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f payment
+      
       - name: OWASP Dependency Check
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: dependency-check/Dependency-Check_Action@main
         with:
           project: 'yas-payment'
-          path: './payment'  
+          path: './payment'
           format: 'HTML'
+      
       - name: Upload OWASP results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: actions/upload-artifact@v4
