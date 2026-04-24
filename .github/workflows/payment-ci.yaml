@@ -107,9 +107,15 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -f payment
+
+      - name: Analyze with sonar cloud
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd payment
+          cd customer
           mvn clean verify sonar:sonar \
             -Drevision=1.0-SNAPSHOT \
             -Dsonar.pullrequest.key=${{ github.event.number }} \
