@@ -53,6 +53,9 @@ jobs:
         with:
           name: location-coverage-report
           path: ${{github.workspace}}/location/target/site/jacoco/
+      - name: Gitleaks check (Service Level)
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/work -w /work zricethezav/gitleaks:v8.18.4 detect --source="./location" --no-git --verbose
 
   build:
     runs-on: ubuntu-latest
