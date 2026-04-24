@@ -117,7 +117,7 @@ jobs:
         run: snyk code test ./payment --severity-threshold=medium --sarif-file-output=snyk-results.sarif
       
       - name: Upload Snyk results
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && !cancelled() }}
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && !cancelled() && hashFiles('snyk-results.sarif') != '' }}
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk-results.sarif
