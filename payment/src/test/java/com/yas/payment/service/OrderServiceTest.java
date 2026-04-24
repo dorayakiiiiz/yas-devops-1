@@ -108,4 +108,96 @@ class OrderServiceTest {
         assertThat(result.paymentId()).isEqualTo(78910L);
         assertThat(result.paymentStatus()).isEqualTo("SUCCESS");
     }
+
+    @Test
+    void testUpdateCheckoutStatus_whenPaymentFailed_returnLong() {
+        CapturedPayment capturedPayment = CapturedPayment.builder()
+            .orderId(12345L)
+            .checkoutId("checkout-failed")
+            .amount(new BigDecimal("99.99"))
+            .paymentFee(new BigDecimal("2.50"))
+            .gatewayTransactionId("txn-failed")
+            .paymentMethod(PaymentMethod.COD)
+            .paymentStatus(PaymentStatus.FAILED)
+            .failureMessage("Payment declined")
+            .build();
+
+        URI url = UriComponentsBuilder
+            .fromUriString(serviceUrlConfig.order())
+            .path("/storefront/checkouts/status")
+            .buildAndExpand()
+            .toUri();
+
+        RestClient.RequestBodyUriSpec requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+        when(restClient.put()).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(url)).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.body(any(CheckoutStatusVm.class))).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.headers(any())).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.body(Long.class)).thenReturn(1L);
+
+        Long result = orderService.updateCheckoutStatus(capturedPayment);
+
+        assertThat(result).isEqualTo(1L);
+    }
+
+    @Test
+    void testUpdateCheckoutStatus_whenRestClientThrowsException() {
+        CapturedPayment capturedPayment = CapturedPayment.builder()
+            .orderId(12345L)
+            .checkoutId("checkout-1234")
+            .amount(new BigDecimal("99.99"))
+            .paymentFee(new BigDecimal("2.50"))
+            .gatewayTransactionId("txn-67890")
+            .paymentMethod(PaymentMethod.COD)
+            .paymentStatus(PaymentStatus.COMPLETED)
+            .failureMessage(null)
+            .build();
+
+        URI url = UriComponentsBuilder
+            .fromUriString(serviceUrlConfig.order())
+            .path("/storefront/checkouts/status")
+            .buildAndExpand()
+            .toUri();
+
+        RestClient.RequestBodyUriSpec requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+        when(restClient.put()).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(url)).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.body(any(CheckoutStatusVm.class))).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.headers(any())).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.body(Long.class)).thenThrow(new RuntimeException("Connection failed"));
+
+        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, 
+            () -> orderService.updateCheckoutStatus(capturedPayment));
+    }
+
+    @Test
+    void testUpdateOrderStatus_whenPaymentStatusFailed() {
+        PaymentOrderStatusVm statusVm = PaymentOrderStatusVm.builder()
+            .orderId(123456L)
+            .orderStatus("FAILED")
+            .paymentId(78910L)
+            .paymentStatus("FAILED")
+            .build();
+
+        URI url = UriComponentsBuilder
+            .fromUriString(serviceUrlConfig.order())
+            .path("/storefront/orders/status")
+            .buildAndExpand()
+            .toUri();
+
+        RestClient.RequestBodyUriSpec requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+        when(restClient.put()).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(url)).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.body(statusVm)).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.headers(any())).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.body(PaymentOrderStatusVm.class)).thenReturn(statusVm);
+
+        PaymentOrderStatusVm result = orderService.updateOrderStatus(statusVm);
+        assertThat(result.orderId()).isEqualTo(123456L);
+        assertThat(result.orderStatus()).isEqualTo("FAILED");
+        assertThat(result.paymentStatus()).isEqualTo("FAILED");
+    }
 }
