@@ -108,9 +108,6 @@ jobs:
           format: 'HTML'
           out: 'reports'
           args: >
-            --nvdApiKey ${{ secrets.NVD_API_KEY }}
-            --ossIndexUsername ${{ secrets.OSSINDEX_USER }}
-            --ossIndexPassword ${{ secrets.OSSINDEX_TOKEN }}
             --retryCount 5
             --retryWait 2000
             --enableRetired
