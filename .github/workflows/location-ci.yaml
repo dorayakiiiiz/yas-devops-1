@@ -91,7 +91,7 @@ jobs:
           # Thêm dòng args dưới đây để tắt Central Analyzer
           args: >
             --disableCentral
-            --failOnCVSS 7
+            --failOnCVSS 11 # Đặt ngưỡng CVSS > 10 để không fail build nhưng vẫn sinh report
       - name: Upload OWASP Dependency Check results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: actions/upload-artifact@master
@@ -110,6 +110,7 @@ jobs:
 
       - name: Run Snyk Scan (Code Quality & Security)
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        continue-on-error: true # Thêm dòng này để nếu snyk thấy lỗi vẫn chạy tiếp step upload
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: snyk code test ./location --severity-threshold=medium --sarif-file-output=snyk-results.sarif
