@@ -83,6 +83,20 @@ jobs:
         with:
           path: '**/payment-checkstyle-result.xml'
       
+      - name: Install Node dependencies for OWASP scan
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        run: |
+          # Install dependencies for storefront if package-lock.json exists
+          if [ -f "storefront/package-lock.json" ]; then
+            echo "Installing dependencies for storefront..."
+            cd storefront && npm ci --prefer-offline --no-audit && cd ..
+          fi
+          # Install dependencies for backoffice if package-lock.json exists
+          if [ -f "backoffice/package-lock.json" ]; then
+            echo "Installing dependencies for backoffice..."
+            cd backoffice && npm ci --prefer-offline --no-audit && cd ..
+          fi
+      
       - name: OWASP Dependency Check
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: dependency-check/Dependency-Check_Action@main
@@ -92,13 +106,24 @@ jobs:
           project: 'yas'
           path: '.'
           format: 'HTML'
+          out: 'reports'
+          args: >
+            --nvdApiKey ${{ secrets.NVD_API_KEY }}
+            --ossIndexUsername ${{ secrets.OSSINDEX_USER }}
+            --ossIndexPassword ${{ secrets.OSSINDEX_TOKEN }}
+            --retryCount 5
+            --retryWait 2000
+            --enableRetired
+            --failOnCVSS 7
       
       - name: Upload OWASP Dependency Check results
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
-        uses: actions/upload-artifact@master
+        if: ${{ always() && env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        uses: actions/upload-artifact@v4
         with:
-          name: OWASP Dependency Check Report
-          path: ${{github.workspace}}/reports
+          name: OWASP-Dependency-Check-Report
+          path: |
+            ${{github.workspace}}/reports/dependency-check-report.html
+            ${{github.workspace}}/reports/dependency-check-report.json
       
       - name: Analyze with SonarCloud
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
