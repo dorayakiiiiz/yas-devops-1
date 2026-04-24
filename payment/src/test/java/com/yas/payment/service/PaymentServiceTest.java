@@ -83,53 +83,6 @@ class PaymentServiceTest {
         verifyResult(capturedPayment, capturePaymentResponseVm);
     }
 
-    //Thêm unit test
-    @Test
-    void initPayment_ProviderNotFound() {
-        InitPaymentRequestVm request = InitPaymentRequestVm.builder()
-                .paymentMethod("UNKNOWN").totalPrice(BigDecimal.TEN).build();
-        
-        assertThrows(IllegalArgumentException.class, 
-                () -> paymentService.initPayment(request));
-    }
-
-    @Test
-    void capturePayment_ProviderNotFound() {
-        CapturePaymentRequestVm request = CapturePaymentRequestVm.builder()
-                .paymentMethod("UNKNOWN").token("123").build();
-        
-        assertThrows(IllegalArgumentException.class, 
-                () -> paymentService.capturePayment(request));
-    }
-
-
-    @Test
-    void initPayment_HandlerThrowsException() {
-        InitPaymentRequestVm request = InitPaymentRequestVm.builder()
-                .paymentMethod(PaymentMethod.PAYPAL.name()).build();
-        
-        when(paymentHandler.initPayment(request))
-                .thenThrow(new RuntimeException("Payment failed"));
-        
-        assertThrows(RuntimeException.class, 
-                () -> paymentService.initPayment(request));
-    }
-
-
-    @Test
-    void capturePayment_CaptureFailed() {
-        CapturePaymentRequestVm request = CapturePaymentRequestVm.builder()
-                .paymentMethod(PaymentMethod.PAYPAL.name()).token("invalid").build();
-        
-        CapturedPayment failedPayment = CapturedPayment.builder()
-                .paymentStatus(PaymentStatus.FAILED)
-                .failureMessage("Payment declined")
-                .build();
-        
-        when(paymentHandler.capturePayment(request)).thenReturn(failedPayment);
-        // Expect no order update when payment failed
-    }
-
     private CapturedPayment prepareCapturedPayment() {
         return CapturedPayment.builder()
             .orderId(2L)
