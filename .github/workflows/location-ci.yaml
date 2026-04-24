@@ -88,6 +88,10 @@ jobs:
           project: 'yas'
           path: '.'
           format: 'HTML'
+          # Thêm dòng args dưới đây để tắt Central Analyzer
+          args: >
+            --disableCentral
+            --failOnCVSS 7
       - name: Upload OWASP Dependency Check results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: actions/upload-artifact@master
