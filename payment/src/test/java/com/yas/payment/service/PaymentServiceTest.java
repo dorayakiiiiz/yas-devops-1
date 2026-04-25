@@ -157,29 +157,29 @@ class PaymentServiceTest {
     }
 
     @Test
-    @DisplayName("Capture payment should handle failed payment status")
-    void capturePayment_WithFailedPaymentStatus() {
+    @DisplayName("Capture payment should handle cancelled payment status")
+    void capturePayment_WithCancelledPaymentStatus() {
         // Given
         CapturePaymentRequestVm capturePaymentRequestVM = CapturePaymentRequestVm.builder()
                 .paymentMethod(PaymentMethod.PAYPAL.name())
                 .token("123")
                 .build();
         
-        CapturedPayment failedCapturedPayment = CapturedPayment.builder()
+        CapturedPayment cancelledCapturedPayment = CapturedPayment.builder()
                 .orderId(null)
                 .checkoutId("secretCheckoutId")
                 .amount(BigDecimal.valueOf(100.0))
                 .paymentFee(BigDecimal.valueOf(500))
                 .gatewayTransactionId(null)
                 .paymentMethod(PaymentMethod.PAYPAL)
-                .paymentStatus(PaymentStatus.FAILED)
-                .failureMessage("Payment failed due to insufficient funds")
+                .paymentStatus(PaymentStatus.CANCELLED)
+                .failureMessage("Payment cancelled by user")
                 .build();
         
         Long orderId = null;
         
-        when(paymentHandler.capturePayment(capturePaymentRequestVM)).thenReturn(failedCapturedPayment);
-        when(orderService.updateCheckoutStatus(failedCapturedPayment)).thenReturn(orderId);
+        when(paymentHandler.capturePayment(capturePaymentRequestVM)).thenReturn(cancelledCapturedPayment);
+        when(orderService.updateCheckoutStatus(cancelledCapturedPayment)).thenReturn(orderId);
         when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
         
         // When
@@ -188,12 +188,52 @@ class PaymentServiceTest {
         // Then
         assertNotNull(response);
         assertNull(response.orderId());
-        assertEquals(PaymentStatus.FAILED, response.paymentStatus());
-        assertEquals("Payment failed due to insufficient funds", response.failureMessage());
+        assertEquals(PaymentStatus.CANCELLED, response.paymentStatus());
+        assertEquals("Payment cancelled by user", response.failureMessage());
         assertNull(response.gatewayTransactionId());
         
-        verify(orderService, times(1)).updateCheckoutStatus(failedCapturedPayment);
-        // Order status should not be updated if payment failed
+        verify(orderService, times(1)).updateCheckoutStatus(cancelledCapturedPayment);
+        verify(orderService, times(1)).updateOrderStatus(any(PaymentOrderStatusVm.class));
+        verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    @DisplayName("Capture payment should handle pending payment status")
+    void capturePayment_WithPendingPaymentStatus() {
+        // Given
+        CapturePaymentRequestVm capturePaymentRequestVM = CapturePaymentRequestVm.builder()
+                .paymentMethod(PaymentMethod.PAYPAL.name())
+                .token("123")
+                .build();
+        
+        CapturedPayment pendingCapturedPayment = CapturedPayment.builder()
+                .orderId(null)
+                .checkoutId("secretCheckoutId")
+                .amount(BigDecimal.valueOf(100.0))
+                .paymentFee(BigDecimal.valueOf(500))
+                .gatewayTransactionId("pending-tx-123")
+                .paymentMethod(PaymentMethod.PAYPAL)
+                .paymentStatus(PaymentStatus.PENDING)
+                .failureMessage(null)
+                .build();
+        
+        Long orderId = null;
+        
+        when(paymentHandler.capturePayment(capturePaymentRequestVM)).thenReturn(pendingCapturedPayment);
+        when(orderService.updateCheckoutStatus(pendingCapturedPayment)).thenReturn(orderId);
+        when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        
+        // When
+        CapturePaymentResponseVm response = paymentService.capturePayment(capturePaymentRequestVM);
+        
+        // Then
+        assertNotNull(response);
+        assertNull(response.orderId());
+        assertEquals(PaymentStatus.PENDING, response.paymentStatus());
+        assertEquals("pending-tx-123", response.gatewayTransactionId());
+        assertNull(response.failureMessage());
+        
+        verify(orderService, times(1)).updateCheckoutStatus(pendingCapturedPayment);
         verify(orderService, times(1)).updateOrderStatus(any(PaymentOrderStatusVm.class));
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
@@ -304,16 +344,6 @@ class PaymentServiceTest {
     void createPayment_ShouldSavePaymentWithCorrectFields() {
         // Given
         CapturedPayment capturedPayment = prepareCapturedPayment();
-        Payment expectedPayment = Payment.builder()
-                .checkoutId(capturedPayment.getCheckoutId())
-                .orderId(capturedPayment.getOrderId())
-                .paymentStatus(capturedPayment.getPaymentStatus())
-                .paymentFee(capturedPayment.getPaymentFee())
-                .paymentMethod(capturedPayment.getPaymentMethod())
-                .amount(capturedPayment.getAmount())
-                .failureMessage(capturedPayment.getFailureMessage())
-                .gatewayTransactionId(capturedPayment.getGatewayTransactionId())
-                .build();
         
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
         
