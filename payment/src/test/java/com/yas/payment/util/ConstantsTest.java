@@ -1,4 +1,4 @@
-package com.yas.payment.util;
+package com.yas.payment.utils;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
