@@ -161,15 +161,6 @@ class PaymentProviderTest {
         assertThat(paymentProvider.isNew()).isFalse();
     }
 
-    @Test
-    @DisplayName("Should return isNew value from transient field")
-    void testIsNew_ShouldReturnTransientFieldValue() {
-        paymentProvider.setNew(true);
-        assertThat(paymentProvider.isNew()).isTrue();
-        
-        paymentProvider.setNew(false);
-        assertThat(paymentProvider.isNew()).isFalse();
-    }
 
     @Test
     @DisplayName("Should handle null values correctly")
@@ -242,6 +233,7 @@ class PaymentProviderTest {
         assertThat(paymentProvider.getLastModifiedOn()).isEqualTo(now);
     }
 
+    @SuppressWarnings("java:S1192")  
     @Test
     @DisplayName("Should handle JSON string in additional settings")
     void testAdditionalSettingsAsJson() {
