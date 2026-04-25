@@ -38,4 +38,19 @@ class AuthenticationControllerTest {
         assertThat(body.authenticatedUser()).isNotNull();
         assertThat(body.authenticatedUser().username()).isEqualTo("alice");
     }
+
+    @Test
+    void user_returnsAuthenticatedEvenWhenUsernameMissing() {
+        OAuth2User principal = Mockito.mock(OAuth2User.class);
+        when(principal.getAttribute("preferred_username")).thenReturn(null);
+
+        var response = controller.user(principal);
+
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+        var body = response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.isAuthenticated()).isTrue();
+        assertThat(body.authenticatedUser()).isNotNull();
+        assertThat(body.authenticatedUser().username()).isNull();
+    }
 }
