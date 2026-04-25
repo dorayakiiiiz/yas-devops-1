@@ -85,6 +85,7 @@
             <groupId>com.yas</groupId>
             <artifactId>payment-paypal</artifactId>
             <version>${revision}</version>
+            <artifactId>spring-boot-starter-test</artifactId>
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
