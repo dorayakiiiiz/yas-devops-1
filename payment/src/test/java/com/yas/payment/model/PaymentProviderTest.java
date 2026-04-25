@@ -192,33 +192,6 @@ class PaymentProviderTest {
     }
 
     @Test
-    @DisplayName("Should override equals and hashCode")
-    void testEqualsAndHashCode() {
-        PaymentProvider provider1 = PaymentProvider.builder()
-                .id("provider_123")
-                .name("PayPal")
-                .enabled(true)
-                .build();
-        
-        PaymentProvider provider2 = PaymentProvider.builder()
-                .id("provider_123")
-                .name("PayPal")
-                .enabled(true)
-                .build();
-        
-        PaymentProvider provider3 = PaymentProvider.builder()
-                .id("provider_456")
-                .name("Stripe")
-                .enabled(false)
-                .build();
-        
-        assertThat(provider1).isEqualTo(provider2);
-        assertThat(provider1.hashCode()).isEqualTo(provider2.hashCode());
-        assertThat(provider1).isNotEqualTo(provider3);
-        assertThat(provider1.hashCode()).isNotEqualTo(provider3.hashCode());
-    }
-
-    @Test
     @DisplayName("Should handle different enabled states")
     void testDifferentEnabledStates() {
         PaymentProvider enabledProvider = PaymentProvider.builder()

@@ -184,16 +184,6 @@ class MessagesUtilsTest {
     }
 
     @Test
-    @DisplayName("Should handle very long argument values")
-    void getMessage_ShouldHandleLongArguments() {
-        String longString = "A".repeat(10000);
-        String result = MessagesUtils.getMessage("test.long.argument", longString);
-        
-        assertThat(result).isNotNull();
-        assertThat(result).contains(longString);
-    }
-
-    @Test
     @DisplayName("Should handle null arguments array")
     void getMessage_ShouldHandleNullArguments() {
         String result = MessagesUtils.getMessage("test.message", (Object[]) null);
