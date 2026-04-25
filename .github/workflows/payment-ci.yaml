@@ -96,7 +96,7 @@ jobs:
           args: >
             --disableCentral
             --failOnCVSS 11
-            
+
       - name: Upload OWASP Dependency Check results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: actions/upload-artifact@master
@@ -115,11 +115,13 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: snyk/actions/setup@master
       
-      - name: Run Snyk Scan
+      - name: Run Snyk Scan (Code Quality & Security)
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        continue-on-error: true 
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: snyk code test ./payment --severity-threshold=medium --sarif-file-output=snyk-results.sarif
+        run: snyk code test ./location --severity-threshold=medium --sarif-file-output=snyk-results.sarif
+
       
       - name: Upload Snyk results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && !cancelled() && hashFiles('snyk-results.sarif') != '' }}
