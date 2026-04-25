@@ -31,9 +31,9 @@ class PaymentProviderTest {
         // Set version and audit fields for testing
         ReflectionTestUtils.setField(paymentProvider, "version", 0);
         ReflectionTestUtils.setField(paymentProvider, "createdBy", "test_user");
-        ReflectionTestUtils.setField(paymentProvider, "createdDate", ZonedDateTime.now());
+        ReflectionTestUtils.setField(paymentProvider, "createdOn", ZonedDateTime.now());
         ReflectionTestUtils.setField(paymentProvider, "lastModifiedBy", "test_user");
-        ReflectionTestUtils.setField(paymentProvider, "lastModifiedDate", ZonedDateTime.now());
+        ReflectionTestUtils.setField(paymentProvider, "lastModifiedOn", ZonedDateTime.now());
     }
 
     @Test
@@ -259,14 +259,14 @@ class PaymentProviderTest {
         ZonedDateTime now = ZonedDateTime.now();
         
         paymentProvider.setCreatedBy("admin");
-        paymentProvider.setCreatedDate(now);
+        paymentProvider.setCreatedOn(now);
         paymentProvider.setLastModifiedBy("admin");
-        paymentProvider.setLastModifiedDate(now);
+        paymentProvider.setLastModifiedOn(now);
         
         assertThat(paymentProvider.getCreatedBy()).isEqualTo("admin");
-        assertThat(paymentProvider.getCreatedDate()).isEqualTo(now);
+        assertThat(paymentProvider.getCreatedOn()).isEqualTo(now);
         assertThat(paymentProvider.getLastModifiedBy()).isEqualTo("admin");
-        assertThat(paymentProvider.getLastModifiedDate()).isEqualTo(now);
+        assertThat(paymentProvider.getLastModifiedOn()).isEqualTo(now);
     }
 
     @Test
