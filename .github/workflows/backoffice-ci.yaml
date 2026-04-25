@@ -38,7 +38,7 @@ jobs:
         working-directory: ./backoffice
 
       - name: Run Lint/Test
-        run: npm test --if-present
+        run: npm run test:ci
         working-directory: ./backoffice
 
       - name: Test Results
@@ -46,8 +46,8 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && (success() || failure()) }}
         with:
           name: backoffice-Service-Unit-Test-Results
-          path: "backoffice/coverage/*.xml"
-          reporter: java-junit
+          path: "backoffice/coverage/junit.xml"
+          reporter: jest-junit  # Đổi từ java-junit sang jest-junit
 
   build:
     runs-on: ubuntu-latest
