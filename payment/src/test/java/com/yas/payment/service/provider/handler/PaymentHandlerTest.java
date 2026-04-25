@@ -33,13 +33,13 @@ class PaymentHandlerTest {
     void setUp() {
         // Initialize test data
         initPaymentRequestVm = InitPaymentRequestVm.builder()
-                .paymentMethod("CREDIT_CARD")
+                .paymentMethod("PAYPAL")
                 .totalPrice(new BigDecimal("99.99"))
                 .checkoutId("checkout-123")
                 .build();
 
         capturePaymentRequestVm = CapturePaymentRequestVm.builder()
-                .paymentMethod("CREDIT_CARD")
+                .paymentMethod("PAYPAL")
                 .token("payment-token-456")
                 .build();
 
@@ -55,7 +55,7 @@ class PaymentHandlerTest {
                 .amount(new BigDecimal("99.99"))
                 .paymentFee(new BigDecimal("2.99"))
                 .gatewayTransactionId("txn_789012")
-                .paymentMethod(PaymentMethod.CREDIT_CARD)
+                .paymentMethod(PaymentMethod.PAYPAL)
                 .paymentStatus(PaymentStatus.COMPLETED)
                 .failureMessage(null)
                 .build();
@@ -118,7 +118,7 @@ class PaymentHandlerTest {
         assertThat(result.getCheckoutId()).isEqualTo("checkout-123");
         assertThat(result.getAmount()).isEqualTo(new BigDecimal("99.99"));
         assertThat(result.getGatewayTransactionId()).isEqualTo("txn_789012");
-        assertThat(result.getPaymentMethod()).isEqualTo(PaymentMethod.CREDIT_CARD);
+        assertThat(result.getPaymentMethod()).isEqualTo(PaymentMethod.PAYPAL);
         assertThat(result.getPaymentStatus()).isEqualTo(PaymentStatus.COMPLETED);
         assertThat(result.getFailureMessage()).isNull();
     }
@@ -139,51 +139,77 @@ class PaymentHandlerTest {
     @Test
     void testInitPayment_WithDifferentPaymentMethods() {
         // Given
-        InitPaymentRequestVm paypalRequest = InitPaymentRequestVm.builder()
-                .paymentMethod("PAYPAL")
+        InitPaymentRequestVm bankingRequest = InitPaymentRequestVm.builder()
+                .paymentMethod("BANKING")
                 .totalPrice(new BigDecimal("150.00"))
-                .checkoutId("checkout-paypal")
+                .checkoutId("checkout-banking")
                 .build();
 
         InitiatedPayment expectedPayment = InitiatedPayment.builder()
                 .status("PENDING")
-                .paymentId("paypal_789")
-                .redirectUrl("https://www.paypal.com/checkout/789")
+                .paymentId("banking_789")
+                .redirectUrl("https://banking.checkout.com/789")
                 .build();
 
-        when(paymentHandler.initPayment(paypalRequest)).thenReturn(expectedPayment);
+        when(paymentHandler.initPayment(bankingRequest)).thenReturn(expectedPayment);
 
         // When
-        InitiatedPayment result = paymentHandler.initPayment(paypalRequest);
+        InitiatedPayment result = paymentHandler.initPayment(bankingRequest);
 
         // Then
-        assertThat(result.getPaymentId()).isEqualTo("paypal_789");
-        assertThat(result.getRedirectUrl()).contains("paypal.com");
+        assertThat(result.getPaymentId()).isEqualTo("banking_789");
+        assertThat(result.getRedirectUrl()).contains("banking");
     }
 
     @Test
-    void testCapturePayment_WithFailedStatus() {
+    void testCapturePayment_WithPendingStatus() {
         // Given
-        CapturedPayment failedPayment = CapturedPayment.builder()
+        CapturedPayment pendingPayment = CapturedPayment.builder()
                 .orderId(1002L)
-                .checkoutId("checkout-failed")
+                .checkoutId("checkout-pending")
                 .amount(new BigDecimal("50.00"))
                 .paymentFee(new BigDecimal("1.50"))
-                .gatewayTransactionId(null)
-                .paymentMethod(PaymentMethod.CREDIT_CARD)
-                .paymentStatus(PaymentStatus.FAILED)
-                .failureMessage("Insufficient funds")
+                .gatewayTransactionId("txn_pending_001")
+                .paymentMethod(PaymentMethod.BANKING)
+                .paymentStatus(PaymentStatus.PENDING)
+                .failureMessage(null)
                 .build();
 
         when(paymentHandler.capturePayment(any(CapturePaymentRequestVm.class)))
-                .thenReturn(failedPayment);
+                .thenReturn(pendingPayment);
 
         // When
         CapturedPayment result = paymentHandler.capturePayment(capturePaymentRequestVm);
 
         // Then
-        assertThat(result.getPaymentStatus()).isEqualTo(PaymentStatus.FAILED);
-        assertThat(result.getFailureMessage()).isEqualTo("Insufficient funds");
+        assertThat(result.getPaymentStatus()).isEqualTo(PaymentStatus.PENDING);
+        assertThat(result.getFailureMessage()).isNull();
+        assertThat(result.getGatewayTransactionId()).isEqualTo("txn_pending_001");
+    }
+
+    @Test
+    void testCapturePayment_WithCOD() {
+        // Given
+        CapturedPayment codPayment = CapturedPayment.builder()
+                .orderId(1003L)
+                .checkoutId("checkout-cod")
+                .amount(new BigDecimal("75.00"))
+                .paymentFee(BigDecimal.ZERO)
+                .gatewayTransactionId(null)
+                .paymentMethod(PaymentMethod.COD)
+                .paymentStatus(PaymentStatus.COMPLETED)
+                .failureMessage(null)
+                .build();
+
+        when(paymentHandler.capturePayment(any(CapturePaymentRequestVm.class)))
+                .thenReturn(codPayment);
+
+        // When
+        CapturedPayment result = paymentHandler.capturePayment(capturePaymentRequestVm);
+
+        // Then
+        assertThat(result.getPaymentMethod()).isEqualTo(PaymentMethod.COD);
+        assertThat(result.getPaymentFee()).isEqualTo(BigDecimal.ZERO);
         assertThat(result.getGatewayTransactionId()).isNull();
     }
 }
