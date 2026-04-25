@@ -38,61 +38,49 @@ class PaymentProviderControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Khởi tạo MockMvc với controller cần test
         mockMvc = MockMvcBuilders.standaloneSetup(paymentProviderController).build();
     }
 
     @Test
     void create_ShouldReturnCreated_WhenRequestIsValid() throws Exception {
-        // Given
-        CreatePaymentVm createVm = new CreatePaymentVm(); // Giả định các field (name, v.v.)
-        PaymentProviderVm responseVm = new PaymentProviderVm();
-        // Giả sử response có ID là 1
-        responseVm.setId(1L);
+        CreatePaymentVm createVm = new CreatePaymentVm("Paypal", "paypal_id", "secret", true); 
+        PaymentProviderVm responseVm = new PaymentProviderVm("PAYPAL", "Paypal", "Description", 1, 1L, "{}");
 
         when(paymentProviderService.create(any(CreatePaymentVm.class))).thenReturn(responseVm);
 
-        // When & Then
         mockMvc.perform(post("/backoffice/payment-providers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createVm)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1L));
+                .andExpect(jsonPath("$.id").value("PAYPAL"));
     }
 
     @Test
     void update_ShouldReturnOk_WhenRequestIsValid() throws Exception {
-        // Given
-        UpdatePaymentVm updateVm = new UpdatePaymentVm();
-        PaymentProviderVm responseVm = new PaymentProviderVm();
-        responseVm.setId(1L);
+        UpdatePaymentVm updateVm = new UpdatePaymentVm("PAYPAL", "New Name", "New Desc", true);
+        PaymentProviderVm responseVm = new PaymentProviderVm("PAYPAL", "New Name", "New Desc", 1, 1L, "{}");
 
         when(paymentProviderService.update(any(UpdatePaymentVm.class))).thenReturn(responseVm);
 
-        // When & Then
         mockMvc.perform(put("/backoffice/payment-providers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateVm)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
+                .andExpect(jsonPath("$.id").value("PAYPAL"));
     }
 
     @Test
     void getAll_ShouldReturnList_WhenCallingStorefront() throws Exception {
-        // Given
-        PaymentProviderVm provider1 = new PaymentProviderVm();
-        provider1.setId(1L);
+        PaymentProviderVm provider1 = new PaymentProviderVm("PAYPAL", "Paypal", "Desc", 1, 1L, "{}");
         List<PaymentProviderVm> providers = List.of(provider1);
 
         when(paymentProviderService.getEnabledPaymentProviders(any(Pageable.class))).thenReturn(providers);
 
-        // When & Then
         mockMvc.perform(get("/storefront/payment-providers")
                 .param("page", "0")
-                .param("size", "10")
-                .contentType(MediaType.APPLICATION_JSON))
+                .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1L));
+                .andExpect(jsonPath("$[0].id").value("PAYPAL"));
     }
 }
