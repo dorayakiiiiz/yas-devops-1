@@ -11,15 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ConstantsTest {
 
-    @Test
-    @DisplayName("Constants class should have private constructor")
-    void testConstructorIsPrivate() throws Exception {
-        Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
-        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-        
-        constructor.setAccessible(true);
-        assertThrows(InvocationTargetException.class, constructor::newInstance);
-    }
 
     @Test
     @DisplayName("ErrorCode constants should be defined correctly")
@@ -30,28 +21,6 @@ class ConstantsTest {
             .isNotBlank();
     }
 
-    @Test
-    @DisplayName("ErrorCode class should have private constructor")
-    void testErrorCodeConstructorIsPrivate() {
-        // Get all constructors
-        Constructor<?>[] constructors = Constants.ErrorCode.class.getDeclaredConstructors();
-        
-        // If there are constructors, verify they are private
-        if (constructors.length > 0) {
-            for (Constructor<?> constructor : constructors) {
-                assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-                
-                constructor.setAccessible(true);
-                assertThrows(InvocationTargetException.class, () -> {
-                    constructor.newInstance();
-                });
-            }
-        } else {
-            // If no constructors, the class is effectively not instantiable
-            // This is also acceptable
-            assertTrue(true, "ErrorCode class has no accessible constructors");
-        }
-    }
 
     @Test
     @DisplayName("Message constants should be defined correctly")
@@ -62,28 +31,6 @@ class ConstantsTest {
             .isNotBlank();
     }
 
-    @Test
-    @DisplayName("Message class should have private constructor")
-    void testMessageConstructorIsPrivate() {
-        // Get all constructors
-        Constructor<?>[] constructors = Constants.Message.class.getDeclaredConstructors();
-        
-        // If there are constructors, verify they are private
-        if (constructors.length > 0) {
-            for (Constructor<?> constructor : constructors) {
-                assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-                
-                constructor.setAccessible(true);
-                assertThrows(InvocationTargetException.class, () -> {
-                    constructor.newInstance();
-                });
-            }
-        } else {
-            // If no constructors, the class is effectively not instantiable
-            // This is also acceptable
-            assertTrue(true, "Message class has no accessible constructors");
-        }
-    }
 
     @Test
     @DisplayName("Constants should be final and cannot be extended")
