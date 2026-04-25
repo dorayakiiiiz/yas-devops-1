@@ -43,14 +43,14 @@ class PaymentProviderControllerTest {
         createPaymentVm.setName("PayPal");
         createPaymentVm.setConfigureUrl("https://paypal.com/configure");
         createPaymentVm.setMediaId(100L);
-        createPaymentVm.setIconUrl("https://example.com/paypal-icon.png");
+        // Note: setIconUrl() doesn't exist in CreatePaymentVm
 
         // Initialize test data for Update (extends PaymentProviderReqVm)
         updatePaymentVm = new UpdatePaymentVm();
         updatePaymentVm.setName("PayPal Updated");
         updatePaymentVm.setConfigureUrl("https://paypal.com/configure/new");
         updatePaymentVm.setMediaId(200L);
-        updatePaymentVm.setIconUrl("https://example.com/paypal-icon-updated.png");
+        // Note: setIconUrl() doesn't exist in UpdatePaymentVm
 
         // Initialize test data for Response
         paymentProviderVm = new PaymentProviderVm(
@@ -113,29 +113,29 @@ class PaymentProviderControllerTest {
     }
 
     @Test
-    void testCreate_WithNullIconUrl() {
+    void testCreate_WithNullConfigureUrl() {
         // Given
-        CreatePaymentVm createWithNullIcon = new CreatePaymentVm();
-        createWithNullIcon.setName("COD");
-        createWithNullIcon.setConfigureUrl("https://cod.com/configure");
-        createWithNullIcon.setMediaId(101L);
-        createWithNullIcon.setIconUrl(null);
+        CreatePaymentVm createWithNullUrl = new CreatePaymentVm();
+        createWithNullUrl.setName("COD");
+        createWithNullUrl.setConfigureUrl(null);
+        createWithNullUrl.setMediaId(101L);
 
         PaymentProviderVm expectedResponse = new PaymentProviderVm(
                 "provider-456",
                 "COD",
-                "https://cod.com/configure",
+                null,
                 1,
                 101L,
                 null
         );
 
-        when(paymentProviderService.create(createWithNullIcon)).thenReturn(expectedResponse);
+        when(paymentProviderService.create(createWithNullUrl)).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<PaymentProviderVm> response = paymentProviderController.create(createWithNullIcon);
+        ResponseEntity<PaymentProviderVm> response = paymentProviderController.create(createWithNullUrl);
 
         // Then
+        assertThat(response.getBody().getConfigureUrl()).isNull();
         assertThat(response.getBody().getIconUrl()).isNull();
     }
 
@@ -146,7 +146,6 @@ class PaymentProviderControllerTest {
         createWithEmptyUrl.setName("Bank Transfer");
         createWithEmptyUrl.setConfigureUrl("");
         createWithEmptyUrl.setMediaId(102L);
-        createWithEmptyUrl.setIconUrl("https://example.com/bank-icon.png");
 
         PaymentProviderVm expectedResponse = new PaymentProviderVm(
                 "provider-789",
@@ -164,6 +163,32 @@ class PaymentProviderControllerTest {
 
         // Then
         assertThat(response.getBody().getConfigureUrl()).isEmpty();
+    }
+
+    @Test
+    void testCreate_WithNullMediaId() {
+        // Given
+        CreatePaymentVm createWithNullMedia = new CreatePaymentVm();
+        createWithNullMedia.setName("Stripe");
+        createWithNullMedia.setConfigureUrl("https://stripe.com/configure");
+        createWithNullMedia.setMediaId(null);
+
+        PaymentProviderVm expectedResponse = new PaymentProviderVm(
+                "provider-999",
+                "Stripe",
+                "https://stripe.com/configure",
+                1,
+                null,
+                "https://example.com/stripe-icon.png"
+        );
+
+        when(paymentProviderService.create(createWithNullMedia)).thenReturn(expectedResponse);
+
+        // When
+        ResponseEntity<PaymentProviderVm> response = paymentProviderController.create(createWithNullMedia);
+
+        // Then
+        assertThat(response.getBody().getMediaId()).isNull();
     }
 
     // ==================== UPDATE TESTS ====================
@@ -252,13 +277,12 @@ class PaymentProviderControllerTest {
         updateWithNullMedia.setName("Stripe");
         updateWithNullMedia.setConfigureUrl("https://stripe.com/configure");
         updateWithNullMedia.setMediaId(null);
-        updateWithNullMedia.setIconUrl("https://example.com/stripe-icon.png");
 
         PaymentProviderVm expectedResponse = new PaymentProviderVm(
                 "provider-999",
                 "Stripe",
                 "https://stripe.com/configure",
-                1,
+                2,
                 null,
                 "https://example.com/stripe-icon.png"
         );
@@ -396,15 +420,6 @@ class PaymentProviderControllerTest {
     @Test
     void testUpdate_VersionShouldIncrease() {
         // Given
-        PaymentProviderVm originalResponse = new PaymentProviderVm(
-                "provider-123",
-                "PayPal",
-                "https://paypal.com/configure",
-                1,
-                100L,
-                "icon.png"
-        );
-        
         PaymentProviderVm updatedResponse = new PaymentProviderVm(
                 "provider-123",
                 "PayPal Updated",
@@ -420,7 +435,6 @@ class PaymentProviderControllerTest {
         ResponseEntity<PaymentProviderVm> response = paymentProviderController.update(updatePaymentVm);
 
         // Then
-        assertThat(response.getBody().getVersion()).isGreaterThan(originalResponse.getVersion());
         assertThat(response.getBody().getVersion()).isEqualTo(2);
     }
 }
