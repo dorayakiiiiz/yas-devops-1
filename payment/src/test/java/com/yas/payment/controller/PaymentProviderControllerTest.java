@@ -45,34 +45,32 @@ class PaymentProviderControllerTest {
         objectMapper = new ObjectMapper();
         mockMvc = MockMvcBuilders.standaloneSetup(paymentProviderController).build();
 
-        createRequest = new CreatePaymentVm(
-            "PayPal",
-            true,
-            "https://paypal.com/configure",
-            "PaypalComponent",
-            "{\"mode\":\"sandbox\"}",
-            1L
-        );
+        // Sử dụng setter hoặc builder nếu có
+        createRequest = new CreatePaymentVm();
+        createRequest.setName("PayPal");
+        createRequest.setEnabled(true);
+        createRequest.setConfigureUrl("https://paypal.com/configure");
+        createRequest.setLandingViewComponentName("PaypalComponent");
+        createRequest.setAdditionalSettings("{\"mode\":\"sandbox\"}");
+        createRequest.setMediaId(1L);
 
-        updateRequest = new UpdatePaymentVm(
-            "provider_123",
-            "PayPal Express",
-            true,
-            "https://paypal.com/configure",
-            "PaypalComponent",
-            "{\"mode\":\"live\"}",
-            1L
-        );
+        updateRequest = new UpdatePaymentVm();
+        updateRequest.setId("provider_123");
+        updateRequest.setName("PayPal Express");
+        updateRequest.setEnabled(true);
+        updateRequest.setConfigureUrl("https://paypal.com/configure");
+        updateRequest.setLandingViewComponentName("PaypalComponent");
+        updateRequest.setAdditionalSettings("{\"mode\":\"live\"}");
+        updateRequest.setMediaId(1L);
 
-        paymentProviderVm = new PaymentProviderVm(
-            "provider_123",
-            "PayPal",
-            true,
-            "https://paypal.com/configure",
-            "PaypalComponent",
-            "{\"mode\":\"sandbox\"}",
-            1L
-        );
+        paymentProviderVm = new PaymentProviderVm();
+        paymentProviderVm.setId("provider_123");
+        paymentProviderVm.setName("PayPal");
+        paymentProviderVm.setEnabled(true);
+        paymentProviderVm.setConfigureUrl("https://paypal.com/configure");
+        paymentProviderVm.setLandingViewComponentName("PaypalComponent");
+        paymentProviderVm.setAdditionalSettings("{\"mode\":\"sandbox\"}");
+        paymentProviderVm.setMediaId(1L);
     }
 
     @Test
@@ -90,7 +88,7 @@ class PaymentProviderControllerTest {
 
     @Test
     void create_ShouldReturnBadRequest_WhenInvalidData() throws Exception {
-        CreatePaymentVm invalidRequest = new CreatePaymentVm(null, null, null, null, null, null);
+        CreatePaymentVm invalidRequest = new CreatePaymentVm();
 
         mockMvc.perform(post("/backoffice/payment-providers")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +110,7 @@ class PaymentProviderControllerTest {
 
     @Test
     void update_ShouldReturnBadRequest_WhenInvalidData() throws Exception {
-        UpdatePaymentVm invalidRequest = new UpdatePaymentVm(null, null, null, null, null, null, null);
+        UpdatePaymentVm invalidRequest = new UpdatePaymentVm();
 
         mockMvc.perform(put("/backoffice/payment-providers")
                 .contentType(MediaType.APPLICATION_JSON)
