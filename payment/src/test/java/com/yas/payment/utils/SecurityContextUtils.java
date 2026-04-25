@@ -1,4 +1,4 @@
-package com.yas.payment.utils;
+package com.yas.payment.util;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
