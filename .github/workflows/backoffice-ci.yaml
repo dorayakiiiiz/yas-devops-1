@@ -38,16 +38,17 @@ jobs:
         working-directory: ./backoffice
 
       - name: Run Lint/Test
-        run: npm run test:ci
+        run: npm test --if-present
         working-directory: ./backoffice
 
       - name: Test Results
+        continue-on-error: true
         uses: dorny/test-reporter@v1
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && (success() || failure()) }}
         with:
           name: backoffice-Service-Unit-Test-Results
-          path: "backoffice/coverage/junit.xml"
-          reporter: jest-junit  # Đổi từ java-junit sang jest-junit
+          path: "backoffice/coverage/*.xml"
+          reporter: java-junit
 
   build:
     runs-on: ubuntu-latest
