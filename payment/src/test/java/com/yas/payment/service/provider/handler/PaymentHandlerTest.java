@@ -2,6 +2,8 @@ package com.yas.payment.service.provider.handler;
 
 import com.yas.payment.model.CapturedPayment;
 import com.yas.payment.model.InitiatedPayment;
+import com.yas.payment.model.enumeration.PaymentMethod;
+import com.yas.payment.model.enumeration.PaymentStatus;
 import com.yas.payment.viewmodel.CapturePaymentRequestVm;
 import com.yas.payment.viewmodel.InitPaymentRequestVm;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,15 +44,20 @@ class PaymentHandlerTest {
                 .build();
 
         initiatedPayment = InitiatedPayment.builder()
-                .id("init-001")
-                .status("INITIATED")
-                .paymentToken("token-789")
+                .status("PENDING")
+                .paymentId("pay_123456")
+                .redirectUrl("https://sandbox.paypal.com/checkout/123")
                 .build();
 
         capturedPayment = CapturedPayment.builder()
-                .id("capture-001")
-                .status("CAPTURED")
-                .transactionId("txn-001")
+                .orderId(1001L)
+                .checkoutId("checkout-123")
+                .amount(new BigDecimal("99.99"))
+                .paymentFee(new BigDecimal("2.99"))
+                .gatewayTransactionId("txn_789012")
+                .paymentMethod(PaymentMethod.CREDIT_CARD)
+                .paymentStatus(PaymentStatus.COMPLETED)
+                .failureMessage(null)
                 .build();
     }
 
@@ -78,9 +85,9 @@ class PaymentHandlerTest {
 
         // Then
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo("init-001");
-        assertThat(result.getStatus()).isEqualTo("INITIATED");
-        assertThat(result.getPaymentToken()).isEqualTo("token-789");
+        assertThat(result.getStatus()).isEqualTo("PENDING");
+        assertThat(result.getPaymentId()).isEqualTo("pay_123456");
+        assertThat(result.getRedirectUrl()).isEqualTo("https://sandbox.paypal.com/checkout/123");
     }
 
     @Test
@@ -93,7 +100,6 @@ class PaymentHandlerTest {
         InitiatedPayment result = paymentHandler.initPayment(initPaymentRequestVm);
 
         // Then
-        assertThat(result).isNotNull();
         assertThat(result).isEqualTo(initiatedPayment);
     }
 
@@ -108,9 +114,13 @@ class PaymentHandlerTest {
 
         // Then
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo("capture-001");
-        assertThat(result.getStatus()).isEqualTo("CAPTURED");
-        assertThat(result.getTransactionId()).isEqualTo("txn-001");
+        assertThat(result.getOrderId()).isEqualTo(1001L);
+        assertThat(result.getCheckoutId()).isEqualTo("checkout-123");
+        assertThat(result.getAmount()).isEqualTo(new BigDecimal("99.99"));
+        assertThat(result.getGatewayTransactionId()).isEqualTo("txn_789012");
+        assertThat(result.getPaymentMethod()).isEqualTo(PaymentMethod.CREDIT_CARD);
+        assertThat(result.getPaymentStatus()).isEqualTo(PaymentStatus.COMPLETED);
+        assertThat(result.getFailureMessage()).isNull();
     }
 
     @Test
@@ -136,9 +146,9 @@ class PaymentHandlerTest {
                 .build();
 
         InitiatedPayment expectedPayment = InitiatedPayment.builder()
-                .id("init-paypal")
-                .status("INITIATED")
-                .paymentToken("paypal-token")
+                .status("PENDING")
+                .paymentId("paypal_789")
+                .redirectUrl("https://www.paypal.com/checkout/789")
                 .build();
 
         when(paymentHandler.initPayment(paypalRequest)).thenReturn(expectedPayment);
@@ -147,31 +157,33 @@ class PaymentHandlerTest {
         InitiatedPayment result = paymentHandler.initPayment(paypalRequest);
 
         // Then
-        assertThat(result.getPaymentToken()).isEqualTo("paypal-token");
-        assertThat(result.getId()).isEqualTo("init-paypal");
+        assertThat(result.getPaymentId()).isEqualTo("paypal_789");
+        assertThat(result.getRedirectUrl()).contains("paypal.com");
     }
 
     @Test
-    void testCapturePayment_WithDifferentTokens() {
+    void testCapturePayment_WithFailedStatus() {
         // Given
-        CapturePaymentRequestVm differentTokenRequest = CapturePaymentRequestVm.builder()
-                .paymentMethod("PAYPAL")
-                .token("different-token-999")
+        CapturedPayment failedPayment = CapturedPayment.builder()
+                .orderId(1002L)
+                .checkoutId("checkout-failed")
+                .amount(new BigDecimal("50.00"))
+                .paymentFee(new BigDecimal("1.50"))
+                .gatewayTransactionId(null)
+                .paymentMethod(PaymentMethod.CREDIT_CARD)
+                .paymentStatus(PaymentStatus.FAILED)
+                .failureMessage("Insufficient funds")
                 .build();
 
-        CapturedPayment expectedCapture = CapturedPayment.builder()
-                .id("capture-diff")
-                .status("CAPTURED")
-                .transactionId("txn-diff-999")
-                .build();
-
-        when(paymentHandler.capturePayment(differentTokenRequest)).thenReturn(expectedCapture);
+        when(paymentHandler.capturePayment(any(CapturePaymentRequestVm.class)))
+                .thenReturn(failedPayment);
 
         // When
-        CapturedPayment result = paymentHandler.capturePayment(differentTokenRequest);
+        CapturedPayment result = paymentHandler.capturePayment(capturePaymentRequestVm);
 
         // Then
-        assertThat(result.getTransactionId()).isEqualTo("txn-diff-999");
-        assertThat(result.getId()).isEqualTo("capture-diff");
+        assertThat(result.getPaymentStatus()).isEqualTo(PaymentStatus.FAILED);
+        assertThat(result.getFailureMessage()).isEqualTo("Insufficient funds");
+        assertThat(result.getGatewayTransactionId()).isNull();
     }
 }
