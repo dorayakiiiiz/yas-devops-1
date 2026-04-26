@@ -1,6 +1,6 @@
 name: promotion service ci
 
-on:
+on:   
   push:
     branches: ["**"]
     paths:
