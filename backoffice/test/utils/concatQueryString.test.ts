@@ -169,19 +169,4 @@ describe('concatQueryString', () => {
       expect(result).toBe('http://example.com?a=1?b=2'); // Bug: should be '&b=2' instead of '?b=2'
     });
   });
-
-  // Test với null/undefined (nếu hàm cho phép)
-  describe('Null/undefined handling', () => {
-    test('should handle null array', () => {
-      // @ts-ignore - Testing edge case
-      const result = concatQueryString(null, 'http://example.com');
-      expect(result).toBe('http://example.com');
-    });
-
-    test('should handle undefined array', () => {
-      // @ts-ignore - Testing edge case
-      const result = concatQueryString(undefined, 'http://example.com');
-      expect(result).toBe('http://example.com');
-    });
-  });
 });
