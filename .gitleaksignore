@@ -15,3 +15,7 @@ search/src/test/java/resources/test-realm.json:generic-api-key:517
 search/src/test/java/resources/test-realm.json:generic-api-key:544
 search/src/test/java/resources/test-realm.json:generic-api-key:695
 search/src/test/java/resources/test-realm.json:generic-api-key:724
+k8s/charts/yas-configuration/values.yaml:generic-api-key:10
+k8s/charts/yas-configuration/values.yaml:generic-api-key:11
+customer/target/classes/application.properties:generic-api-key:34
+customer/target/test-classes/application.properties:generic-api-key:14
