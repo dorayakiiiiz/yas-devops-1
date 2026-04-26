@@ -59,7 +59,7 @@ jobs:
 
       - name: Check Coverage Threshold
         run: |
-          THRESHOLD= 70
+          THRESHOLD=70
           COVERAGE=${{ steps.coverage.outputs.coverage }}
           
           echo "🎯 Threshold: ${THRESHOLD}%"
