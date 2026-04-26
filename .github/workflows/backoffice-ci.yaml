@@ -33,7 +33,10 @@ jobs:
           cache-dependency-path: 'backoffice/package-lock.json'
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          cd ./backoffice
+          rm -f package-lock.json
+          npm install --legacy-peer-deps
         working-directory: ./backoffice
 
       - name: Run Lint
