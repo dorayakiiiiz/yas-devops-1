@@ -5,7 +5,7 @@ import AuthenticationInfo from '../../../common/components/AuthenticationInfo';
 import apiClientService from '../../../common/services/ApiClientService';
 
 // Mock apiClientService
-vi.mock('../../common/services/ApiClientService', () => ({
+vi.mock('../../../common/services/ApiClientService', () => ({
   default: {
     get: vi.fn(),
   },
