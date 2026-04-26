@@ -37,8 +37,8 @@ jobs:
         run: npm ci
         working-directory: ./backoffice
 
-      - name: Run Lint/Test
-        run: npm test --if-present
+      - name: Run Lint/Test with Coverage Check (70%)
+        run: npm test
         working-directory: ./backoffice
 
       - name: Test Results
@@ -47,7 +47,7 @@ jobs:
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && (success() || failure()) }}
         with:
           name: backoffice-Service-Unit-Test-Results
-          path: "backoffice/coverage/*.xml"
+          path: "backoffice/coverage/clover.xml"
           reporter: java-junit
 
   build:
