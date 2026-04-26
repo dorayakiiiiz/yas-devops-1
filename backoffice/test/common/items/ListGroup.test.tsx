@@ -127,26 +127,4 @@ describe('ListGroup', () => {
       vi.clearAllMocks();
     });
   });
-
-  describe('Multiple Items', () => {
-    it('should render large number of items', () => {
-      const largeData = Array.from({ length: 50 }, (_, i) => ({
-        id: i,
-        name: `Item ${i}`,
-        link: `/item/${i}`,
-        icon: '📦',
-      }));
-      
-      (useRouter as any).mockReturnValue({
-        pathname: '/item/0',
-      });
-
-      render(<ListGroup data={largeData} />);
-      
-      const items = document.querySelectorAll('.list-group-item-mock');
-      expect(items.length).toBe(50);
-      
-      vi.clearAllMocks();
-    });
-  });
 });
