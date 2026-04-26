@@ -120,7 +120,7 @@ jobs:
           cache-dependency-path: 'backoffice/package-lock.json'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install --legacy-peer-deps
         working-directory: ./backoffice
 
       - name: Run Build
