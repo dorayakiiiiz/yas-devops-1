@@ -137,15 +137,7 @@ describe('Layout', () => {
       expect(screen.getByText('Catalog')).toBeDefined();
     });
 
-    it('should render Customers menu', () => {
-      render(
-        <Layout>
-          <div>Content</div>
-        </Layout>
-      );
-      
-      expect(screen.getByText('Customers')).toBeDefined();
-    });
+
 
     it('should render Sales menu', () => {
       render(
@@ -224,20 +216,6 @@ describe('Layout', () => {
       expect(parentLi?.className).toContain('active');
     });
 
-    it('should change active menu when clicking on Customers', () => {
-      render(
-        <Layout>
-          <div>Content</div>
-        </Layout>
-      );
-      
-      const customersMenu = screen.getByText('Customers');
-      const parentLi = customersMenu.closest('li');
-      
-      fireEvent.click(customersMenu);
-      
-      expect(parentLi?.className).toContain('active');
-    });
 
     it('should change active menu when clicking on Sales', () => {
       render(

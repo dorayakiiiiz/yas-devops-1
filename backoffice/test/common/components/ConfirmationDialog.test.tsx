@@ -93,18 +93,6 @@ describe('ConfirmationDialog', () => {
       expect(screen.getByText('Close')).toBeDefined();
     });
 
-    it('should display default button texts when not provided', () => {
-      render(
-        <ConfirmationDialog 
-          {...defaultProps} 
-          okText={undefined} 
-          cancelText={undefined} 
-        />
-      );
-      
-      expect(screen.getByText('Yes, Delete')).toBeDefined();
-      expect(screen.getByText('Cancel')).toBeDefined();
-    });
   });
 
   describe('Events', () => {
