@@ -37,11 +37,11 @@ jobs:
         run: npm ci
         working-directory: ./backoffice
 
-      - name: Run Lint/Test with Coverage Check (70%)
+      - name: Run Tests with Coverage Check (70%)
         run: npm test
         working-directory: ./backoffice
 
-      - name: Test Results
+      - name: Test Results Report
         continue-on-error: true
         uses: dorny/test-reporter@v1
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && (success() || failure()) }}
@@ -49,6 +49,13 @@ jobs:
           name: backoffice-Service-Unit-Test-Results
           path: "backoffice/coverage/clover.xml"
           reporter: java-junit
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backoffice-coverage-report
+          path: backoffice/coverage/
 
   build:
     runs-on: ubuntu-latest

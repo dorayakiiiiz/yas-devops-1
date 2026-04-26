@@ -7,18 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest --coverage"
-  },
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "lines": 70,
-        "functions": 70,
-        "branches": 70,
-        "statements": 70
-      }
-    },
-    "testEnvironment": "jsdom"
+    "test": "jest --coverage --ci"
   },
   "dependencies": {
     "@fortawesome/fontawesome-common-types": "^6.4.0",
@@ -50,6 +39,8 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "18.0.0",
     "@types/react": "18.0.14",
     "@types/react-csv": "^1.1.3",
