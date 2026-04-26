@@ -124,7 +124,7 @@ jobs:
             
             ${{ steps.coverage.outputs.average >= 70 && '✅ **Good coverage!**' : '⚠️ **Needs improvement. Please add more tests.**' }}
             
-            📥 [Download Coverage Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            📥 [Download Coverage Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) 
 
   build:
     runs-on: ubuntu-latest
