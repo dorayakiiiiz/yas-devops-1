@@ -6,7 +6,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     include: [
-      'test/**/*.{test,spec}.{js,jsx,ts,tsx}',        // THÊM DÒNG NÀY
+      'test/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'common/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'modules/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'pages/**/*.{test,spec}.{js,jsx,ts,tsx}',
@@ -21,7 +21,7 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
+      reporter: ['text', 'json-summary', 'json', 'html', 'lcov'], // Thêm json-summary
       reportsDirectory: './coverage',
       include: [
         'common/**/*.{js,jsx,ts,tsx}',
@@ -30,7 +30,7 @@ export default defineConfig({
         'utils/**/*.{js,jsx,ts,tsx}'
       ],
       exclude: [
-        'test/**',                   
+        'test/**',
         '**/*.{test,spec}.{js,jsx,ts,tsx}',
         '**/node_modules/**',
         '**/.next/**',

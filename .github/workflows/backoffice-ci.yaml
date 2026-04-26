@@ -52,24 +52,14 @@ jobs:
           path: backoffice/coverage/
           retention-days: 7
 
-      # Display coverage summary in PR
-      - name: Coverage Summary
-        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && (success() || failure()) }}
-        uses: dorny/test-reporter@v1
-        with:
-          name: Backoffice Unit Test Results
-          path: "backoffice/coverage/junit.xml"
-          reporter: java-junit
-
-      # Coverage comment on PR using vitest-coverage-report
-      - name: Report Coverage
-        if: ${{ github.event_name == 'pull_request' && env.FROM_ORIGINAL_REPOSITORY == 'true' }}
-        uses: davelosert/vitest-coverage-report-action@v2
-        with:
-          working-directory: ./backoffice
-          vitest-run-command: npm run test:coverage
-          coverage-file-path: ./coverage/coverage-final.json
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # Hiển thị kết quả test trong GitHub Actions log
+      - name: Display coverage summary
+        if: always()
+        run: |
+          echo "=== Coverage Summary ==="
+          cat backoffice/coverage/coverage-summary.json || echo "No coverage summary found"
+          echo "========================="
+        working-directory: ./
 
   build:
     runs-on: ubuntu-latest
