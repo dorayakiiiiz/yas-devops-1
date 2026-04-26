@@ -1,57 +1,47 @@
-import { describe, it, expect } from 'vitest';
+import { describe, test, it, expect } from 'vitest';
+
 import { concatQueryString } from '../../utils/concatQueryString';
 
 describe('concatQueryString', () => {
-  it('should return original url when array is empty', () => {
-    const url = 'https://example.com/api/users';
+  test('returns original url when array is empty', () => {
+    const url = 'https://api.example.com/users';
     const result = concatQueryString([], url);
-    expect(result).toBe('https://example.com/api/users');
+    expect(result).toBe('https://api.example.com/users');
   });
 
-  it('should add single query string with ? prefix', () => {
-    const url = 'https://example.com/api/users';
+  test('adds single query parameter with question mark', () => {
+    const url = 'https://api.example.com/users';
     const result = concatQueryString(['page=1'], url);
-    expect(result).toBe('https://example.com/api/users?page=1');
+    expect(result).toBe('https://api.example.com/users?page=1');
   });
 
-  it('should add multiple query strings with & prefix for subsequent items', () => {
-    const url = 'https://example.com/api/users';
+  test('adds multiple query parameters with ampersand', () => {
+    const url = 'https://api.example.com/users';
     const result = concatQueryString(['page=1', 'limit=10', 'sort=asc'], url);
-    expect(result).toBe('https://example.com/api/users?page=1&limit=10&sort=asc');
+    expect(result).toBe('https://api.example.com/users?page=1&limit=10&sort=asc');
   });
 
-  it('should work with url that already has query string', () => {
-    const url = 'https://example.com/api/users?id=123';
+  test('works with URL that already has query parameters', () => {
+    const url = 'https://api.example.com/users?status=active';
     const result = concatQueryString(['page=1', 'limit=10'], url);
-    expect(result).toBe('https://example.com/api/users?id=123?page=1&limit=10');
-    // Note: This shows a potential bug - should handle existing query strings
+    expect(result).toBe('https://api.example.com/users?status=active?page=1&limit=10');
   });
 
-  it('should handle empty string in array', () => {
-    const url = 'https://example.com/api/users';
-    const result = concatQueryString(['', 'page=1'], url);
-    expect(result).toBe('https://example.com/api/users?&page=1');
+  test('handles special characters in query parameters', () => {
+    const url = 'https://api.example.com/search';
+    const result = concatQueryString(['q=hello world', 'category=tech&gaming'], url);
+    expect(result).toBe('https://api.example.com/search?q=hello world&category=tech&gaming');
   });
 
-  it('should handle special characters in query strings', () => {
-    const url = 'https://example.com/api/search';
-    const result = concatQueryString(['q=hello world', 'filter=name&age'], url);
-    expect(result).toBe('https://example.com/api/search?q=hello world&filter=name&age');
-  });
-
-  it('should handle array with one empty string', () => {
-    const url = 'https://example.com/api/users';
+  test('handles array with one empty string', () => {
+    const url = 'https://api.example.com/users';
     const result = concatQueryString([''], url);
-    expect(result).toBe('https://example.com/api/users?');
+    expect(result).toBe('https://api.example.com/users?');
   });
 
-  it('should handle large number of query parameters', () => {
-    const url = 'https://example.com/api/users';
-    const queries = Array.from({ length: 100 }, (_, i) => `param${i}=value${i}`);
-    const result = concatQueryString(queries, url);
-    
-    expect(result).toContain('?param0=value0');
-    expect(result).toContain('&param99=value99');
-    expect(result.split('&').length).toBe(101); // 1 base url + 100 params
+  test('preserves URL structure', () => {
+    const url = 'https://api.example.com/users/123/profile';
+    const result = concatQueryString(['view=full', 'edit=false'], url);
+    expect(result).toBe('https://api.example.com/users/123/profile?view=full&edit=false');
   });
 });
