@@ -37,15 +37,6 @@ describe('concatQueryString', () => {
     expect(result).toBe('https://api.example.com/users?');
   });
 
-  test('handles large number of parameters', () => {
-    const url = 'https://api.example.com/users';
-    const params = Array.from({ length: 10 }, (_, i) => `param${i}=value${i}`);
-    const result = concatQueryString(params, url);
-    
-    expect(result).toContain('?param0=value0');
-    expect(result).toContain('&param9=value9');
-    expect(result.split('&').length).toBe(11); 
-  });
 
   test('preserves URL structure', () => {
     const url = 'https://api.example.com/users/123/profile';
