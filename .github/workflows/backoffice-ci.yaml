@@ -43,6 +43,57 @@ jobs:
         working-directory: ./backoffice
         continue-on-error: false
 
+      # Tính coverage trung bình
+      - name: Calculate Average Coverage
+        id: coverage
+        run: |
+          cd backoffice
+          if [ -f coverage/coverage-summary.json ]; then
+            STATEMENTS=$(node -p "require('./coverage/coverage-summary.json').total.statements.pct")
+            BRANCHES=$(node -p "require('./coverage/coverage-summary.json').total.branches.pct")
+            FUNCTIONS=$(node -p "require('./coverage/coverage-summary.json').total.functions.pct")
+            LINES=$(node -p "require('./coverage/coverage-summary.json').total.lines.pct")
+            
+            # Tính trung bình (sử dụng bc hoặc node)
+            AVERAGE=$(node -e "console.log((($STATEMENTS + $BRANCHES + $FUNCTIONS + $LINES) / 4).toFixed(2))")
+            
+            echo "statements=${STATEMENTS}" >> $GITHUB_OUTPUT
+            echo "branches=${BRANCHES}" >> $GITHUB_OUTPUT
+            echo "functions=${FUNCTIONS}" >> $GITHUB_OUTPUT
+            echo "lines=${LINES}" >> $GITHUB_OUTPUT
+            echo "average=${AVERAGE}" >> $GITHUB_OUTPUT
+            
+            echo "Statements: ${STATEMENTS}%"
+            echo "Branches: ${BRANCHES}%"
+            echo "Functions: ${FUNCTIONS}%"
+            echo "Lines: ${LINES}%"
+            echo "Average Coverage: ${AVERAGE}%"
+          else
+            echo "statements=0" >> $GITHUB_OUTPUT
+            echo "branches=0" >> $GITHUB_OUTPUT
+            echo "functions=0" >> $GITHUB_OUTPUT
+            echo "lines=0" >> $GITHUB_OUTPUT
+            echo "average=0" >> $GITHUB_OUTPUT
+            echo "No coverage report found"
+          fi
+        working-directory: ./
+
+      # Hiển thị lên GitHub Actions Summary
+      - name: Add Coverage to Job Summary
+        if: always()
+        run: |
+          echo "## 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Coverage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 📝 Statements | ${{ steps.coverage.outputs.statements }}% | ${{ steps.coverage.outputs.statements >= 70 && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌿 Branches | ${{ steps.coverage.outputs.branches }}% | ${{ steps.coverage.outputs.branches >= 65 && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⚙️ Functions | ${{ steps.coverage.outputs.functions }}% | ${{ steps.coverage.outputs.functions >= 70 && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📄 Lines | ${{ steps.coverage.outputs.lines }}% | ${{ steps.coverage.outputs.lines >= 70 && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🎯 **Average** | **${{ steps.coverage.outputs.average }}%** | ${{ steps.coverage.outputs.average >= 70 && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Threshold Target:** Statements ≥70%, Branches ≥65%, Functions ≥70%, Lines ≥70%" >> $GITHUB_STEP_SUMMARY
+
       # Upload coverage report as artifact
       - name: Upload Coverage Artifact
         uses: actions/upload-artifact@v4
@@ -52,14 +103,28 @@ jobs:
           path: backoffice/coverage/
           retention-days: 7
 
-      # Hiển thị kết quả test trong GitHub Actions log
-      - name: Display coverage summary
-        if: always()
-        run: |
-          echo "=== Coverage Summary ==="
-          cat backoffice/coverage/coverage-summary.json || echo "No coverage summary found"
-          echo "========================="
-        working-directory: ./
+      # Comment lên PR (chỉ khi có PR)
+      - name: PR Coverage Comment
+        if: ${{ github.event_name == 'pull_request' && env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: coverage-report
+          message: |
+            ## 📊 Coverage Report
+            
+            | Metric | Coverage | Status |
+            |--------|----------|--------|
+            | 📝 Statements | ${{ steps.coverage.outputs.statements }}% | ${{ steps.coverage.outputs.statements >= 70 && '✅' || '❌' }} |
+            | 🌿 Branches | ${{ steps.coverage.outputs.branches }}% | ${{ steps.coverage.outputs.branches >= 65 && '✅' || '❌' }} |
+            | ⚙️ Functions | ${{ steps.coverage.outputs.functions }}% | ${{ steps.coverage.outputs.functions >= 70 && '✅' || '❌' }} |
+            | 📄 Lines | ${{ steps.coverage.outputs.lines }}% | ${{ steps.coverage.outputs.lines >= 70 && '✅' || '❌' }} |
+            | 🎯 **Average** | **${{ steps.coverage.outputs.average }}%** | ${{ steps.coverage.outputs.average >= 70 && '✅' || '❌' }} |
+            
+            **Threshold Target:** Statements ≥70%, Branches ≥65%, Functions ≥70%, Lines ≥70%
+            
+            ${{ steps.coverage.outputs.average >= 70 && '✅ **Good coverage!**' : '⚠️ **Needs improvement. Please add more tests.**' }}
+            
+            📥 [Download Coverage Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
   build:
     runs-on: ubuntu-latest
@@ -92,6 +157,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: backoffice
+          args: >
+            -Dsonar.exclusions=**/package.json,**/package-lock.json,**/node_modules/**,**/.next/**,**/public/**,**/styles/**,**/constants/**,**/test/**,**/coverage/**
+            -Dsonar.coverage.exclusions=**/package.json,**/package-lock.json,**/next.config.js,**/*.config.js,**/*.config.ts
 
       - name: Setup Snyk
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
