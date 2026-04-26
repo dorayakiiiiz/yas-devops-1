@@ -23,6 +23,7 @@ export default defineConfig({
       reporter: ['text', 'json', 'html', 'lcov'],
       reportsDirectory: './coverage',
       include: [
+        '_test_/**/*.{test,spec}.{js,jsx,ts,tsx}',
         'common/**/*.{js,jsx,ts,tsx}',
         'modules/**/*.{js,jsx,ts,tsx}',
         'pages/**/*.{js,jsx,ts,tsx}',
