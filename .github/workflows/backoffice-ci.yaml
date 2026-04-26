@@ -33,7 +33,7 @@ jobs:
           cache-dependency-path: 'backoffice/package-lock.json'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
         working-directory: ./backoffice
 
       - name: Run Lint
