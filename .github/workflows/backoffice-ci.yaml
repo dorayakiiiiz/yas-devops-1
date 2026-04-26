@@ -34,7 +34,7 @@ jobs:
           cache-dependency-path: 'backoffice/package-lock.json'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
         working-directory: ./backoffice
 
       # Run tests with coverage
@@ -87,7 +87,7 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
         working-directory: ./backoffice
 
       - name: Run Build
