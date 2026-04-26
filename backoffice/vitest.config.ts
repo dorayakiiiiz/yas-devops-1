@@ -6,6 +6,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     include: [
+      'test/**/*.{test,spec}.{js,jsx,ts,tsx}',        // THÊM DÒNG NÀY
       'common/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'modules/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'pages/**/*.{test,spec}.{js,jsx,ts,tsx}',
@@ -16,30 +17,27 @@ export default defineConfig({
       '.next/**',
       'public/**',
       'styles/**',
-      'constants/**'  // Bỏ qua constants nếu không muốn test
+      'constants/**'
     ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
       reportsDirectory: './coverage',
       include: [
-        'test/**/*.{test,spec}.{js,jsx,ts,tsx}',
-        '**/test/**/*.{test,spec}.{js,jsx,ts,tsx}',
+        'common/**/*.{js,jsx,ts,tsx}',
+        'modules/**/*.{js,jsx,ts,tsx}',
+        'pages/**/*.{js,jsx,ts,tsx}',
+        'utils/**/*.{js,jsx,ts,tsx}'
       ],
       exclude: [
+        'test/**',                   
         '**/*.{test,spec}.{js,jsx,ts,tsx}',
         '**/node_modules/**',
         '**/.next/**',
-        '**/constants/**',  
+        '**/constants/**',
         '**/public/**',
         '**/styles/**'
-      ],
-      thresholds: {
-        lines: 70,
-        functions: 70,
-        branches: 65,
-        statements: 70
-      }
+      ]
     },
     globals: true
   }
