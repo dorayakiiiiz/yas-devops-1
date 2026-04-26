@@ -47,7 +47,6 @@ jobs:
 
       - name: Debug - Check coverage files
         run: |
-          cd ./backoffice
           echo "========================================="
           echo "🔍 DEBUGGING COVERAGE FILES"
           echo "========================================="
