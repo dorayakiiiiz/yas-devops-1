@@ -1,6 +1,6 @@
 // test/common/components/ChooseImageCommon.test.tsx
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import ChooseImageCommon from '../../../common/components/ChooseImageCommon';
 
 // Mock styles
