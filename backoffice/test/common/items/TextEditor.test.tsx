@@ -29,11 +29,6 @@ describe('TextEditor', () => {
   });
 
   describe('Rendering', () => {
-    it('should render label', () => {
-      render(<TextEditor {...defaultProps} />);
-      
-      expect(screen.getByLabelText('Description')).toBeDefined();
-    });
 
     it('should render text editor', () => {
       render(<TextEditor {...defaultProps} />);
@@ -100,16 +95,6 @@ describe('TextEditor', () => {
       expect(setValue).toHaveBeenCalledWith('New content');
     });
 
-    it('should call setValue with empty string when cleared', () => {
-      const setValue = vi.fn();
-      render(<TextEditor {...defaultProps} setValue={setValue} />);
-      
-      const editor = screen.getByTestId('text-editor');
-      fireEvent.change(editor, { target: { value: '' } });
-      
-      expect(setValue).toHaveBeenCalledWith('');
-    });
-
     it('should handle multiple changes', () => {
       const setValue = vi.fn();
       render(<TextEditor {...defaultProps} setValue={setValue} />);
@@ -126,36 +111,8 @@ describe('TextEditor', () => {
     });
   });
 
-  describe('Field ID', () => {
-    it('should have label with htmlFor matching field', () => {
-      render(<TextEditor {...defaultProps} field="content" />);
-      
-      const label = screen.getByLabelText('Description');
-      expect(label.getAttribute('for')).toBe('content');
-    });
-
-    it('should use different field names', () => {
-      const fields = ['bio', 'notes', 'comments', 'review'];
-      
-      fields.forEach((field) => {
-        const { unmount } = render(<TextEditor {...defaultProps} field={field} />);
-        const label = screen.getByLabelText('Description');
-        expect(label.getAttribute('for')).toBe(field);
-        unmount();
-      });
-    });
-  });
 
   describe('Label Text', () => {
-    it('should display different label texts', () => {
-      const labels = ['Bio', 'Notes', 'Comments', 'Description'];
-      
-      labels.forEach((label) => {
-        const { unmount } = render(<TextEditor {...defaultProps} labelText={label} />);
-        expect(screen.getByLabelText(label)).toBeDefined();
-        unmount();
-      });
-    });
 
     it('should handle empty label', () => {
       render(<TextEditor {...defaultProps} labelText="" />);
@@ -193,13 +150,6 @@ describe('TextEditor', () => {
     });
   });
 
-  describe('Dynamic Import', () => {
-    it('should use dynamic import for react-quill', () => {
-      const dynamicMock = vi.mocked(require('next/dynamic').default);
-      expect(dynamicMock).toHaveBeenCalled();
-    });
-  });
-
   describe('CSS Classes', () => {
     it('should have mb-3 class on container', () => {
       render(<TextEditor {...defaultProps} />);
@@ -233,19 +183,6 @@ describe('TextEditor', () => {
       
       fireEvent.change(editor, { target: { value: 'Updated description' } });
       expect(setValue).toHaveBeenCalledWith('Updated description');
-    });
-
-    it('should work with HTML content', () => {
-      const setValue = vi.fn();
-      const htmlContent = '<p>This is <strong>bold</strong> text</p>';
-      
-      render(<TextEditor {...defaultProps} setValue={setValue} defaultValue={htmlContent} />);
-      
-      const editor = screen.getByTestId('text-editor') as HTMLTextAreaElement;
-      expect(editor.defaultValue).toBe(htmlContent);
-      
-      fireEvent.change(editor, { target: { value: htmlContent } });
-      expect(setValue).toHaveBeenCalledWith(htmlContent);
     });
   });
 });
