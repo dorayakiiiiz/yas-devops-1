@@ -37,7 +37,7 @@ jobs:
         with:
           name: Customer-Service-Unit-Test-Results
           path: "customer/**/*-reports/TEST*.xml"
-          reporter: java-junit
+          reporter: java-junit  
       - name: Add coverage report to PR
         uses: madrapps/jacoco-report@v1.6.1
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
