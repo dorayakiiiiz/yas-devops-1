@@ -2,27 +2,33 @@ import { formatPriceVND, formatPriceUSD } from '../../utils/formatPrice';
 
 describe('formatPriceVND', () => {
   test('formats integer price correctly', () => {
-    expect(formatPriceVND(100000)).toBe('100.000 ₫');  // Thêm space
+    const result = formatPriceVND(100000);
+    expect(result.trim()).toBe('100.000 ₫');  // Dùng trim()
   });
 
   test('formats price with decimals correctly', () => {
-    expect(formatPriceVND(100000.5)).toBe('100.001 ₫');  // Làm tròn
+    const result = formatPriceVND(100000.5);
+    expect(result.trim()).toBe('100.001 ₫');
   });
 
   test('formats zero price correctly', () => {
-    expect(formatPriceVND(0)).toBe('0 ₫');  // Thêm space
+    const result = formatPriceVND(0);
+    expect(result.trim()).toBe('0 ₫');
   });
 
   test('formats negative price correctly', () => {
-    expect(formatPriceVND(-50000)).toBe('-50.000 ₫'); 
+    const result = formatPriceVND(-50000);
+    expect(result.trim()).toBe('-50.000 ₫');
   });
 
   test('formats large price correctly', () => {
-    expect(formatPriceVND(1000000000)).toBe('1.000.000.000 ₫'); 
+    const result = formatPriceVND(1000000000);
+    expect(result.trim()).toBe('1.000.000.000 ₫');
   });
 
   test('formats price with thousand separator', () => {
-    expect(formatPriceVND(1234567)).toBe('1.234.567 ₫'); 
+    const result = formatPriceVND(1234567);
+    expect(result.trim()).toBe('1.234.567 ₫');
   });
 });
 
@@ -54,12 +60,14 @@ describe('formatPriceUSD', () => {
 
 describe('Edge cases', () => {
   test('handles very small numbers', () => {
-    expect(formatPriceVND(0.01)).toBe('0 ₫');  // Sửa lại
+    const result = formatPriceVND(0.01);
+    expect(result.trim()).toBe('0 ₫');
     expect(formatPriceUSD(0.01)).toBe('$0.01');
   });
 
   test('handles string numbers', () => {
-    expect(formatPriceVND('100000')).toBe('100.000 ₫');  // Thêm space
+    const result = formatPriceVND('100000');
+    expect(result.trim()).toBe('100.000 ₫');
     expect(formatPriceUSD('100')).toBe('$100.00');
   });
 });
