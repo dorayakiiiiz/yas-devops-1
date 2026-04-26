@@ -1,8 +1,14 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@commonServices': path.resolve(__dirname, './common/services'),
+    },
+  },
   test: {
     environment: 'jsdom',
     include: [
