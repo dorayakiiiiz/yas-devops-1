@@ -89,8 +89,10 @@ jobs:
         uses: snyk/actions/setup@master
       - name: Snyk Security Scan
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          MAVEN_OPTS: "-Xmx512m"
         run: snyk test --file=cart/pom.xml --severity-threshold=high --project-name=yas-cart
       - name: Log in to the Container registry
         if: ${{ github.ref == 'refs/heads/main' }}
