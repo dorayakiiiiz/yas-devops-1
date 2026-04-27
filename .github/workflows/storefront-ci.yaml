@@ -44,6 +44,14 @@ jobs:
           name: storefront-coverage-report
           path: storefront/coverage/
 
+      - name: Add coverage report to PR
+        uses: romeovs/lcov-reporter-action@v0.4.0
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' && github.event_name == 'pull_request' }}
+        with:
+          lcov-file: storefront/coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'Storefront Coverage Report'
+
       - name: Gitleaks check (Service Level)
         run: |
           docker run --rm -v ${{ github.workspace }}:/work -w /work zricethezav/gitleaks:v8.18.4 detect --source="./storefront" --no-git --verbose
