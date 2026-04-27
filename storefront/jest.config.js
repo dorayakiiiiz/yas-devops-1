@@ -4,6 +4,7 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: {
+        module: 'commonjs',
         jsx: 'react',
       },
     }],
@@ -18,6 +19,8 @@ module.exports = {
   collectCoverageFrom: [
     'utils/**/*.{ts,tsx}',
     '!utils/**/*.d.ts',
+    '!utils/**/__tests__/**',
+    '!utils/useDebounce.ts',
     '!**/node_modules/**',
   ],
   coverageReporters: ['text', 'lcov', 'json'],
