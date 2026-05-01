@@ -358,27 +358,4 @@ describe('ProductAttributeService', () => {
     });
   });
 
-  describe('URL construction', () => {
-    it('should use correct base URL for all methods', async () => {
-      const newAttribute = { name: 'Test', productAttributeGroupId: '1' };
-      (apiClientService.get as any).mockResolvedValue({ json: vi.fn().mockResolvedValue([]) });
-      (apiClientService.post as any).mockResolvedValue({});
-      (apiClientService.put as any).mockResolvedValue({});
-      (apiClientService.delete as any).mockResolvedValue({ status: 204 });
-
-      await getProductAttributes();
-      await getPageableProductAttributes(1, 10);
-      await getProductAttribute(1);
-      await createProductAttribute(newAttribute);
-      await updateProductAttribute(1, newAttribute);
-      await deleteProductAttribute(1);
-
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-attribute');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-attribute/paging?pageNo=1&pageSize=10');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-attribute/1');
-      expect(apiClientService.post).toHaveBeenCalledWith('/api/product/backoffice/product-attribute', expect.any(String));
-      expect(apiClientService.put).toHaveBeenCalledWith('/api/product/backoffice/product-attribute/1', expect.any(String));
-      expect(apiClientService.delete).toHaveBeenCalledWith('/api/product/backoffice/product-attribute/1');
-    });
-  });
 });

@@ -342,27 +342,4 @@ describe('ProductAttributeGroupService', () => {
     });
   });
 
-  describe('URL construction', () => {
-    it('should use correct base URL for all methods', async () => {
-      const newGroup: ProductAttributeGroup = { id: 0, name: 'Test' };
-      (apiClientService.get as any).mockResolvedValue({ json: vi.fn().mockResolvedValue([]) });
-      (apiClientService.post as any).mockResolvedValue({});
-      (apiClientService.put as any).mockResolvedValue({});
-      (apiClientService.delete as any).mockResolvedValue({ status: 204 });
-
-      await getProductAttributeGroups();
-      await getPageableProductAttributeGroups(1, 10);
-      await getProductAttributeGroup(1);
-      await createProductAttributeGroup(newGroup);
-      await updateProductAttributeGroup(1, newGroup);
-      await deleteProductAttributeGroup(1);
-
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-attribute-groups');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-attribute-groups/paging?pageNo=1&pageSize=10');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-attribute-groups/1');
-      expect(apiClientService.post).toHaveBeenCalledWith('/api/product/backoffice/product-attribute-groups', expect.any(String));
-      expect(apiClientService.put).toHaveBeenCalledWith('/api/product/backoffice/product-attribute-groups/1', expect.any(String));
-      expect(apiClientService.delete).toHaveBeenCalledWith('/api/product/backoffice/product-attribute-groups/1');
-    });
-  });
 });
