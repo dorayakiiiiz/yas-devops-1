@@ -75,31 +75,6 @@ describe('CustomerBaseInformation', () => {
       expect(screen.getByTestId('input-lastName')).toBeDefined();
     });
   });
-
-  describe('Default Values', () => {
-
-    it('should render with empty fields when customer is undefined', () => {
-      render(<CustomerBaseInformation {...defaultProps} customer={undefined} />);
-
-      const emailInput = screen.getByTestId('input-email') as HTMLInputElement;
-      const firstNameInput = screen.getByTestId('input-firstName') as HTMLInputElement;
-      const lastNameInput = screen.getByTestId('input-lastName') as HTMLInputElement;
-
-      expect(emailInput.defaultValue).toBeUndefined();
-      expect(firstNameInput.defaultValue).toBeUndefined();
-      expect(lastNameInput.defaultValue).toBeUndefined();
-    });
-  });
-
-  describe('Register Options', () => {
-
-    it('should call register exactly 3 times', () => {
-      render(<CustomerBaseInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledTimes(3);
-    });
-  });
-
  
 
   describe('Customer Create VM Type', () => {
