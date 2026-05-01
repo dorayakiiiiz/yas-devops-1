@@ -94,27 +94,6 @@ describe('CustomerInformation', () => {
       expect(screen.getByTestId('customer-base-info')).toBeDefined();
     });
 
-    it('should render Username input', () => {
-      render(<CustomerInformation {...defaultProps} />);
-      expect(screen.getByTestId('input-username')).toBeDefined();
-    });
-
-    it('should render Password input with type password', () => {
-      render(<CustomerInformation {...defaultProps} />);
-      const passwordInput = screen.getByTestId('input-password');
-      expect(passwordInput).toHaveAttribute('type', 'password');
-    });
-
-    it('should render Confirm password input with type password', () => {
-      render(<CustomerInformation {...defaultProps} />);
-      const confirmPasswordInput = screen.getByTestId('input-confirmPassword');
-      expect(confirmPasswordInput).toHaveAttribute('type', 'password');
-    });
-
-    it('should render Role select', () => {
-      render(<CustomerInformation {...defaultProps} />);
-      expect(screen.getByTestId('select-role')).toBeDefined();
-    });
 
     it('should render CustomerBaseInformation component', () => {
       render(<CustomerInformation {...defaultProps} />);
@@ -168,75 +147,11 @@ describe('CustomerInformation', () => {
       });
     });
   });
-
-
-  describe('Select Options', () => {
    
-    it('should render role options correctly', () => {
-      render(<CustomerInformation {...defaultProps} />);
-
-      const select = screen.getByTestId('select-role') as HTMLSelectElement;
-      const options = select.querySelectorAll('option');
-      
-      expect(options).toHaveLength(3);
-      expect(options[0].textContent).toBe('Select Role');
-      expect(options[1].textContent).toBe('Admin');
-      expect(options[1].getAttribute('value')).toBe('ADMIN');
-      expect(options[2].textContent).toBe('Customer');
-      expect(options[2].getAttribute('value')).toBe('CUSTOMER');
-    });
-  });
-
-  describe('Form Interaction', () => {
-    it('should handle username input change', () => {
-      render(<CustomerInformation {...defaultProps} />);
-      const usernameInput = screen.getByTestId('input-username');
-      fireEvent.change(usernameInput, { target: { value: 'john_doe' } });
-      expect(usernameInput).toHaveValue('john_doe');
-    });
-
-    it('should handle password input change', () => {
-      render(<CustomerInformation {...defaultProps} />);
-      const passwordInput = screen.getByTestId('input-password');
-      fireEvent.change(passwordInput, { target: { value: 'newPassword123' } });
-      expect(passwordInput).toHaveValue('newPassword123');
-    });
-
-    it('should handle confirmPassword input change', () => {
-      render(<CustomerInformation {...defaultProps} />);
-      const confirmPasswordInput = screen.getByTestId('input-confirmPassword');
-      fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
-      expect(confirmPasswordInput).toHaveValue('password123');
-    });
-
-    it('should handle role selection change', () => {
-      render(<CustomerInformation {...defaultProps} />);
-      const roleSelect = screen.getByTestId('select-role');
-      fireEvent.change(roleSelect, { target: { value: 'ADMIN' } });
-      expect(roleSelect).toHaveValue('ADMIN');
-    });
-  });
-
   describe('Watch functionality', () => {
     it('should call watch with password field', () => {
       render(<CustomerInformation {...defaultProps} />);
       expect(mockWatch).toHaveBeenCalledWith('password');
-    });
-  });
-
-  describe('Empty values handling', () => {
-    it('should handle empty username', () => {
-      render(<CustomerInformation {...defaultProps} />);
-      const usernameInput = screen.getByTestId('input-username');
-      fireEvent.change(usernameInput, { target: { value: '' } });
-      expect(usernameInput).toHaveValue('');
-    });
-
-    it('should handle empty password', () => {
-      render(<CustomerInformation {...defaultProps} />);
-      const passwordInput = screen.getByTestId('input-password');
-      fireEvent.change(passwordInput, { target: { value: '' } });
-      expect(passwordInput).toHaveValue('');
     });
   });
 

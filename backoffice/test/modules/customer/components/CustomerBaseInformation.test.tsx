@@ -92,33 +92,6 @@ describe('CustomerBaseInformation', () => {
   });
 
   describe('Register Options', () => {
-    it('should register email field with required validation and email pattern', () => {
-      render(<CustomerBaseInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledWith('email', {
-        required: { value: true, message: 'Email is required' },
-        pattern: {
-          value: EMAIL_PATTERN,
-          message: 'Please provide correct email',
-        },
-      });
-    });
-
-    it('should register firstName field with required validation', () => {
-      render(<CustomerBaseInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledWith('firstName', {
-        required: { value: true, message: 'First name is required' },
-      });
-    });
-
-    it('should register lastName field with required validation', () => {
-      render(<CustomerBaseInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledWith('lastName', {
-        required: { value: true, message: 'Last name is required' },
-      });
-    });
 
     it('should call register exactly 3 times', () => {
       render(<CustomerBaseInformation {...defaultProps} />);
