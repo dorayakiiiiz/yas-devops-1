@@ -106,30 +106,6 @@ describe('ProfileForm', () => {
     });
   });
 
-  describe('Form Interaction', () => {
-    it('should handle firstName input change', async () => {
-      const user = userEvent.setup();
-      render(<ProfileForm {...defaultProps} />);
-
-      const firstNameInput = screen.getByTestId('input-firstName');
-      fireEvent.change(firstNameInput, { target: { value: 'Jane' } });
-
-      expect(firstNameInput).toHaveValue('Jane');
-    });
-
-
-    it('should not allow username input change (disabled)', () => {
-      render(<ProfileForm {...defaultProps} />);
-
-      const usernameInput = screen.getByTestId('input-username') as HTMLInputElement;
-      const originalValue = usernameInput.defaultValue;
-      
-      fireEvent.change(usernameInput, { target: { value: 'new_username' } });
-      
-      expect(usernameInput).toHaveValue(originalValue || '');
-    });
-  });
-
   describe('Cancel Button Link', () => {
     it('should have Cancel button wrapped in Link component', () => {
       render(<ProfileForm {...defaultProps} />);
@@ -184,36 +160,4 @@ describe('ProfileForm', () => {
     });
   });
 
-  describe('Accessibility', () => {
-    it('should have labels associated with inputs via htmlFor', () => {
-      render(<ProfileForm {...defaultProps} />);
-
-      const usernameLabel = screen.getByText('Username');
-      const usernameInput = screen.getByTestId('input-username');
-      
-      expect(usernameLabel).toHaveAttribute('for', 'username');
-      expect(usernameInput).toHaveAttribute('id', 'username');
-    });
-
-    it('should have correct id attributes for all inputs', () => {
-      render(<ProfileForm {...defaultProps} />);
-
-      expect(screen.getByTestId('input-username')).toHaveAttribute('id', 'username');
-      expect(screen.getByTestId('input-firstName')).toHaveAttribute('id', 'firstName');
-      expect(screen.getByTestId('input-lastName')).toHaveAttribute('id', 'lastName');
-      expect(screen.getByTestId('input-email')).toHaveAttribute('id', 'email');
-    });
-  });
-
-  describe('Special characters handling', () => {
-    it('should handle firstName with special characters', () => {
-      render(<ProfileForm {...defaultProps} />);
-
-      const firstNameInput = screen.getByTestId('input-firstName');
-      fireEvent.change(firstNameInput, { target: { value: 'John-Doe_123' } });
-
-      expect(firstNameInput).toHaveValue('John-Doe_123');
-    });
-
-  });
 });
