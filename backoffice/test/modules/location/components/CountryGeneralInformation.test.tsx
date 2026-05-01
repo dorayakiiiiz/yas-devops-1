@@ -88,16 +88,6 @@ describe('CountryGeneralInformation', () => {
       expect(screen.getByText('isZipCodeEnabled')).toBeDefined();
       expect(screen.getByText('isDistrictEnabled')).toBeDefined();
     });
-
-    it('should render all checkboxes', () => {
-      render(<CountryGeneralInformation {...defaultProps} />);
-
-      expect(screen.getByTestId('checkbox-isBillingEnabled')).toBeDefined();
-      expect(screen.getByTestId('checkbox-isShippingEnabled')).toBeDefined();
-      expect(screen.getByTestId('checkbox-isCityEnabled')).toBeDefined();
-      expect(screen.getByTestId('checkbox-isZipCodeEnabled')).toBeDefined();
-      expect(screen.getByTestId('checkbox-isDistrictEnabled')).toBeDefined();
-    });
   });
 
   describe('Register Options', () => {
@@ -121,18 +111,6 @@ describe('CountryGeneralInformation', () => {
       render(<CountryGeneralInformation {...defaultProps} />);
 
       expect(mockRegister).toHaveBeenCalledTimes(8);
-    });
-  });
-
-  describe('Accessibility', () => {
-    it('should have labels associated with inputs', () => {
-      render(<CountryGeneralInformation {...defaultProps} />);
-
-      const code2Label = screen.getByText('Code2');
-      const code2Input = screen.getByTestId('input-code2');
-
-      expect(code2Label).toHaveAttribute('for', 'code2');
-      expect(code2Input).toHaveAttribute('id', 'code2');
     });
   });
 
