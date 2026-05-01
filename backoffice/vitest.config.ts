@@ -10,7 +10,9 @@ export default defineConfig({
       '@commonItems': path.resolve(__dirname, './common/items'),
       '@commonServices': path.resolve(__dirname, './common/services'),
       '@locationServices': path.resolve(__dirname, './modules/location/services'),
-      '@taxServices': path.resolve(__dirname, './modules/tax/services')
+      '@taxServices': path.resolve(__dirname, './modules/tax/services'),
+      '@webhookServices': path.resolve(__dirname, './modules/webhook/services'), 
+      '@webhookModels': path.resolve(__dirname, './modules/webhook/models'),
     }
   },
   test: {
