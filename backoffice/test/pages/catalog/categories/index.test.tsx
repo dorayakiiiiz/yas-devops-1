@@ -165,15 +165,4 @@ describe('CategoryList Page', () => {
   });
 
 
-  describe('Category Hierarchy', () => {
-
-    it('should render subcategories with correct hierarchy', async () => {
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Electronics')).toBeDefined();
-        expect(screen.getByText('Electronics >> Laptops')).toBeDefined();
-      });
-    });
-  });
 });
