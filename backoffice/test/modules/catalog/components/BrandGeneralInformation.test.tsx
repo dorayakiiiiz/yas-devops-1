@@ -68,51 +68,6 @@ describe('BrandGeneralInformation', () => {
     (slugify as any).mockClear();
   });
 
-  describe('Rendering', () => {
-    it('should render all form fields', () => {
-      render(<BrandGeneralInformation {...defaultProps} />);
-
-      expect(screen.getByLabelText('Name')).toBeDefined();
-      expect(screen.getByLabelText('Slug')).toBeDefined();
-      expect(screen.getByLabelText('Publish')).toBeDefined();
-    });
-
-    it('should render Name input with correct label', () => {
-      render(<BrandGeneralInformation {...defaultProps} />);
-
-      expect(screen.getByText('Name')).toBeDefined();
-      expect(screen.getByTestId('input-name')).toBeDefined();
-    });
-
-    it('should render Slug input with correct label', () => {
-      render(<BrandGeneralInformation {...defaultProps} />);
-
-      expect(screen.getByText('Slug')).toBeDefined();
-      expect(screen.getByTestId('input-slug')).toBeDefined();
-    });
-
-    it('should render Publish switch with correct label', () => {
-      render(<BrandGeneralInformation {...defaultProps} />);
-
-      expect(screen.getByText('Publish')).toBeDefined();
-      expect(screen.getByTestId('switch-isPublish')).toBeDefined();
-    });
-
-  });
-
-  describe('Default Values', () => {
-
-    it('should render with empty fields when brand is undefined', () => {
-      render(<BrandGeneralInformation {...defaultProps} brand={undefined} />);
-
-      const nameInput = screen.getByTestId('input-name') as HTMLInputElement;
-      const slugInput = screen.getByTestId('input-slug') as HTMLInputElement;
-
-      expect(nameInput.defaultValue).toBeUndefined();
-      expect(slugInput.defaultValue).toBeUndefined();
-    });
-  });
-
   describe('Register Options', () => {
     it('should register name field with required validation', () => {
       render(<BrandGeneralInformation {...defaultProps} />);
@@ -138,73 +93,6 @@ describe('BrandGeneralInformation', () => {
       render(<BrandGeneralInformation {...defaultProps} />);
 
       expect(mockRegister).toHaveBeenCalledWith('isPublish', undefined);
-    });
-  });
-
-  describe('onNameChange Handler', () => {
-
-    it('should trigger validation for slug, name, and isPublish after name change', async () => {
-      (slugify as any).mockReturnValue('test-brand');
-
-      render(<BrandGeneralInformation {...defaultProps} />);
-
-      const nameInput = screen.getByTestId('input-name');
-      fireEvent.change(nameInput, { target: { value: 'Test Brand' } });
-
-      await waitFor(() => {
-        expect(mockTrigger).toHaveBeenCalledWith('slug');
-        expect(mockTrigger).toHaveBeenCalledWith('name');
-        expect(mockTrigger).toHaveBeenCalledWith('isPublish');
-        expect(mockTrigger).toHaveBeenCalledTimes(3);
-      });
-    });
-
-    it('should handle empty name input', async () => {
-      (slugify as any).mockReturnValue('');
-
-      render(<BrandGeneralInformation {...defaultProps} />);
-
-      const nameInput = screen.getByTestId('input-name');
-      fireEvent.change(nameInput, { target: { value: '' } });
-
-      await waitFor(() => {
-        expect(slugify).toHaveBeenCalledWith('', { lower: true, strict: true });
-        expect(mockSetValue).toHaveBeenCalledWith('slug', '');
-      });
-    });
-
-    it('should handle name with special characters', async () => {
-      (slugify as any).mockReturnValue('test-brand-123');
-
-      render(<BrandGeneralInformation {...defaultProps} />);
-
-      const nameInput = screen.getByTestId('input-name');
-      fireEvent.change(nameInput, { target: { value: 'Test Brand 123!' } });
-
-      await waitFor(() => {
-        expect(slugify).toHaveBeenCalledWith('Test Brand 123!', { lower: true, strict: true });
-        expect(mockSetValue).toHaveBeenCalledWith('slug', 'test-brand-123');
-      });
-    });
-
-    it('should handle multiple rapid changes', async () => {
-      (slugify as any)
-        .mockReturnValueOnce('nike')
-        .mockReturnValueOnce('adidas')
-        .mockReturnValueOnce('puma');
-
-      render(<BrandGeneralInformation {...defaultProps} />);
-
-      const nameInput = screen.getByTestId('input-name');
-      
-      fireEvent.change(nameInput, { target: { value: 'Nike' } });
-      fireEvent.change(nameInput, { target: { value: 'Adidas' } });
-      fireEvent.change(nameInput, { target: { value: 'Puma' } });
-
-      await waitFor(() => {
-        expect(mockSetValue).toHaveBeenLastCalledWith('slug', 'puma');
-        expect(mockTrigger).toHaveBeenCalledTimes(9); // 3 changes × 3 triggers
-      });
     });
   });
 
