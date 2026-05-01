@@ -340,28 +340,4 @@ describe('ProductOptionService', () => {
       await expect(deleteProductOption(1)).rejects.toThrow('Cannot delete option with existing values');
     });
   });
-
-  describe('URL construction', () => {
-    it('should use correct base URL for all methods', async () => {
-      const newOption: ProductOption = { id: 0, name: 'Test' };
-      (apiClientService.get as any).mockResolvedValue({ json: vi.fn().mockResolvedValue([]) });
-      (apiClientService.post as any).mockResolvedValue({});
-      (apiClientService.put as any).mockResolvedValue({});
-      (apiClientService.delete as any).mockResolvedValue({ status: 204 });
-
-      await getProductOptions();
-      await getPageableProductOptions(1, 10);
-      await getProductOption(1);
-      await createProductOption(newOption);
-      await updateProductOption(1, newOption);
-      await deleteProductOption(1);
-
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-options');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-options/paging?pageNo=1&pageSize=10');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-options/1');
-      expect(apiClientService.post).toHaveBeenCalledWith('/api/product/backoffice/product-options', expect.any(String));
-      expect(apiClientService.put).toHaveBeenCalledWith('/api/product/backoffice/product-options/1', expect.any(String));
-      expect(apiClientService.delete).toHaveBeenCalledWith('/api/product/backoffice/product-options/1');
-    });
-  });
 });

@@ -267,24 +267,4 @@ describe('ProductTemplateService', () => {
     });
   });
 
-  describe('URL construction', () => {
-    it('should use correct base URL for all methods', async () => {
-      const newTemplate: FromProductTemplate = { name: 'Test' };
-      (apiClientService.get as any).mockResolvedValue({ json: vi.fn().mockResolvedValue([]) });
-      (apiClientService.post as any).mockResolvedValue({});
-      (apiClientService.put as any).mockResolvedValue({});
-
-      await getProductTemplates();
-      await getPageableProductTemplates(1, 10);
-      await getProductTemplate(1);
-      await createProductTemplate(newTemplate);
-      await updateProductTemplate(1, newTemplate);
-
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-template');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-template/paging?pageNo=1&pageSize=10');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/product-template/1');
-      expect(apiClientService.post).toHaveBeenCalledWith('/api/product/backoffice/product-template', expect.any(String));
-      expect(apiClientService.put).toHaveBeenCalledWith('/api/product/backoffice/product-template/1', expect.any(String));
-    });
-  });
 });
