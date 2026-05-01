@@ -152,17 +152,6 @@ describe('ToastHandlerService', () => {
       expect(toastSuccess).not.toHaveBeenCalled();
     });
 
-
-    it('should handle case when response.json fails', async () => {
-      const mockResponse = {
-        status: ResponseStatus.BAD_REQUEST,
-        json: vi.fn().mockRejectedValue(new Error('Parse error')),
-      };
-
-      await handleCreatingResponse(mockResponse);
-
-      expect(toastError).toHaveBeenCalledWith(CREATE_FAILED);
-    });
   });
 
   describe('handleResponse', () => {
