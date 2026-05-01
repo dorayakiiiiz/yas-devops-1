@@ -7,7 +7,8 @@ export default defineConfig({
   resolve: { // THÊM cả block này
     alias: {
       '@catalogServices': path.resolve(__dirname, './modules/catalog/services'),
-      '@commonItems': path.resolve(__dirname, './common/items')
+      '@commonItems': path.resolve(__dirname, './common/items'),
+      '@@commonServices': path.resolve(__dirname, './common/services')
     }
   },
   test: {
