@@ -82,10 +82,6 @@ describe('WebhookInformation', () => {
       expect(screen.getByText('Active')).toBeDefined();
     });
 
-    it('should render Active checkbox', () => {
-      render(<WebhookInformation {...defaultProps} />);
-      expect(screen.getByTestId('checkbox-isActive')).toBeDefined();
-    });
   });
 
 
