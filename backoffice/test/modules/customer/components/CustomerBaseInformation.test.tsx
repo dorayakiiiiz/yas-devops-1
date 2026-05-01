@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import CustomerBaseInformation from '../../../../modules/customer/components/CustomerBaseInformation';
+import { EMAIL_PATTERN } from '../../../../modules/catalog/constants/validationPattern';
 
 // Mock Input component
 vi.mock('@commonItems/Input', () => ({
@@ -91,6 +92,18 @@ describe('CustomerBaseInformation', () => {
   });
 
   describe('Register Options', () => {
+    it('should register email field with required validation and email pattern', () => {
+      render(<CustomerBaseInformation {...defaultProps} />);
+
+      expect(mockRegister).toHaveBeenCalledWith('email', {
+        required: { value: true, message: 'Email is required' },
+        pattern: {
+          value: EMAIL_PATTERN,
+          message: 'Please provide correct email',
+        },
+      });
+    });
+
     it('should register firstName field with required validation', () => {
       render(<CustomerBaseInformation {...defaultProps} />);
 
