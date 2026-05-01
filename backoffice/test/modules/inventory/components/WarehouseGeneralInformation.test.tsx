@@ -1,0 +1,404 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import WarehouseGeneralInformation from '../../../../modules/inventory/components/WarehouseGeneralInformation';
+import { getCountries } from '../../../../modules/location/services/CountryService';
+import { getStatesOrProvinces } from '../../../../modules/location/services/StateOrProvinceService';
+import { getDistricts } from '../../../../modules/location/services/DistrictService';
+import { useRouter } from 'next/router';
+
+// Mock dependencies
+vi.mock('next/router', () => ({
+  useRouter: vi.fn(),
+}));
+
+vi.mock('@commonItems/OptionSelect', () => ({
+  OptionSelect: ({ labelText, field, placeholder, options, register, registerOptions, error, defaultValue }: any) => (
+    <div>
+      <label htmlFor={field}>{labelText}</label>
+      <select
+        id={field}
+        data-testid={`select-${field}`}
+        defaultValue={defaultValue}
+        onChange={(e) => {
+          if (registerOptions?.onChange) {
+            registerOptions.onChange(e);
+          }
+          if (register) {
+            register(field, registerOptions).onChange(e);
+          }
+        }}
+      >
+        <option value="">{placeholder}</option>
+        {options?.map((opt: any) => (
+          <option key={opt.id} value={opt.id}>
+            {opt.name}
+          </option>
+        ))}
+      </select>
+      {error && <span data-testid={`error-${field}`}>{error}</span>}
+    </div>
+  ),
+}));
+
+vi.mock('common/items/Input', () => ({
+  Input: ({ labelText, field, defaultValue, register, registerOptions, error }: any) => (
+    <div>
+      <label htmlFor={field}>{labelText}</label>
+      <input
+        id={field}
+        data-testid={`input-${field}`}
+        defaultValue={defaultValue}
+        onChange={(e) => {
+          if (registerOptions?.onChange) {
+            registerOptions.onChange(e);
+          }
+          if (register) {
+            register(field, registerOptions).onChange(e);
+          }
+        }}
+      />
+      {error && <span data-testid={`error-${field}`}>{error}</span>}
+    </div>
+  ),
+}));
+
+vi.mock('../../../../modules/location/services/CountryService', () => ({
+  getCountries: vi.fn(),
+}));
+
+vi.mock('../../../../modules/location/services/StateOrProvinceService', () => ({
+  getStatesOrProvinces: vi.fn(),
+}));
+
+vi.mock('../../../../modules/location/services/DistrictService', () => ({
+  getDistricts: vi.fn(),
+}));
+
+describe('WarehouseGeneralInformation', () => {
+  const mockRegister = vi.fn((field, options) => ({
+    name: field,
+    onChange: vi.fn(),
+    onBlur: vi.fn(),
+    ref: vi.fn(),
+  }));
+
+  const mockSetValue = vi.fn();
+  const mockTrigger = vi.fn();
+
+  const mockCountries = [
+    { id: 1, name: 'USA' },
+    { id: 2, name: 'Canada' },
+  ];
+
+  const mockStates = [
+    { id: 1, name: 'California', countryId: 1 },
+    { id: 2, name: 'Texas', countryId: 1 },
+  ];
+
+  const mockDistricts = [
+    { id: 1, name: 'Los Angeles', stateOrProvinceId: 1 },
+    { id: 2, name: 'San Francisco', stateOrProvinceId: 1 },
+  ];
+
+  const mockWarehouseDetail = {
+    id: 1,
+    name: 'Main Warehouse',
+    contactName: 'John Doe',
+    phone: '123-456-7890',
+    addressLine1: '123 Main St',
+    addressLine2: 'Suite 100',
+    city: 'Los Angeles',
+    countryId: 1,
+    stateOrProvinceId: 1,
+    districtId: 1,
+    zipCode: '90210',
+  };
+
+  const defaultProps = {
+    register: mockRegister,
+    errors: {},
+    setValue: mockSetValue,
+    trigger: mockTrigger,
+    warehouseDetail: undefined,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (useRouter as any).mockReturnValue({ query: {} });
+    (getCountries as any).mockResolvedValue(mockCountries);
+    (getStatesOrProvinces as any).mockResolvedValue(mockStates);
+    (getDistricts as any).mockResolvedValue(mockDistricts);
+  });
+
+  describe('Rendering', () => {
+    it('should render all form fields', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Name')).toBeDefined();
+        expect(screen.getByText('Contact Name')).toBeDefined();
+        expect(screen.getByText('Phone')).toBeDefined();
+        expect(screen.getByText('Address Line 1')).toBeDefined();
+        expect(screen.getByText('Address Line 2')).toBeDefined();
+        expect(screen.getByText('City')).toBeDefined();
+        expect(screen.getByText('Country')).toBeDefined();
+        expect(screen.getByText('State or province')).toBeDefined();
+        expect(screen.getByText('District')).toBeDefined();
+        expect(screen.getByText('Postal Code')).toBeDefined();
+      });
+    });
+
+    it('should render all input fields', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('input-name')).toBeDefined();
+        expect(screen.getByTestId('input-contactName')).toBeDefined();
+        expect(screen.getByTestId('input-phone')).toBeDefined();
+        expect(screen.getByTestId('input-addressLine1')).toBeDefined();
+        expect(screen.getByTestId('input-addressLine2')).toBeDefined();
+        expect(screen.getByTestId('input-city')).toBeDefined();
+        expect(screen.getByTestId('input-zipCode')).toBeDefined();
+      });
+    });
+
+    it('should render select fields', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('select-countryId')).toBeDefined();
+        expect(screen.getByTestId('select-stateOrProvinceId')).toBeDefined();
+        expect(screen.getByTestId('select-districtId')).toBeDefined();
+      });
+    });
+  });
+
+  describe('Initial Data Fetching', () => {
+    it('should fetch countries on mount', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(getCountries).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should populate countries dropdown', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('USA')).toBeDefined();
+        expect(screen.getByText('Canada')).toBeDefined();
+      });
+    });
+  });
+
+  describe('Edit Mode - With Warehouse Data', () => {
+    beforeEach(() => {
+      (useRouter as any).mockReturnValue({ query: { id: '1' } });
+    });
+
+    it('should fetch states and districts when warehouseDetail is provided', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} warehouseDetail={mockWarehouseDetail} />);
+
+      await waitFor(() => {
+        expect(getStatesOrProvinces).toHaveBeenCalledWith(mockWarehouseDetail.countryId);
+        expect(getDistricts).toHaveBeenCalledWith(mockWarehouseDetail.stateOrProvinceId);
+      });
+    });
+
+    it('should populate fields with warehouse data', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} warehouseDetail={mockWarehouseDetail} />);
+
+      await waitFor(() => {
+        const nameInput = screen.getByTestId('input-name') as HTMLInputElement;
+        const contactNameInput = screen.getByTestId('input-contactName') as HTMLInputElement;
+        const phoneInput = screen.getByTestId('input-phone') as HTMLInputElement;
+        
+        expect(nameInput.defaultValue).toBe('Main Warehouse');
+        expect(contactNameInput.defaultValue).toBe('John Doe');
+        expect(phoneInput.defaultValue).toBe('123-456-7890');
+      });
+    });
+  });
+
+  describe('Edit Mode - No Warehouse Data', () => {
+    beforeEach(() => {
+      (useRouter as any).mockReturnValue({ query: { id: '999' } });
+    });
+
+    it('should show "No warehouse" message when warehouseDetail is not found', () => {
+      render(<WarehouseGeneralInformation {...defaultProps} warehouseDetail={undefined} />);
+      
+      expect(screen.getByText('No warehouse')).toBeDefined();
+    });
+
+    it('should not show form fields when warehouse not found', () => {
+      render(<WarehouseGeneralInformation {...defaultProps} warehouseDetail={undefined} />);
+      
+      expect(screen.queryByText('Name')).toBeNull();
+    });
+  });
+
+  describe('Location Selection', () => {
+    beforeEach(() => {
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+    });
+
+    it('should fetch states when country changes', async () => {
+      await waitFor(() => {
+        expect(screen.getByTestId('select-countryId')).toBeDefined();
+      });
+
+      const countrySelect = screen.getByTestId('select-countryId');
+      fireEvent.change(countrySelect, { target: { value: '1' } });
+
+      await waitFor(() => {
+        expect(getStatesOrProvinces).toHaveBeenCalledWith('1');
+      });
+    });
+
+    it('should fetch districts when state changes', async () => {
+      await waitFor(() => {
+        expect(screen.getByTestId('select-stateOrProvinceId')).toBeDefined();
+      });
+
+      const stateSelect = screen.getByTestId('select-stateOrProvinceId');
+      fireEvent.change(stateSelect, { target: { value: '1' } });
+
+      await waitFor(() => {
+        expect(getDistricts).toHaveBeenCalledWith('1');
+      });
+    });
+
+    it('should update districts when country changes', async () => {
+      await waitFor(() => {
+        expect(screen.getByTestId('select-countryId')).toBeDefined();
+      });
+
+      const countrySelect = screen.getByTestId('select-countryId');
+      fireEvent.change(countrySelect, { target: { value: '1' } });
+
+      await waitFor(() => {
+        expect(getDistricts).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Registration', () => {
+    it('should register name field with required validation', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockRegister).toHaveBeenCalledWith('name', {
+          required: { value: true, message: 'Name is required' },
+        });
+      });
+    });
+
+    it('should register country field with required validation and onChange', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockRegister).toHaveBeenCalledWith('countryId', {
+          required: { value: true, message: 'Please select country' },
+          onChange: expect.any(Function),
+        });
+      });
+    });
+
+    it('should register state field with required validation', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockRegister).toHaveBeenCalledWith('stateOrProvinceId', {
+          required: { value: true, message: 'Please select state or ' },
+          onChange: expect.any(Function),
+        });
+      });
+    });
+
+    it('should register district field with required validation', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockRegister).toHaveBeenCalledWith('districtId', {
+          required: { value: true, message: 'Please select district' },
+        });
+      });
+    });
+  });
+
+
+  describe('Default Values', () => {
+    it('should populate form with warehouseDetail values', async () => {
+      render(<WarehouseGeneralInformation {...defaultProps} warehouseDetail={mockWarehouseDetail} />);
+
+      await waitFor(() => {
+        const nameInput = screen.getByTestId('input-name') as HTMLInputElement;
+        const contactNameInput = screen.getByTestId('input-contactName') as HTMLInputElement;
+        
+        expect(nameInput.defaultValue).toBe('Main Warehouse');
+        expect(contactNameInput.defaultValue).toBe('John Doe');
+      });
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle empty districts array when state change returns no data', async () => {
+      (getDistricts as any).mockResolvedValue([]);
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('select-stateOrProvinceId')).toBeDefined();
+      });
+
+      const stateSelect = screen.getByTestId('select-stateOrProvinceId');
+      fireEvent.change(stateSelect, { target: { value: '1' } });
+
+      await waitFor(() => {
+        expect(getDistricts).toHaveBeenCalledWith('1');
+      });
+    });
+
+    it('should handle null districts from API', async () => {
+      (getDistricts as any).mockResolvedValue(null);
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('select-stateOrProvinceId')).toBeDefined();
+      });
+
+      const stateSelect = screen.getByTestId('select-stateOrProvinceId');
+      fireEvent.change(stateSelect, { target: { value: '1' } });
+
+      await waitFor(() => {
+        expect(getDistricts).toHaveBeenCalledWith('1');
+      });
+    });
+
+    it('should handle API errors gracefully', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      (getCountries as any).mockRejectedValue(new Error('API Error'));
+      
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(consoleErrorSpy).toHaveBeenCalled();
+      });
+      
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('Location Data Loading States', () => {
+    it('should show empty when countries are loading', async () => {
+      (getCountries as any).mockImplementation(() => new Promise(() => {}));
+      render(<WarehouseGeneralInformation {...defaultProps} />);
+
+      await waitFor(() => {
+        const countrySelect = screen.getByTestId('select-countryId');
+        expect(countrySelect.children.length).toBe(1); // Only placeholder
+      });
+    });
+  });
+});
