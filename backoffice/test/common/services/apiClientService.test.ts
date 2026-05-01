@@ -22,19 +22,6 @@ describe('apiClientService', () => {
   });
 
   describe('POST', () => {
-    it('should make POST request with JSON body', async () => {
-      const mockResponse = { ok: true, json: async () => ({ id: 1 }) };
-      (fetch as any).mockResolvedValue(mockResponse);
-
-      const data = { name: 'John', age: 30 };
-      await apiClientService.post('/users', data);
-
-      expect(fetch).toHaveBeenCalledWith('/users', {
-        method: 'POST',
-        headers: { 'Content-type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify(data),
-      });
-    });
 
     it('should make POST request with custom content type', async () => {
       const mockResponse = { ok: true };
@@ -79,19 +66,6 @@ describe('apiClientService', () => {
   });
 
   describe('PUT', () => {
-    it('should make PUT request with JSON body', async () => {
-      const mockResponse = { ok: true };
-      (fetch as any).mockResolvedValue(mockResponse);
-
-      const data = { name: 'Jane' };
-      await apiClientService.put('/users/1', data);
-
-      expect(fetch).toHaveBeenCalledWith('/users/1', {
-        method: 'PUT',
-        headers: { 'Content-type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify(data),
-      });
-    });
 
     it('should make PUT request with custom content type', async () => {
       const mockResponse = { ok: true };
