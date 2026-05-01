@@ -7,15 +7,12 @@ export default defineConfig({
   resolve: { // THÊM cả block này
     alias: {
       '@catalogServices': path.resolve(__dirname, './modules/catalog/services'),
-      '@common': path.resolve(__dirname, './src/common'),
-      '@modules': path.resolve(__dirname, './src/modules'),
-      '@pages': path.resolve(__dirname, './src/pages'),
-      '@utils': path.resolve(__dirname, './src/utils'),
-      '@components': path.resolve(__dirname, './src/components'),
+      '@commonItems': path.resolve(__dirname, './common/items')
     }
   },
   test: {
     environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
     include: [
       'test/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'common/**/*.{test,spec}.{js,jsx,ts,tsx}',
