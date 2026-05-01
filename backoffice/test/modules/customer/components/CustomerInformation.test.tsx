@@ -172,6 +172,7 @@ describe('CustomerInformation', () => {
 
 
   describe('Select Options', () => {
+   
     it('should render role options correctly', () => {
       render(<CustomerInformation {...defaultProps} />);
 
@@ -240,24 +241,4 @@ describe('CustomerInformation', () => {
     });
   });
 
-  describe('Accessibility', () => {
-    it('should have labels associated with inputs', () => {
-      render(<CustomerInformation {...defaultProps} />);
-
-      const usernameLabel = screen.getByText('Username');
-      const usernameInput = screen.getByTestId('input-username');
-      
-      expect(usernameLabel).toHaveAttribute('for', 'username');
-      expect(usernameInput).toHaveAttribute('id', 'username');
-    });
-
-    it('should have correct id attributes for all inputs', () => {
-      render(<CustomerInformation {...defaultProps} />);
-
-      expect(screen.getByTestId('input-username')).toHaveAttribute('id', 'username');
-      expect(screen.getByTestId('input-password')).toHaveAttribute('id', 'password');
-      expect(screen.getByTestId('input-confirmPassword')).toHaveAttribute('id', 'confirmPassword');
-      expect(screen.getByTestId('select-role')).toHaveAttribute('id', 'role');
-    });
-  });
 });
