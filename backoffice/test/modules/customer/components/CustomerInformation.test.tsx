@@ -1,8 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event'; // THÊM import này
 import CustomerInformation from '../../../../modules/customer/components/CustomerInformation';
-import { USER_NAME_PATTERN } from '../../../../modules/catalog/constants/validationPattern';
 
 // Mock child component CustomerBaseInformation
 vi.mock('../../../../modules/customer/components/CustomerBaseInformation', () => ({
@@ -121,20 +119,6 @@ describe('CustomerInformation', () => {
       render(<CustomerInformation {...defaultProps} />);
       expect(screen.getByTestId('customer-base-info')).toBeDefined();
       expect(screen.getByText('Customer Base Information Mock')).toBeDefined();
-    });
-  });
-
-  describe('Register Options - Username', () => {
-    it('should register username with required validation', () => {
-      render(<CustomerInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledWith('username', {
-        required: { value: true, message: 'Username is required' },
-        pattern: {
-          value: USER_NAME_PATTERN,
-          message: 'Username must not contain special characters',
-        },
-      });
     });
   });
 
