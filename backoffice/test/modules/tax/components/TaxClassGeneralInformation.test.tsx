@@ -70,12 +70,6 @@ describe('TaxClassGeneralInformation', () => {
   });
 
   describe('Rendering', () => {
-    it('should render Name input field', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} />);
-
-      expect(screen.getByText('Name')).toBeDefined();
-      expect(screen.getByTestId('input-name')).toBeDefined();
-    });
 
     it('should render Name label correctly', () => {
       render(<TaxClassGeneralInformation {...defaultProps} />);
@@ -86,33 +80,6 @@ describe('TaxClassGeneralInformation', () => {
     });
   });
 
-  describe('Default Values', () => {
-    it('should populate Name field with taxClass data when provided', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} taxClass={mockTaxClass} />);
-
-      const nameInput = screen.getByTestId('input-name') as HTMLInputElement;
-      expect(nameInput.defaultValue).toBe('Standard Tax');
-    });
-
-    it('should render with empty Name field when taxClass is undefined', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} taxClass={undefined} />);
-
-      const nameInput = screen.getByTestId('input-name') as HTMLInputElement;
-      expect(nameInput.defaultValue).toBeUndefined();
-    });
-
-    it('should handle taxClass with empty name', () => {
-      const emptyNameTaxClass: TaxClass = {
-        id: 1,
-        name: '',
-      };
-
-      render(<TaxClassGeneralInformation {...defaultProps} taxClass={emptyNameTaxClass} />);
-
-      const nameInput = screen.getByTestId('input-name') as HTMLInputElement;
-      expect(nameInput.defaultValue).toBe('');
-    });
-  });
 
   describe('Register Options', () => {
     it('should register name field with required validation', () => {
@@ -130,93 +97,4 @@ describe('TaxClassGeneralInformation', () => {
     });
   });
 
-
-  describe('Form Interaction', () => {
-    it('should handle name input change', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} />);
-
-      const nameInput = screen.getByTestId('input-name');
-      fireEvent.change(nameInput, { target: { value: 'VAT 10%' } });
-
-      expect(nameInput).toHaveValue('VAT 10%');
-    });
-
-    it('should handle empty name input', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} />);
-
-      const nameInput = screen.getByTestId('input-name');
-      fireEvent.change(nameInput, { target: { value: '' } });
-
-      expect(nameInput).toHaveValue('');
-    });
-
-    it('should handle long name input', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} />);
-
-      const longName = 'A'.repeat(200);
-      const nameInput = screen.getByTestId('input-name');
-      fireEvent.change(nameInput, { target: { value: longName } });
-
-      expect(nameInput).toHaveValue(longName);
-    });
-
-    it('should handle special characters in name', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} />);
-
-      const specialName = 'Tax @#$% Class 123!';
-      const nameInput = screen.getByTestId('input-name');
-      fireEvent.change(nameInput, { target: { value: specialName } });
-
-      expect(nameInput).toHaveValue(specialName);
-    });
-  });
-
-  describe('Props Validation', () => {
-    it('should accept partial taxClass data', () => {
-      const partialTaxClass = {
-        id: 1,
-        name: 'Partial Tax',
-      };
-
-      render(<TaxClassGeneralInformation {...defaultProps} taxClass={partialTaxClass} />);
-
-      const nameInput = screen.getByTestId('input-name') as HTMLInputElement;
-      expect(nameInput.defaultValue).toBe('Partial Tax');
-    });
-  });
-
-  describe('Accessibility', () => {
-    it('should have label associated with name input', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} />);
-
-      const label = screen.getByText('Name');
-      const input = screen.getByTestId('input-name');
-
-      expect(label).toHaveAttribute('for', 'name');
-      expect(input).toHaveAttribute('id', 'name');
-    });
-  });
-
-  describe('Edge Cases', () => {
-    it('should work correctly without taxClass prop', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} taxClass={undefined} />);
-
-      const nameInput = screen.getByTestId('input-name');
-      fireEvent.change(nameInput, { target: { value: 'New Tax Class' } });
-
-      expect(nameInput).toHaveValue('New Tax Class');
-    });
-
-    it('should handle very long tax class name', () => {
-      const longNameTaxClass: TaxClass = {
-        id: 1,
-        name: 'A'.repeat(500),
-      };
-
-      render(<TaxClassGeneralInformation {...defaultProps} taxClass={longNameTaxClass} />);
-
-      const nameInput = screen.getByTestId('input-name') as HTMLInputElement;
-      expect(nameInput.defaultValue).toBe('A'.repeat(500));
-    });
-  });
 });

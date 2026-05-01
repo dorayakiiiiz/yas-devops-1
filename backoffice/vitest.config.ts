@@ -9,7 +9,8 @@ export default defineConfig({
       '@catalogServices': path.resolve(__dirname, './modules/catalog/services'),
       '@commonItems': path.resolve(__dirname, './common/items'),
       '@commonServices': path.resolve(__dirname, './common/services'),
-      '@locationServices': path.resolve(__dirname, './modules/location/services')
+      '@locationServices': path.resolve(__dirname, './modules/location/services'),
+      '@taxServices': path.resolve(__dirname, './modules/tax/services')
     }
   },
   test: {
