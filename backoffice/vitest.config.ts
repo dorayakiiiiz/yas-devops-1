@@ -6,8 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: { // THÊM cả block này
     alias: {
-      '@catalogServices': path.resolve(__dirname, './src/catalog/services'),
-      // Thêm các alias khác nếu cần
+      '@catalogServices': path.resolve(__dirname, './modules/catalog/services'),
       '@common': path.resolve(__dirname, './src/common'),
       '@modules': path.resolve(__dirname, './src/modules'),
       '@pages': path.resolve(__dirname, './src/pages'),
