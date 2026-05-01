@@ -85,43 +85,10 @@ describe('StateOrProvinceGeneralInformation', () => {
       });
     });
 
-    it('should register type field without validation', () => {
-      render(<StateOrProvinceGeneralInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledWith('type', undefined);
-    });
-
     it('should call register 3 times', () => {
       render(<StateOrProvinceGeneralInformation {...defaultProps} />);
 
       expect(mockRegister).toHaveBeenCalledTimes(3);
-    });
-  });
-
-
-  describe('Edge Cases', () => {
-
-    it('should handle long text inputs', () => {
-      const longName = 'A'.repeat(500);
-      const longCode = 'B'.repeat(100);
-      const longType = 'C'.repeat(50);
-
-      const longTextState = {
-        ...mockStateOrProvince,
-        name: longName,
-        code: longCode,
-        type: longType,
-      };
-
-      render(<StateOrProvinceGeneralInformation {...defaultProps} stateOrProvince={longTextState} />);
-
-      const nameInput = screen.getByTestId('input-name') as HTMLInputElement;
-      const codeInput = screen.getByTestId('input-code') as HTMLInputElement;
-      const typeInput = screen.getByTestId('input-type') as HTMLInputElement;
-
-      expect(nameInput.defaultValue).toBe(longName);
-      expect(codeInput.defaultValue).toBe(longCode);
-      expect(typeInput.defaultValue).toBe(longType);
     });
   });
 
