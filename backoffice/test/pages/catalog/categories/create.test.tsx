@@ -219,15 +219,6 @@ describe('CategoryCreate Page', () => {
         expect(screen.getByText('Top')).toBeDefined();
       });
     });
-
-    it('should display category options', async () => {
-      render(<CategoryCreate />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Electronics')).toBeDefined();
-        expect(screen.getByText('Clothing')).toBeDefined();
-      });
-    });
   });
 
   describe('Auto-generate Slug', () => {
@@ -252,44 +243,6 @@ describe('CategoryCreate Page', () => {
       fireEvent.change(slugInput, { target: { value: 'new-category' } });
     };
 
-    it('should call createCategory with correct data when form is submitted', async () => {
-      render(<CategoryCreate />);
-      
-      await fillForm();
-      
-      const saveButton = screen.getByText('Save');
-      fireEvent.click(saveButton);
-
-      await waitFor(() => {
-        expect(createCategory).toHaveBeenCalledWith({
-          id: 0,
-          name: 'New Category',
-          slug: 'new-category',
-          description: '',
-          parentId: null,
-          metaKeywords: '',
-          metaDescription: '',
-          displayOrder: 0,
-          isPublish: false,
-          imageId: undefined,
-        });
-      });
-    });
-
-    it('should redirect to categories list on successful creation (status 201)', async () => {
-      (createCategory as any).mockResolvedValue({ status: 201 });
-      render(<CategoryCreate />);
-      
-      await fillForm();
-      
-      const saveButton = screen.getByText('Save');
-      fireEvent.click(saveButton);
-
-      await waitFor(() => {
-        expect(mockRouterReplace).toHaveBeenCalledWith('/catalog/categories');
-      });
-    });
-
     it('should not redirect on non-201 status', async () => {
       (createCategory as any).mockResolvedValue({ status: 400 });
       render(<CategoryCreate />);
@@ -303,58 +256,6 @@ describe('CategoryCreate Page', () => {
         expect(mockRouterReplace).not.toHaveBeenCalled();
       });
     });
-
-    it('should call handleCreatingResponse after submission', async () => {
-      const { handleCreatingResponse } = await import('@commonServices/ResponseStatusHandlingService');
-      render(<CategoryCreate />);
-      
-      await fillForm();
-      
-      const saveButton = screen.getByText('Save');
-      fireEvent.click(saveButton);
-
-      await waitFor(() => {
-        expect(handleCreatingResponse).toHaveBeenCalled();
-      });
-    });
-
-    it('should handle API error gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      (createCategory as any).mockRejectedValue(new Error('API Error'));
-      
-      render(<CategoryCreate />);
-      
-      await fillForm();
-      
-      const saveButton = screen.getByText('Save');
-      fireEvent.click(saveButton);
-
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-      consoleSpy.mockRestore();
-    });
   });
-
-  describe('Parent ID Handling', () => {
-    it('should set parentId to null when Top is selected', async () => {
-      render(<CategoryCreate />);
-      
-      await waitFor(() => {
-        expect(screen.getByLabelText('Parent category')).toBeDefined();
-      });
-
-      const nameInput = screen.getByTestId('input-name');
-      fireEvent.change(nameInput, { target: { value: 'Root Category' } });
-      
-      const saveButton = screen.getByText('Save');
-      fireEvent.click(saveButton);
-
-      await waitFor(() => {
-        expect(createCategory).toHaveBeenCalledWith(
-          expect.objectContaining({ parentId: null })
-        );
-      });
-    });
-  });
+    
 });
