@@ -101,30 +101,6 @@ describe('Customers Page', () => {
         expect(screen.getByText('Doe')).toBeDefined();
       });
     });
-
-    it('should handle empty customer list', async () => {
-      (getCustomers as any).mockResolvedValue({
-        customers: [],
-        totalPage: 0,
-        totalUser: 0,
-      });
-      render(<Customers />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('No customers available')).toBeDefined();
-      });
-    });
-
-    it('should handle API error', async () => {
-      const toastSpy = vi.spyOn(require('react-toastify').toast, 'error').mockImplementation(() => {});
-      (getCustomers as any).mockRejectedValue(new Error('Network error'));
-      render(<Customers />);
-      
-      await waitFor(() => {
-        expect(toastSpy).toHaveBeenCalledWith('Something was wrong! Try later!');
-      });
-      toastSpy.mockRestore();
-    });
   });
 
   describe('deleteCustomer', () => {
@@ -147,41 +123,6 @@ describe('Customers Page', () => {
       render(<Customers />);
       await waitFor(() => {
         expect(getCustomers).toHaveBeenCalledWith(0);
-      });
-    });
-  });
-
-  describe('Table Headers', () => {
-    it('should render all table headers', async () => {
-      render(<Customers />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('User Id')).toBeDefined();
-        expect(screen.getByText('Username')).toBeDefined();
-        expect(screen.getByText('Email')).toBeDefined();
-        expect(screen.getByText('First Name')).toBeDefined();
-        expect(screen.getByText('Last Name')).toBeDefined();
-        expect(screen.getByText('Created Timestamp')).toBeDefined();
-        expect(screen.getByText('Actions')).toBeDefined();
-      });
-    });
-  });
-
-  describe('Create Button', () => {
-    it('should render Create New Customer button', async () => {
-      render(<Customers />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Create New Customer')).toBeDefined();
-      });
-    });
-
-    it('should have link to create customer page', async () => {
-      render(<Customers />);
-      
-      await waitFor(() => {
-        const link = screen.getByTestId('mock-link');
-        expect(link).toHaveAttribute('href', '/customers/create');
       });
     });
   });

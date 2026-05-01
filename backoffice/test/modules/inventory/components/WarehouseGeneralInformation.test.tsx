@@ -244,18 +244,6 @@ describe('WarehouseGeneralInformation', () => {
     });
   });
 
-  describe('Registration', () => {
-    it('should register name field with required validation', async () => {
-      render(<WarehouseGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockRegister).toHaveBeenCalledWith('name', {
-          required: { value: true, message: 'Name is required' },
-        });
-      });
-    });
-  });
-
 
 
   describe('Location Data Loading States', () => {

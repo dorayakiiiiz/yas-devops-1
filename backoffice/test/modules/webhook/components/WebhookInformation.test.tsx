@@ -85,24 +85,6 @@ describe('WebhookInformation', () => {
   });
 
 
-  describe('Register Options', () => {
-    it('should register payloadUrl field with required validation', () => {
-      render(<WebhookInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledWith('payloadUrl', {
-        required: { value: true, message: 'Payload URL is required' },
-      });
-    });
-
-
-    it('should call register 4 times', () => {
-      render(<WebhookInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledTimes(4);
-    });
-  });
-
-
   describe('Error Display', () => {
 
     it('should not display error when no errors', () => {

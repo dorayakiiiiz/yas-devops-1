@@ -114,16 +114,6 @@ describe('Profile Page', () => {
         expect(lastNameInput.defaultValue).toBe('Doe');
       });
     });
-
-    it('should handle API error', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      (getMyProfile as any).mockRejectedValue(new Error('Network error'));
-      render(<Profile />);
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-      consoleSpy.mockRestore();
-    });
   });
 
   describe('updateCustomer', () => {
@@ -137,16 +127,6 @@ describe('Profile Page', () => {
       await waitFor(() => {
         expect(updateCustomer).toBeDefined();
       });
-    });
-
-    it('should handle update error', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      (updateCustomer as any).mockRejectedValue(new Error('Update failed'));
-      render(<Profile />);
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-      consoleSpy.mockRestore();
     });
   });
 

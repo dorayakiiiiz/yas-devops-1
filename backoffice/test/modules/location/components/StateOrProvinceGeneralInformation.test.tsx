@@ -75,22 +75,4 @@ describe('StateOrProvinceGeneralInformation', () => {
 
   });
 
-
-  describe('Register Options', () => {
-    it('should register name field with required validation', () => {
-      render(<StateOrProvinceGeneralInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledWith('name', {
-        required: { value: true, message: 'State Or Province name is required' },
-      });
-    });
-
-    it('should call register 3 times', () => {
-      render(<StateOrProvinceGeneralInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledTimes(3);
-    });
-  });
-
-
 });

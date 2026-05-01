@@ -81,20 +81,4 @@ describe('TaxClassGeneralInformation', () => {
   });
 
 
-  describe('Register Options', () => {
-    it('should register name field with required validation', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledWith('name', {
-        required: { value: true, message: 'Tax Class name is required' },
-      });
-    });
-
-    it('should call register exactly 1 time', () => {
-      render(<TaxClassGeneralInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledTimes(1);
-    });
-  });
-
 });

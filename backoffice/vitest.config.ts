@@ -16,6 +16,7 @@ export default defineConfig({
       '@constants': path.resolve(__dirname, './constants'),
       '@inventoryServices': path.resolve(__dirname, './modules/inventory/services'),
       'common': path.resolve(__dirname, './common'),
+      '@webhookComponents': path.resolve(__dirname, './modules/webhook/components'),
     }
   },
   test: {

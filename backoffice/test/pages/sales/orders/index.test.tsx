@@ -4,13 +4,15 @@ import userEvent from '@testing-library/user-event';
 import Orders from '../../../../pages/sales/orders/index';
 import { getOrders } from '../../../../modules/order/services/OrderService';
 import { Order } from '../../../../modules/order/models/Order';
+import { OrderItem } from '../../../../modules/order/models/OrderItem';
+import { OrderAddress } from '../../../../modules/order/models/OrderAddress';
 
 // Mock dependencies
 vi.mock('../../../../modules/order/services/OrderService', () => ({
   getOrders: vi.fn(),
 }));
 
-vi.mock('../../../../commonServices/ApiClientService', () => ({
+vi.mock('../../../../common/services/ApiClientService', () => ({
   default: {
     get: vi.fn(),
     post: vi.fn(),
@@ -31,30 +33,97 @@ vi.mock('query-string', () => ({
   stringify: vi.fn(),
 }));
 
+vi.mock('next/router', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    query: {},
+  })),
+}));
+
+vi.mock('next/link', () => ({
+  default: ({ children, href }: any) => (
+    <a href={href} data-testid="mock-link">
+      {children}
+    </a>
+  ),
+}));
+
 vi.mock('react', () => ({
   ...vi.importActual('react'),
   useEffect: vi.fn(),
 }));
 
 describe('Orders Page', () => {
+  // Mock OrderAddress
+  const mockAddress: OrderAddress = {
+    contactName: 'John Doe',
+    phone: '123-456-7890',
+    addressLine1: '123 Main St',
+    addressLine2: 'Apt 4B',
+    zipCode: '10001',
+    districtName: 'Manhattan',
+    districtId: 1,
+    city: 'New York',
+    stateOrProvinceName: 'New York',
+    stateOrProvinceId: 1,
+    countryName: 'United States',
+    countryId: 1,
+  };
+
+  // Mock OrderItem
+  const mockOrderItems: OrderItem[] = [
+    {
+      id: 1,
+      productId: 100,
+      productName: 'Laptop',
+      quantity: 1,
+      productPrice: 999.99,
+    },
+  ];
+
+  // SỬA: Order theo đúng type
   const mockOrders: Order[] = [
     {
       id: 1,
-      orderId: 'ORD-001',
-      customerId: 'customer-1',
-      orderDate: new Date('2024-01-01'),
-      orderStatus: 'PENDING',
-      orderTotal: 100,
-      currency: 'USD',
+      email: 'john@example.com',
+      note: 'Please leave at front door',
+      tax: 10.00,
+      discount: 5.00,
+      numberItem: 2,
+      totalPrice: 299.99,
+      deliveryFee: 15.00,
+      couponCode: 'SAVE10',
+      deliveryMethod: 'Standard Shipping',
+      deliveryStatus: 'Shipped',
+      paymentMethod: 'Credit Card',
+      paymentStatus: 'Paid',
+      createdOn: new Date('2024-01-15T10:30:00Z'),
+      orderStatus: 'Processing',
+      orderItemVms: mockOrderItems,
+      shippingAddressVm: mockAddress,
+      billingAddressVm: mockAddress,
+      checkoutId: 'checkout_123',
     },
     {
       id: 2,
-      orderId: 'ORD-002',
-      customerId: 'customer-2',
-      orderDate: new Date('2024-01-02'),
-      orderStatus: 'COMPLETED',
-      orderTotal: 200,
-      currency: 'USD',
+      email: 'jane@example.com',
+      note: '',
+      tax: 8.00,
+      discount: 0,
+      numberItem: 1,
+      totalPrice: 199.99,
+      deliveryFee: 10.00,
+      couponCode: '',
+      deliveryMethod: 'Express Shipping',
+      deliveryStatus: 'Delivered',
+      paymentMethod: 'PayPal',
+      paymentStatus: 'Paid',
+      createdOn: new Date('2024-01-16T10:30:00Z'),
+      orderStatus: 'Completed',
+      orderItemVms: mockOrderItems,
+      shippingAddressVm: mockAddress,
+      billingAddressVm: mockAddress,
+      checkoutId: 'checkout_456',
     },
   ];
 
@@ -79,6 +148,19 @@ describe('Orders Page', () => {
       });
     });
 
+    it('should display order data in table', async () => {
+      render(<Orders />);
+      
+      await waitFor(() => {
+        expect(screen.getByText('john@example.com')).toBeDefined();
+        expect(screen.getByText('jane@example.com')).toBeDefined();
+        expect(screen.getByText('299.99')).toBeDefined();
+        expect(screen.getByText('199.99')).toBeDefined();
+        expect(screen.getByText('Processing')).toBeDefined();
+        expect(screen.getByText('Completed')).toBeDefined();
+      });
+    });
+
     it('should handle empty order list', async () => {
       (getOrders as any).mockResolvedValue({
         orderList: [],
@@ -88,8 +170,9 @@ describe('Orders Page', () => {
         pageSize: 10,
       });
       render(<Orders />);
+      
       await waitFor(() => {
-        expect(screen.queryByText('Loading...')).toBeNull();
+        expect(screen.getByText('No orders available')).toBeDefined();
       });
     });
 
@@ -97,10 +180,30 @@ describe('Orders Page', () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       (getOrders as any).mockRejectedValue(new Error('Network error'));
       render(<Orders />);
+      
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalled();
       });
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('Table Headers', () => {
+    it('should render all table headers', async () => {
+      render(<Orders />);
+      
+      await waitFor(() => {
+        expect(screen.getByText('Order ID')).toBeDefined();
+        expect(screen.getByText('Email')).toBeDefined();
+        expect(screen.getByText('Number of Items')).toBeDefined();
+        expect(screen.getByText('Total Price')).toBeDefined();
+        expect(screen.getByText('Delivery Method')).toBeDefined();
+        expect(screen.getByText('Payment Method')).toBeDefined();
+        expect(screen.getByText('Payment Status')).toBeDefined();
+        expect(screen.getByText('Order Status')).toBeDefined();
+        expect(screen.getByText('Created On')).toBeDefined();
+        expect(screen.getByText('Actions')).toBeDefined();
+      });
     });
   });
 
@@ -109,6 +212,17 @@ describe('Orders Page', () => {
       render(<Orders />);
       await waitFor(() => {
         expect(getOrders).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('View Details Link', () => {
+    it('should have view details link for each order', async () => {
+      render(<Orders />);
+      
+      await waitFor(() => {
+        const links = screen.getAllByTestId('mock-link');
+        expect(links.length).toBeGreaterThan(0);
       });
     });
   });

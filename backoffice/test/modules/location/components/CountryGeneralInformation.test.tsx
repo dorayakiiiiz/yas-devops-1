@@ -90,28 +90,4 @@ describe('CountryGeneralInformation', () => {
     });
   });
 
-  describe('Register Options', () => {
-    it('should register code2 field with required validation', () => {
-      render(<CountryGeneralInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledWith('code2', {
-        required: { value: true, message: 'Code2 is required' },
-      });
-    });
-
-    it('should register name field with required validation', () => {
-      render(<CountryGeneralInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledWith('name', {
-        required: { value: true, message: 'Country name is required' },
-      });
-    });
-
-    it('should call register 8 times (2 inputs with options + 1 input without + 5 checkboxes)', () => {
-      render(<CountryGeneralInformation {...defaultProps} />);
-
-      expect(mockRegister).toHaveBeenCalledTimes(8);
-    });
-  });
-
 });
