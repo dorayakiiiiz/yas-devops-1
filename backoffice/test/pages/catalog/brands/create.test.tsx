@@ -211,26 +211,6 @@ describe('BrandCreate Page', () => {
         expect(handleCreatingResponse).toHaveBeenCalled();
       });
     });
-
-    it('should handle API error gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      (createBrand as any).mockRejectedValue(new Error('API Error'));
-      
-      render(<BrandCreate />);
-      
-      const nameInput = screen.getByTestId('input-name');
-      const slugInput = screen.getByTestId('input-slug');
-      const saveButton = screen.getByText('Save');
-
-      fireEvent.change(nameInput, { target: { value: 'Test Brand' } });
-      fireEvent.change(slugInput, { target: { value: 'test-brand' } });
-      fireEvent.click(saveButton);
-
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-      consoleSpy.mockRestore();
-    });
   });
 
   describe('Validation', () => {

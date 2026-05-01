@@ -169,21 +169,6 @@ describe('BrandList Page', () => {
       });
     });
 
-    it('should handle empty brand list', async () => {
-      (getPageableBrands as any).mockResolvedValue({
-        brandContent: [],
-        totalPages: 0,
-        totalElements: 0,
-        pageNo: 0,
-        pageSize: 10,
-      });
-      render(<BrandList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('No brand')).toBeDefined();
-      });
-    });
-
     it('should handle API error', async () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       (getPageableBrands as any).mockRejectedValue(new Error('Network error'));

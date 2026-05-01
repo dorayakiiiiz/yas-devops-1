@@ -17,6 +17,7 @@ export default defineConfig({
       '@inventoryServices': path.resolve(__dirname, './modules/inventory/services'),
       'common': path.resolve(__dirname, './common'),
       '@webhookComponents': path.resolve(__dirname, './modules/webhook/components'),
+      '@catalogComponents': path.resolve(__dirname, './modules/catalog/components'),
     }
   },
   test: {
@@ -38,7 +39,7 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'text-summary', 'json', 'json-summary', 'html', 'lcov'], // Thêm 'text-summary'
+      reporter: ['text', 'text-summary', 'json', 'json-summary', 'html', 'lcov'], 
       reportsDirectory: './coverage',
       include: [
         'common/**/*.{js,jsx,ts,tsx}',
