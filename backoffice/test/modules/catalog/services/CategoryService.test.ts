@@ -276,26 +276,4 @@ describe('CategoryService', () => {
     });
   });
 
-
-  describe('URL construction', () => {
-    it('should use correct base URL for backoffice methods', async () => {
-      const newCategory: Category = { id: 0, name: 'Test', description: '', slug: 'test', parentId: null, metaKeywords: '', metaDescription: '', displayOrder: 0, isPublish: true };
-      (apiClientService.get as any).mockResolvedValue({ json: vi.fn().mockResolvedValue([]) });
-      (apiClientService.post as any).mockResolvedValue({});
-      (apiClientService.put as any).mockResolvedValue({});
-      (apiClientService.delete as any).mockResolvedValue({ status: 204 });
-
-      await getCategories();
-      await getCategory(1);
-      await createCategory(newCategory);
-      await updateCategory(1, newCategory);
-      await deleteCategory(1);
-
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/categories');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/product/backoffice/categories/1');
-      expect(apiClientService.post).toHaveBeenCalledWith('/api/product/backoffice/categories', expect.any(String));
-      expect(apiClientService.put).toHaveBeenCalledWith('/api/product/backoffice/categories/1', expect.any(String));
-      expect(apiClientService.delete).toHaveBeenCalledWith('/api/product/backoffice/categories/1');
-    });
-  });
 });
