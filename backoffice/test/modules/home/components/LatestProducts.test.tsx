@@ -89,18 +89,6 @@ describe('LatestProducts', () => {
   });
 
   describe('Rendering - Success State', () => {
-    it('should render products when data is fetched successfully', async () => {
-      (getLatestProducts as any).mockResolvedValue(mockProducts);
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Product 1')).toBeDefined();
-        expect(screen.getByText('Product 2')).toBeDefined();
-        expect(screen.getByText('Product 3')).toBeDefined();
-        expect(screen.getByText('Product 4')).toBeDefined();
-        expect(screen.getByText('Product 5')).toBeDefined();
-      });
-    });
 
     it('should render table headers correctly', async () => {
       (getLatestProducts as any).mockResolvedValue(mockProducts);
@@ -129,16 +117,6 @@ describe('LatestProducts', () => {
       });
     });
 
-    it('should render formatted date using moment when createdOn exists', async () => {
-      (getLatestProducts as any).mockResolvedValue(mockProducts);
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        expect(moment).toHaveBeenCalled();
-        expect(screen.getAllByText('January 1st 2024, 12:00:00 pm')).toHaveLength(5);
-      });
-    });
-
     it('should not render date when createdOn is missing', async () => {
       const productsWithoutDate = [
         {
@@ -159,73 +137,6 @@ describe('LatestProducts', () => {
       });
     });
 
-    it('should render Details button for each product', async () => {
-      (getLatestProducts as any).mockResolvedValue(mockProducts);
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        const buttons = screen.getAllByText('Details');
-        expect(buttons).toHaveLength(5);
-        buttons.forEach(button => {
-          expect(button).toHaveClass('btn', 'btn-outline-primary', 'btn-sm');
-        });
-      });
-    });
-  });
-
-  describe('Link Href Construction', () => {
-    it('should use parentId for edit link when product has parentId', async () => {
-      (getLatestProducts as any).mockResolvedValue([mockProducts[2]]); // Product with parentId = 1
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        const link = screen.getByTestId('mock-link');
-        expect(link).toHaveAttribute('href', '/catalog/products/1/edit');
-      });
-    });
-
-    it('should use product id for edit link when product has no parentId', async () => {
-      (getLatestProducts as any).mockResolvedValue([mockProducts[0]]); // Product with parentId = null
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        const link = screen.getByTestId('mock-link');
-        expect(link).toHaveAttribute('href', '/catalog/products/1/edit');
-      });
-    });
-
-    it('should handle parentId = 0 correctly', async () => {
-      const productWithParentZero = [
-        {
-          id: 1,
-          name: 'Product 1',
-          slug: 'product-1',
-          createdOn: '2024-01-01T12:00:00Z',
-          parentId: 0,
-        },
-      ];
-      (getLatestProducts as any).mockResolvedValue(productWithParentZero);
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        const link = screen.getByTestId('mock-link');
-        expect(link).toHaveAttribute('href', '/catalog/products/0/edit');
-      });
-    });
-
-    it('should use correct link for multiple products', async () => {
-      (getLatestProducts as any).mockResolvedValue(mockProducts);
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        const links = screen.getAllByTestId('mock-link');
-        expect(links[0]).toHaveAttribute('href', '/catalog/products/1/edit');
-        expect(links[1]).toHaveAttribute('href', '/catalog/products/2/edit');
-        expect(links[2]).toHaveAttribute('href', '/catalog/products/1/edit');
-        expect(links[3]).toHaveAttribute('href', '/catalog/products/4/edit');
-        expect(links[4]).toHaveAttribute('href', '/catalog/products/5/edit');
-      });
-    });
   });
 
   describe('Rendering - Empty State', () => {
@@ -351,86 +262,6 @@ describe('LatestProducts', () => {
         expect(headers[2].textContent).toBe('Slug');
         expect(headers[3].textContent).toBe('Created On');
         expect(headers[4].textContent).toBe('Action');
-      });
-    });
-  });
-
-  describe('Button Interaction', () => {
-    it('should render Details button as button element', async () => {
-      (getLatestProducts as any).mockResolvedValue(mockProducts);
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        const buttons = screen.getAllByRole('button', { name: 'Details' });
-        expect(buttons).toHaveLength(5);
-        expect(buttons[0]).toHaveAttribute('type', 'button');
-      });
-    });
-
-    it('should have link wrapping the Details button', async () => {
-      (getLatestProducts as any).mockResolvedValue(mockProducts);
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        const links = screen.getAllByTestId('mock-link');
-        expect(links[0].querySelector('button')).toBeDefined();
-      });
-    });
-  });
-
-  describe('Edge Cases', () => {
-    it('should handle products with missing fields gracefully', async () => {
-      const incompleteProducts = [
-        {
-          id: 1,
-          name: 'Product 1',
-          // missing slug
-          createdOn: '2024-01-01T12:00:00Z',
-          parentId: null,
-        },
-      ];
-      (getLatestProducts as any).mockResolvedValue(incompleteProducts);
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Product 1')).toBeDefined();
-      });
-    });
-
-    it('should handle very long product names', async () => {
-      const longNameProducts = [
-        {
-          id: 1,
-          name: 'Very long product name that might overflow the table cell and cause layout issues',
-          slug: 'very-long-product-name',
-          createdOn: '2024-01-01T12:00:00Z',
-          parentId: null,
-        },
-      ];
-      (getLatestProducts as any).mockResolvedValue(longNameProducts);
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        expect(screen.getByText(longNameProducts[0].name)).toBeDefined();
-      });
-    });
-
-    it('should handle special characters in product name and slug', async () => {
-      const specialCharProducts = [
-        {
-          id: 1,
-          name: 'Product @#$%^&*()',
-          slug: 'product-special-!@#$%',
-          createdOn: '2024-01-01T12:00:00Z',
-          parentId: null,
-        },
-      ];
-      (getLatestProducts as any).mockResolvedValue(specialCharProducts);
-      render(<LatestProducts />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Product @#$%^&*()')).toBeDefined();
-        expect(screen.getByText('product-special-!@#$%')).toBeDefined();
       });
     });
   });

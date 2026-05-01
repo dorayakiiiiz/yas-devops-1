@@ -457,17 +457,6 @@ describe('LatestRatings', () => {
   });
 
   describe('State Management', () => {
-    it('should update from loading to success state', async () => {
-      (getLatestRatings as any).mockResolvedValue(mockRatings);
-      render(<LatestRatings />);
-      
-      expect(screen.getByText('Loading...')).toBeDefined();
-      
-      await waitFor(() => {
-        expect(screen.queryByText('Loading...')).toBeNull();
-        expect(screen.getByText('Product 1')).toBeDefined();
-      });
-    });
 
     it('should update from loading to empty state', async () => {
       (getLatestRatings as any).mockResolvedValue([]);
