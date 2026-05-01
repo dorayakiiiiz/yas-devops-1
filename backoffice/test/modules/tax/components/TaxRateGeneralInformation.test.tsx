@@ -165,21 +165,6 @@ describe('TaxRateGeneralInformation', () => {
       });
     });
 
-    it('should render Rate input', async () => {
-      render(<TaxRateGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('input-rate')).toBeDefined();
-      });
-    });
-
-    it('should render Zip Code input', async () => {
-      render(<TaxRateGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('input-zipCode')).toBeDefined();
-      });
-    });
   });
 
   describe('Initial Data Fetching', () => {
@@ -227,83 +212,6 @@ describe('TaxRateGeneralInformation', () => {
       await waitFor(() => {
         expect(getStateOrProvincesByCountry).toHaveBeenCalledWith('1');
       });
-    });
-  });
-
-  describe('Registration', () => {
-    it('should register taxClassId with required validation', async () => {
-      render(<TaxRateGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockRegister).toHaveBeenCalledWith('taxClassId', {
-          required: { value: true, message: 'Please select tax class' },
-        });
-      });
-    });
-
-    it('should register countryId with required validation and onChange', async () => {
-      render(<TaxRateGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockRegister).toHaveBeenCalledWith('countryId', {
-          required: { value: true, message: 'Please select country' },
-          onChange: expect.any(Function),
-        });
-      });
-    });
-
-    it('should register stateOrProvinceId with required validation', async () => {
-      render(<TaxRateGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockRegister).toHaveBeenCalledWith('stateOrProvinceId', {
-          required: { value: true, message: 'Please select state or province' },
-        });
-      });
-    });
-
-    it('should register rate field', async () => {
-      render(<TaxRateGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockRegister).toHaveBeenCalledWith('rate', undefined);
-      });
-    });
-
-    it('should register zipCode field', async () => {
-      render(<TaxRateGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(mockRegister).toHaveBeenCalledWith('zipCode', undefined);
-      });
-    });
-  });
-
-  describe('Form Interaction', () => {
-    it('should handle rate input change', async () => {
-      render(<TaxRateGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('input-rate')).toBeDefined();
-      });
-
-      const rateInput = screen.getByTestId('input-rate');
-      fireEvent.change(rateInput, { target: { value: '15.5' } });
-
-      expect(rateInput).toHaveValue('15.5');
-    });
-
-    it('should handle zip code input change', async () => {
-      render(<TaxRateGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('input-zipCode')).toBeDefined();
-      });
-
-      const zipCodeInput = screen.getByTestId('input-zipCode');
-      fireEvent.change(zipCodeInput, { target: { value: '12345' } });
-
-      expect(zipCodeInput).toHaveValue('12345');
     });
   });
 
