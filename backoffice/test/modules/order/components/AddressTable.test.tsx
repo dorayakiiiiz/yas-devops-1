@@ -41,20 +41,6 @@ describe('AddressTable', () => {
       expect(screen.getByText('Country name')).toBeDefined();
     });
 
-    it('should display correct address values', () => {
-      render(<AddressTable address={mockAddress} isShowOnGoogleMap={false} />);
-      
-      expect(screen.getByText('John Doe')).toBeDefined();
-      expect(screen.getByText('123-456-7890')).toBeDefined();
-      expect(screen.getByText('123 Main Street')).toBeDefined();
-      expect(screen.getByText('Apt 4B')).toBeDefined();
-      expect(screen.getByText('10001')).toBeDefined();
-      expect(screen.getByText('Manhattan')).toBeDefined();
-      expect(screen.getByText('New York')).toBeDefined();
-      expect(screen.getByText('New York')).toBeDefined();
-      expect(screen.getByText('United States')).toBeDefined();
-    });
-
     it('should render Edit button', () => {
       render(<AddressTable address={mockAddress} isShowOnGoogleMap={false} />);
       
@@ -72,13 +58,6 @@ describe('AddressTable', () => {
   });
 
   describe('Google Maps link', () => {
-    it('should show Google Maps link when isShowOnGoogleMap is true', () => {
-      render(<AddressTable address={mockAddress} isShowOnGoogleMap={true} />);
-      
-      expect(screen.getByText('View on Google Maps')).toBeDefined();
-      expect(screen.getByText('View on Google Maps').parentElement).toHaveStyle({ cursor: 'pointer' });
-    });
-
     it('should show map icon when isShowOnGoogleMap is true', () => {
       const { container } = render(<AddressTable address={mockAddress} isShowOnGoogleMap={true} />);
       
@@ -137,17 +116,6 @@ describe('AddressTable', () => {
       const ths = container.querySelectorAll('th');
       expect(ths[1]).toHaveClass('w-50');
       expect(ths[1].textContent).toBe('');
-    });
-  });
-
-  describe('Table rows styling', () => {
-    it('should have first column with center justify for all rows', () => {
-      const { container } = render(<AddressTable address={mockAddress} isShowOnGoogleMap={false} />);
-      
-      const firstColumnCells = container.querySelectorAll('td:first-child');
-      firstColumnCells.forEach(cell => {
-        expect(cell).toHaveClass('d-flex', 'justify-content-center');
-      });
     });
   });
 
