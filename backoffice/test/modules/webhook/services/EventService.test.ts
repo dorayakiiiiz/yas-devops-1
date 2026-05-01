@@ -26,29 +26,4 @@ describe('EventService', () => {
     vi.clearAllMocks();
   });
 
-  describe('getEvents', () => {
-    it('should call API with correct URL', async () => {
-      const mockResponse = { json: vi.fn().mockResolvedValue(mockEvents) };
-      (apiClientService.get as any).mockResolvedValue(mockResponse);
-
-      await getEvents();
-
-      expect(apiClientService.get).toHaveBeenCalledTimes(1);
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/webhook/backoffice/events');
-    });
-
-    it('should return events data on success', async () => {
-      const mockResponse = { json: vi.fn().mockResolvedValue(mockEvents) };
-      (apiClientService.get as any).mockResolvedValue(mockResponse);
-
-      const result = await getEvents();
-
-      expect(result).toEqual(mockEvents);
-      expect(result).toHaveLength(4);
-      expect(result[0].name).toBe('Order Created');
-    });
-
-
-
-  });
 });

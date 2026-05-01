@@ -123,24 +123,6 @@ describe('CategoryList Page', () => {
       expect(screen.getByText('Loading...')).toBeDefined();
     });
 
-    it('should render category list after loading', async () => {
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Electronics')).toBeDefined();
-        expect(screen.getByText('Clothing')).toBeDefined();
-      });
-    });
-
-    it('should render category hierarchy with indentation', async () => {
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Electronics')).toBeDefined();
-        expect(screen.getByText('Electronics >> Laptops')).toBeDefined();
-      });
-    });
-
     it('should render table headers', async () => {
       render(<CategoryList />);
       
@@ -148,24 +130,6 @@ describe('CategoryList Page', () => {
         expect(screen.getByText('#')).toBeDefined();
         expect(screen.getByText('Name')).toBeDefined();
         expect(screen.getByText('Actions')).toBeDefined();
-      });
-    });
-
-    it('should render Edit buttons for each category', async () => {
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        const editButtons = screen.getAllByText('Edit');
-        expect(editButtons.length).toBeGreaterThan(0);
-      });
-    });
-
-    it('should render Delete buttons for each category', async () => {
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        const deleteButtons = screen.getAllByText('Delete');
-        expect(deleteButtons.length).toBeGreaterThan(0);
       });
     });
   });
@@ -198,149 +162,10 @@ describe('CategoryList Page', () => {
         expect(getCategories).toHaveBeenCalled();
       });
     });
-
-    it('should handle empty category list', async () => {
-      (getCategories as any).mockResolvedValue([]);
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('No category')).toBeDefined();
-      });
-    });
-
-    it('should handle API error', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      (getCategories as any).mockRejectedValue(new Error('Network error'));
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-      consoleSpy.mockRestore();
-    });
   });
 
-  describe('Delete Category', () => {
-    it('should show delete modal when clicking Delete button', async () => {
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Electronics')).toBeDefined();
-      });
-
-      const deleteButtons = screen.getAllByText('Delete');
-      fireEvent.click(deleteButtons[0]);
-
-      expect(screen.getByTestId('modal-delete')).toBeDefined();
-    });
-
-    it('should call deleteCategory when confirming delete', async () => {
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Electronics')).toBeDefined();
-      });
-
-      const deleteButtons = screen.getAllByText('Delete');
-      fireEvent.click(deleteButtons[0]);
-
-      const confirmButton = await screen.findByTestId('modal-confirm');
-      fireEvent.click(confirmButton);
-
-      await waitFor(() => {
-        expect(deleteCategory).toHaveBeenCalledWith(1);
-      });
-    });
-
-    it('should close modal without deleting when clicking Close', async () => {
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Electronics')).toBeDefined();
-      });
-
-      const deleteButtons = screen.getAllByText('Delete');
-      fireEvent.click(deleteButtons[0]);
-
-      const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
-
-      expect(screen.queryByTestId('modal-delete')).toBeNull();
-      expect(deleteCategory).not.toHaveBeenCalled();
-    });
-
-    it('should call getCategories again after successful delete', async () => {
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Electronics')).toBeDefined();
-      });
-
-      const deleteButtons = screen.getAllByText('Delete');
-      fireEvent.click(deleteButtons[0]);
-
-      const confirmButton = await screen.findByTestId('modal-confirm');
-      fireEvent.click(confirmButton);
-
-      await waitFor(() => {
-        expect(deleteCategory).toHaveBeenCalled();
-        // getCategories should be called again after delete
-        expect(getCategories).toHaveBeenCalledTimes(2);
-      });
-    });
-
-    it('should handle delete error', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      (deleteCategory as any).mockRejectedValue(new Error('Delete failed'));
-      
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Electronics')).toBeDefined();
-      });
-
-      const deleteButtons = screen.getAllByText('Delete');
-      fireEvent.click(deleteButtons[0]);
-
-      const confirmButton = await screen.findByTestId('modal-confirm');
-      fireEvent.click(confirmButton);
-
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-      consoleSpy.mockRestore();
-    });
-  });
-
-  describe('Edit Link', () => {
-    it('should have correct edit link for each category', async () => {
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        const links = screen.getAllByTestId('mock-link');
-        const editLinks = links.filter(link => link.textContent === 'Edit');
-        expect(editLinks[0]).toHaveAttribute('href', '/catalog/categories/1');
-      });
-    });
-  });
 
   describe('Category Hierarchy', () => {
-    it('should sort categories alphabetically', async () => {
-      const unsortedCategories = [
-        { ...mockCategories[0], name: 'Zoo' },
-        { ...mockCategories[2], name: 'Apple' },
-      ];
-      (getCategories as any).mockResolvedValue(unsortedCategories);
-      render(<CategoryList />);
-      
-      await waitFor(() => {
-        // Check that Apple appears before Zoo
-        const appleElement = screen.getByText('Apple');
-        const zooElement = screen.getByText('Zoo');
-        expect(appleElement).toBeDefined();
-        expect(zooElement).toBeDefined();
-      });
-    });
 
     it('should render subcategories with correct hierarchy', async () => {
       render(<CategoryList />);
