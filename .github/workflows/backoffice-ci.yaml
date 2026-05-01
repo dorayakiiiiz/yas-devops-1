@@ -65,7 +65,7 @@ jobs:
           fi
         working-directory: ./
 
-      # Hiển thị trung bình lên GitHub Summary
+      
       - name: Display Average Coverage
         if: always()
         run: |
