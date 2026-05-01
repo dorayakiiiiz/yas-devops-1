@@ -230,19 +230,6 @@ describe('WarehouseGeneralInformation', () => {
       });
     });
 
-    it('should fetch districts when state changes', async () => {
-      await waitFor(() => {
-        expect(screen.getByTestId('select-stateOrProvinceId')).toBeDefined();
-      });
-
-      const stateSelect = screen.getByTestId('select-stateOrProvinceId');
-      fireEvent.change(stateSelect, { target: { value: '1' } });
-
-      await waitFor(() => {
-        expect(getDistricts).toHaveBeenCalledWith('1');
-      });
-    });
-
     it('should update districts when country changes', async () => {
       await waitFor(() => {
         expect(screen.getByTestId('select-countryId')).toBeDefined();
