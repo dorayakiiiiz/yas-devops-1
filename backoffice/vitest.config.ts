@@ -44,7 +44,6 @@ export default defineConfig({
       include: [
         'common/**/*.{js,jsx,ts,tsx}',
         'modules/**/*.{js,jsx,ts,tsx}',
-        'pages/**/*.{js,jsx,ts,tsx}',
         'utils/**/*.{js,jsx,ts,tsx}'
       ],
       exclude: [
