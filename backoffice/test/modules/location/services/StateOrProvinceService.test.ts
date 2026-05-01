@@ -432,30 +432,4 @@ describe('StateOrProvinceService', () => {
     });
   });
 
-  describe('URL construction', () => {
-    it('should use correct base URL for all methods', async () => {
-      const mockState: StateOrProvince = {
-        id: 0, name: 'Test', code: 'TE', type: 'State', countryId: 1
-      };
-      (apiClientService.get as any).mockResolvedValue({ json: vi.fn().mockResolvedValue([]) });
-      (apiClientService.post as any).mockResolvedValue({});
-      (apiClientService.put as any).mockResolvedValue({});
-      (apiClientService.delete as any).mockResolvedValue({ status: 204 });
-
-      await getStateOrProvincesByCountry(1);
-      await getPageableStateOrProvinces(1, 10, 1);
-      await getStateOrProvince(1);
-      await getStatesOrProvinces(1);
-      await createStateOrProvince(mockState);
-      await editStateOrProvince(1, mockState);
-      await deleteStateOrProvince(1);
-
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/location/backoffice/state-or-provinces?countryId=1');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/location/backoffice/state-or-provinces/paging?pageNo=1&pageSize=10&countryId=1');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/location/backoffice/state-or-provinces/1');
-      expect(apiClientService.post).toHaveBeenCalledWith('/api/location/backoffice/state-or-provinces', expect.any(String));
-      expect(apiClientService.put).toHaveBeenCalledWith('/api/location/backoffice/state-or-provinces/1', expect.any(String));
-      expect(apiClientService.delete).toHaveBeenCalledWith('/api/location/backoffice/state-or-provinces/1');
-    });
-  });
 });

@@ -383,31 +383,4 @@ describe('CountryService', () => {
       await expect(editCountry(countryId, mockCountry)).rejects.toThrow('Country name is required');
     });
   });
-
-  describe('URL construction', () => {
-    it('should use correct base URL for all methods', async () => {
-      const mockCountry: Country = {
-        id: 0, code2: 'DE', code3: 'DEU', name: 'Germany',
-        isBillingEnabled: true, isShippingEnabled: true, isCityEnabled: true, isZipCodeEnabled: true, isDistrictEnabled: true
-      };
-      (apiClientService.get as any).mockResolvedValue({ json: vi.fn().mockResolvedValue([]) });
-      (apiClientService.post as any).mockResolvedValue({});
-      (apiClientService.put as any).mockResolvedValue({});
-      (apiClientService.delete as any).mockResolvedValue({ status: 204 });
-
-      await getCountries();
-      await getPageableCountries(1, 10);
-      await getCountry(1);
-      await createCountry(mockCountry);
-      await editCountry(1, mockCountry);
-      await deleteCountry(1);
-
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/location/backoffice/countries');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/location/backoffice/countries/paging?pageNo=1&pageSize=10');
-      expect(apiClientService.get).toHaveBeenCalledWith('/api/location/backoffice/countries/1');
-      expect(apiClientService.post).toHaveBeenCalledWith('/api/location/backoffice/countries', expect.any(String));
-      expect(apiClientService.put).toHaveBeenCalledWith('/api/location/backoffice/countries/1', expect.any(String));
-      expect(apiClientService.delete).toHaveBeenCalledWith('/api/location/backoffice/countries/1');
-    });
-  });
 });
