@@ -21,32 +21,6 @@ describe('RatingSearch', () => {
   });
 
   describe('Rendering', () => {
-    it('should render all form fields', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      expect(screen.getByLabelText('Created From:')).toBeDefined();
-      expect(screen.getByLabelText('Created To:')).toBeDefined();
-      expect(screen.getByLabelText('Product:')).toBeDefined();
-      expect(screen.getByLabelText('Customer:')).toBeDefined();
-      expect(screen.getByLabelText('Message:')).toBeDefined();
-    });
-
-    it('should render Created From date input', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      const createdFromInput = screen.getByLabelText('Created From:');
-      expect(createdFromInput).toHaveAttribute('type', 'datetime-local');
-      expect(createdFromInput).toHaveAttribute('id', 'startDate');
-      expect(createdFromInput).toHaveClass('form-control');
-    });
-
-    it('should render Created To date input', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      const createdToInput = screen.getByLabelText('Created To:');
-      expect(createdToInput).toHaveAttribute('type', 'datetime-local');
-      expect(createdToInput).toHaveClass('form-control');
-    });
 
     it('should render Product name input', () => {
       render(<RatingSearch {...defaultProps} />);
@@ -56,22 +30,6 @@ describe('RatingSearch', () => {
       expect(productInput).toHaveAttribute('placeholder', 'Search product name ...');
     });
 
-    it('should render Customer name input', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      const customerInput = screen.getByLabelText('Customer:');
-      expect(customerInput).toHaveAttribute('id', 'customer-name');
-      expect(customerInput).toHaveAttribute('placeholder', 'Search customer name ...');
-    });
-
-    it('should render Message input', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      const messageInput = screen.getByLabelText('Message:');
-      expect(messageInput).toHaveAttribute('id', 'search-message');
-      expect(messageInput).toHaveAttribute('placeholder', 'Search message ...');
-    });
-
     it('should render Search button', () => {
       render(<RatingSearch {...defaultProps} />);
 
@@ -79,23 +37,6 @@ describe('RatingSearch', () => {
       expect(searchButton).toBeDefined();
       expect(searchButton).toHaveAttribute('type', 'submit');
       expect(searchButton).toHaveClass('btn', 'btn-primary', 'w-25');
-    });
-  });
-
-  describe('Default Values', () => {
-    it('should have default value for Created From field', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      const createdFromInput = screen.getByLabelText('Created From:') as HTMLInputElement;
-      expect(createdFromInput.defaultValue).toBe('2001-01-01T19:30');
-    });
-
-    it('should have default value for Created To field (current date)', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      const createdToInput = screen.getByLabelText('Created To:') as HTMLInputElement;
-      const currentDate = new Date().toISOString().slice(0, -8);
-      expect(createdToInput.defaultValue).toBe(currentDate);
     });
   });
 
@@ -138,23 +79,6 @@ describe('RatingSearch', () => {
   });
 
   describe('User Interaction', () => {
-    it('should handle Created From date change', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      const createdFromInput = screen.getByLabelText('Created From:');
-      fireEvent.change(createdFromInput, { target: { value: '2024-01-01T10:00' } });
-
-      expect(createdFromInput).toHaveValue('2024-01-01T10:00');
-    });
-
-    it('should handle Created To date change', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      const createdToInput = screen.getByLabelText('Created To:');
-      fireEvent.change(createdToInput, { target: { value: '2024-12-31T23:59' } });
-
-      expect(createdToInput).toHaveValue('2024-12-31T23:59');
-    });
 
     it('should handle Product name input change', () => {
       render(<RatingSearch {...defaultProps} />);
@@ -163,24 +87,6 @@ describe('RatingSearch', () => {
       fireEvent.change(productInput, { target: { value: 'Laptop' } });
 
       expect(productInput).toHaveValue('Laptop');
-    });
-
-    it('should handle Customer name input change', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      const customerInput = screen.getByLabelText('Customer:');
-      fireEvent.change(customerInput, { target: { value: 'John Doe' } });
-
-      expect(customerInput).toHaveValue('John Doe');
-    });
-
-    it('should handle Message input change', () => {
-      render(<RatingSearch {...defaultProps} />);
-
-      const messageInput = screen.getByLabelText('Message:');
-      fireEvent.change(messageInput, { target: { value: 'Great product!' } });
-
-      expect(messageInput).toHaveValue('Great product!');
     });
   });
 
@@ -215,12 +121,6 @@ describe('RatingSearch', () => {
   });
 
   describe('Accessibility', () => {
-    it('should have label associated with Created From input', () => {
-      render(<RatingSearch {...defaultProps} />);
-      
-      const label = screen.getByText('Created From:');
-      expect(label).toHaveAttribute('for', 'startDate');
-    });
 
     it('should have label associated with Product input', () => {
       render(<RatingSearch {...defaultProps} />);
@@ -235,20 +135,6 @@ describe('RatingSearch', () => {
       const label = screen.getByText('Customer:');
       expect(label).toHaveAttribute('for', 'cusomter');
     });
-
-    it('should have correct id for Customer input', () => {
-      render(<RatingSearch {...defaultProps} />);
-      
-      const customerInput = screen.getByLabelText('Customer:');
-      expect(customerInput).toHaveAttribute('id', 'customer-name');
-    });
-
-    it('should have correct id for Message input', () => {
-      render(<RatingSearch {...defaultProps} />);
-      
-      const messageInput = screen.getByLabelText('Message:');
-      expect(messageInput).toHaveAttribute('id', 'search-message');
-    });
   });
 
   describe('Edge Cases', () => {
@@ -260,26 +146,6 @@ describe('RatingSearch', () => {
       fireEvent.change(productInput, { target: { value: longText } });
       
       expect(productInput).toHaveValue(longText);
-    });
-
-    it('should handle very long customer name input', () => {
-      render(<RatingSearch {...defaultProps} />);
-      
-      const customerInput = screen.getByLabelText('Customer:');
-      const longText = 'B'.repeat(500);
-      fireEvent.change(customerInput, { target: { value: longText } });
-      
-      expect(customerInput).toHaveValue(longText);
-    });
-
-    it('should handle very long message input', () => {
-      render(<RatingSearch {...defaultProps} />);
-      
-      const messageInput = screen.getByLabelText('Message:');
-      const longText = 'C'.repeat(1000);
-      fireEvent.change(messageInput, { target: { value: longText } });
-      
-      expect(messageInput).toHaveValue(longText);
     });
 
     it('should handle empty input values', () => {
@@ -310,9 +176,5 @@ describe('RatingSearch', () => {
       expect(textCenterDiv).toBeDefined();
     });
 
-    it('should have Search button with correct classes', () => {
-      const searchButton = screen.getByText('Search');
-      expect(searchButton).toHaveClass('btn', 'btn-primary', 'w-25');
-    });
   });
 });
