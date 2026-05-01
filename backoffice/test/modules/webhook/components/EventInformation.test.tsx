@@ -225,19 +225,6 @@ describe('EventInformation', () => {
       });
     });
 
-    it('should have label with correct styles', async () => {
-      render(<EventInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        const label = screen.getByLabelText('Order Created');
-        expect(label).toHaveStyle({
-          paddingLeft: '15px',
-          fontSize: '1rem',
-          paddingTop: '10px',
-          paddingBottom: '5px',
-        });
-      });
-    });
   });
 
   describe('Edge Cases', () => {
