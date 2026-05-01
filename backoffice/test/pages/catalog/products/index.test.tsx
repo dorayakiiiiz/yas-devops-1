@@ -9,6 +9,30 @@ import { Brand } from '../../../../modules/catalog/models/Brand';
 import { Category } from '../../../../modules/catalog/models/Category';
 import { Media } from '../../../../modules/catalog/models/Media';
 
+
+vi.mock('next/router', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    query: {},
+    pathname: '',
+    asPath: '',
+    events: {
+      on: vi.fn(),
+      off: vi.fn(),
+      emit: vi.fn(),
+    },
+  })),
+}));
+
+// Mock next/link
+vi.mock('next/link', () => ({
+  default: ({ children, href }: any) => (
+    <a href={href} data-testid="mock-link">
+      {children}
+    </a>
+  ),
+}));
+
 // Mock dependencies
 vi.mock('../../../../modules/catalog/services/ProductService', () => ({
   getProducts: vi.fn(),

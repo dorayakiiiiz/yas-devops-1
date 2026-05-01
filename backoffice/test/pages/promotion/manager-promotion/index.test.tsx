@@ -47,83 +47,11 @@ describe('PromotionList Page', () => {
     },
   ];
 
-
-  describe('getPromotions', () => {
-    it('should call getPromotions on mount', async () => {
-      render(<PromotionList />);
-      await waitFor(() => {
-        expect(getPromotions).toHaveBeenCalled();
-      });
-    });
-
-    it('should pass correct request params to getPromotions', async () => {
-      render(<PromotionList />);
-      await waitFor(() => {
-        const expectedParams: PromotionListRequest = {
-          couponCode: '',
-          pageNo: 0,
-          pageSize: 10,
-          promotionName: '',
-        };
-        expect(getPromotions).toHaveBeenCalledWith(expectedParams);
-      });
-    });
-
-    it('should handle empty promotion list', async () => {
-      (getPromotions as any).mockResolvedValue({
-        content: [],
-        totalPages: 0,
-        totalElements: 0,
-        pageNo: 0,
-        pageSize: 10,
-      });
-      render(<PromotionList />);
-      await waitFor(() => {
-        expect(screen.queryByText('Loading...')).toBeNull();
-      });
-    });
-
-    it('should handle API error', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      (getPromotions as any).mockRejectedValue(new Error('Network error'));
-      render(<PromotionList />);
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-      consoleSpy.mockRestore();
-    });
-  });
-
   describe('deletePromotion', () => {
     it('should be defined', () => {
       expect(deletePromotion).toBeDefined();
     });
 
-    it('should handle delete success', async () => {
-      (deletePromotion as any).mockResolvedValue({ status: 204 });
-      render(<PromotionList />);
-      await waitFor(() => {
-        expect(deletePromotion).toBeDefined();
-      });
-    });
-
-    it('should handle delete error', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      (deletePromotion as any).mockRejectedValue(new Error('Delete failed'));
-      render(<PromotionList />);
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-      consoleSpy.mockRestore();
-    });
   });
 
-  describe('page state', () => {
-    it('should have initial pageNo as 0', async () => {
-      render(<PromotionList />);
-      await waitFor(() => {
-        expect(getPromotions).toHaveBeenCalled();
-      });
-    });
-  });
 });

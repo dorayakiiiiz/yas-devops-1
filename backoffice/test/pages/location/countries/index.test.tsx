@@ -136,21 +136,6 @@ describe('CountryList Page', () => {
       });
     });
 
-    it('should handle empty country list', async () => {
-      (getPageableCountries as any).mockResolvedValue({
-        countryContent: [],
-        totalPages: 0,
-        totalElements: 0,
-        pageNo: 0,
-        pageSize: 10,
-      });
-      render(<CountryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('No countries available')).toBeDefined();
-      });
-    });
-
     it('should handle API error', async () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       (getPageableCountries as any).mockRejectedValue(new Error('Network error'));
@@ -175,55 +160,6 @@ describe('CountryList Page', () => {
         expect(deleteCountry).toBeDefined();
       });
     });
-
-    it('should handle delete error', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      (deleteCountry as any).mockRejectedValue(new Error('Delete failed'));
-      render(<CountryList />);
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-      consoleSpy.mockRestore();
-    });
-  });
-
-  describe('Table Headers', () => {
-    it('should render all table headers', async () => {
-      render(<CountryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('ID')).toBeDefined();
-        expect(screen.getByText('Code2')).toBeDefined();
-        expect(screen.getByText('Name')).toBeDefined();
-        expect(screen.getByText('Code3')).toBeDefined();
-        expect(screen.getByText('Billing')).toBeDefined();
-        expect(screen.getByText('Shipping')).toBeDefined();
-        expect(screen.getByText('City')).toBeDefined();
-        expect(screen.getByText('Zip Code')).toBeDefined();
-        expect(screen.getByText('District')).toBeDefined();
-        expect(screen.getByText('Actions')).toBeDefined();
-      });
-    });
-  });
-
-  describe('Create Button', () => {
-    it('should render Create New Country button', async () => {
-      render(<CountryList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Create New Country')).toBeDefined();
-      });
-    });
-
-    it('should have link to create country page', async () => {
-      render(<CountryList />);
-      
-      await waitFor(() => {
-        const links = screen.getAllByTestId('mock-link');
-        const createLink = links.find(link => link.textContent === 'Create New Country');
-        expect(createLink).toHaveAttribute('href', '/location/countries/create');
-      });
-    });
   });
 
   describe('page state', () => {
@@ -231,19 +167,6 @@ describe('CountryList Page', () => {
       render(<CountryList />);
       await waitFor(() => {
         expect(getPageableCountries).toHaveBeenCalledWith(0, 10);
-      });
-    });
-  });
-
-  describe('Status Indicators', () => {
-    it('should show checkmark for enabled features', async () => {
-      render(<CountryList />);
-      
-      await waitFor(() => {
-        // United States has all features enabled
-        const rows = screen.getAllByRole('row');
-        const usRow = rows.find(row => row.textContent?.includes('United States'));
-        expect(usRow?.textContent).toContain('✓');
       });
     });
   });

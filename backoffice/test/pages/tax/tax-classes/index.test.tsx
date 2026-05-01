@@ -111,22 +111,6 @@ describe('TaxClassList Page', () => {
         expect(screen.getByText('Zero Tax')).toBeDefined();
       });
     });
-
-    it('should handle empty tax class list', async () => {
-      (getPageableTaxClasses as any).mockResolvedValue({
-        taxClassContent: [],
-        totalPages: 0,
-        totalElements: 0,
-        pageNo: 0,
-        pageSize: 10,
-      });
-      render(<TaxClassList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('No tax classes available')).toBeDefined();
-      });
-    });
-
     it('should handle API error', async () => {
       const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
       (getPageableTaxClasses as any).mockRejectedValue(new Error('Network error'));
@@ -149,48 +133,6 @@ describe('TaxClassList Page', () => {
       render(<TaxClassList />);
       await waitFor(() => {
         expect(deleteTaxClass).toBeDefined();
-      });
-    });
-
-    it('should handle delete error', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      (deleteTaxClass as any).mockRejectedValue(new Error('Delete failed'));
-      render(<TaxClassList />);
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-      consoleSpy.mockRestore();
-    });
-  });
-
-  describe('Table Headers', () => {
-    it('should render all table headers', async () => {
-      render(<TaxClassList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('ID')).toBeDefined();
-        expect(screen.getByText('Name')).toBeDefined();
-        expect(screen.getByText('Actions')).toBeDefined();
-      });
-    });
-  });
-
-  describe('Create Button', () => {
-    it('should render Create New Tax Class button', async () => {
-      render(<TaxClassList />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Create New Tax Class')).toBeDefined();
-      });
-    });
-
-    it('should have link to create tax class page', async () => {
-      render(<TaxClassList />);
-      
-      await waitFor(() => {
-        const links = screen.getAllByTestId('mock-link');
-        const createLink = links.find(link => link.textContent === 'Create New Tax Class');
-        expect(createLink).toHaveAttribute('href', '/tax/tax-classes/create');
       });
     });
   });

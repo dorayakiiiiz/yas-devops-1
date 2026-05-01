@@ -56,6 +56,9 @@ export default defineConfig({
         '**/styles/**'
       ]
     },
-    globals: true
+    globals: true,
+    deps: {
+      inline: ['next/router', 'next/link'], 
+    }
   }
 })
