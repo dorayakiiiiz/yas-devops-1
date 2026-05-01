@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import WebhookCreate from '../../../../pages/webhook/create';
-import { createWebhook } from '../../../../modules/webhook/services/WebhookService';
-import { Webhook } from '../../../../modules/webhook/models/Webhook';
+import WebhookCreate from '../../../pages/webhook/create';
+import { createWebhook } from '../../../modules/webhook/services/WebhookService';
+import { Webhook } from '../../../modules/webhook/models/Webhook';
 
 // Mock dependencies
 vi.mock('../../../../modules/webhook/services/WebhookService', () => ({

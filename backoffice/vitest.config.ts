@@ -13,6 +13,9 @@ export default defineConfig({
       '@taxServices': path.resolve(__dirname, './modules/tax/services'),
       '@webhookServices': path.resolve(__dirname, './modules/webhook/services'), 
       '@webhookModels': path.resolve(__dirname, './modules/webhook/models'),
+      '@constants': path.resolve(__dirname, './constants'),
+      '@inventoryServices': path.resolve(__dirname, './modules/inventory/services'),
+      'common': path.resolve(__dirname, './common'),
     }
   },
   test: {
