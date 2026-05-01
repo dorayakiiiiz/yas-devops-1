@@ -8,7 +8,7 @@ export default defineConfig({
     alias: {
       '@catalogServices': path.resolve(__dirname, './modules/catalog/services'),
       '@commonItems': path.resolve(__dirname, './common/items'),
-      '@@commonServices': path.resolve(__dirname, './common/services')
+      '@commonServices': path.resolve(__dirname, './common/services'),
     }
   },
   test: {
