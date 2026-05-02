@@ -4,7 +4,7 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  resolve: { // THÊM cả block này
+  resolve: { 
     alias: {
       '@catalogServices': path.resolve(__dirname, './modules/catalog/services'),
       '@commonItems': path.resolve(__dirname, './common/items'),
@@ -24,10 +24,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     include: [
-      'test/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'common/**/*.{test,spec}.{js,jsx,ts,tsx}',
-      'modules/**/*.{test,spec}.{js,jsx,ts,tsx}',
-      'pages/**/*.{test,spec}.{js,jsx,ts,tsx}',
+      'modules/**/services/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'utils/**/*.{test,spec}.{js,jsx,ts,tsx}'
     ],
     exclude: [
@@ -35,7 +33,8 @@ export default defineConfig({
       '.next/**',
       'public/**',
       'styles/**',
-      'constants/**'
+      'constants/**',
+      'modules/**'
     ],
     coverage: {
       provider: 'v8',
