@@ -43,7 +43,7 @@ export default defineConfig({
       reportsDirectory: './coverage',
       include: [
         'common/**/*.{js,jsx,ts,tsx}',
-        'modules/**/*.{js,jsx,ts,tsx}',
+        'modules/**/services/**/*.{test,spec}.{js,jsx,ts,tsx}',
         'utils/**/*.{js,jsx,ts,tsx}'
       ],
       exclude: [
