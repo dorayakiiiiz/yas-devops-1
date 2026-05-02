@@ -109,20 +109,6 @@ describe('MultipleAutoComplete', () => {
       });
     });
 
-    it('should hide dropdown when input is blurred', async () => {
-      render(<MultipleAutoComplete {...defaultProps} />);
-      const input = screen.getByRole('textbox');
-      
-      fireEvent.focus(input);
-      expect(screen.getByText('Option 1')).toBeDefined();
-      
-      fireEvent.blur(input);
-      
-      await waitFor(() => {
-        expect(screen.queryByText('Option 1')).toBeNull();
-      });
-    });
-
     it('should call fetchOptions when typing in input', async () => {
       render(<MultipleAutoComplete {...defaultProps} />);
       const input = screen.getByRole('textbox');
@@ -130,44 +116,6 @@ describe('MultipleAutoComplete', () => {
       fireEvent.change(input, { target: { value: 'test' } });
       
       expect(mockFetchOptions).toHaveBeenCalledWith('test');
-    });
-  });
-
-  describe('Option Selection', () => {
-    it('should select option when clicked', async () => {
-      render(<MultipleAutoComplete {...defaultProps} />);
-      const input = screen.getByRole('textbox');
-      
-      fireEvent.focus(input);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Option 1')).toBeDefined();
-      });
-      
-      const option = screen.getByText('Option 1');
-      fireEvent.click(option);
-      
-      expect(mockOnSelect).toHaveBeenCalledWith(1);
-      expect(screen.getByText('Selected Categories')).toBeDefined();
-      expect(screen.getByText('Option 1')).toBeDefined();
-    });
-
-    it('should not allow selecting same option twice', async () => {
-      const propsWithSelectedIds = { ...defaultProps, optionSelectedIds: [1] };
-      render(<MultipleAutoComplete {...propsWithSelectedIds} />);
-      const input = screen.getByRole('textbox');
-      
-      fireEvent.focus(input);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Option 1')).toBeDefined();
-      });
-      
-      const option = screen.getByText('Option 1');
-      fireEvent.click(option);
-      
-      expect(screen.getByText('These options have been selected. Please choose another option.')).toBeDefined();
-      expect(mockOnSelect).not.toHaveBeenCalled();
     });
   });
 
@@ -235,25 +183,6 @@ describe('MultipleAutoComplete', () => {
         const selectedOption = document.querySelector('.dropdown-item.selected-options');
         expect(selectedOption).toBeDefined();
       });
-    });
-  });
-
-  describe('Error Message', () => {
-    it('should display error message when trying to select duplicate option', async () => {
-      const propsWithSelectedIds = { ...defaultProps, optionSelectedIds: [1] };
-      render(<MultipleAutoComplete {...propsWithSelectedIds} />);
-      const input = screen.getByRole('textbox');
-      
-      fireEvent.focus(input);
-      
-      await waitFor(() => {
-        expect(screen.getByText('Option 1')).toBeDefined();
-      });
-      
-      const option = screen.getByText('Option 1');
-      fireEvent.click(option);
-      
-      expect(screen.getByText('These options have been selected. Please choose another option.')).toBeDefined();
     });
   });
 

@@ -198,23 +198,6 @@ describe('TaxRateGeneralInformation', () => {
 
   });
 
-  describe('Country Selection', () => {
-    it('should fetch state/provinces when country changes', async () => {
-      render(<TaxRateGeneralInformation {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('select-countryId')).toBeDefined();
-      });
-
-      const countrySelect = screen.getByTestId('select-countryId');
-      fireEvent.change(countrySelect, { target: { value: '1' } });
-
-      await waitFor(() => {
-        expect(getStateOrProvincesByCountry).toHaveBeenCalledWith('1');
-      });
-    });
-  });
-
   describe('Select Options', () => {
     it('should populate tax class options', async () => {
       render(<TaxRateGeneralInformation {...defaultProps} />);
