@@ -118,8 +118,8 @@ class PromotionServiceTest {
             .build();
 
         var promotionApply3 = PromotionApply.builder()
-            .promotion(promotion2)
-            .productId(1L).build();
+            .promotion(promotion3)
+            .categoryId(1L).build();
         promotion3.setPromotionApplies(List.of(promotionApply3));
 
         promotionRepository.save(promotion3);
@@ -171,6 +171,48 @@ class PromotionServiceTest {
         assertEquals(promotionPostVm.getSlug(), result.slug());
         assertEquals(promotionPostVm.getName(), result.name());
         assertEquals(true, result.isActive());
+    }
+
+    @Test
+    void createPromotion_ApplyToBrand_ThenSuccess() {
+        PromotionPostVm postVm = PromotionPostVm.builder()
+                .name("Promotion Brand")
+                .slug("promotion-brand")
+                .description("Description")
+                .couponCode("brandcode")
+                .discountType(DiscountType.FIXED)
+                .discountAmount(300L)
+                .discountPercentage(30L)
+                .isActive(true)
+                .startDate(Date.from(Instant.now().plus(60, ChronoUnit.DAYS)))
+                .endDate(Date.from(Instant.now().plus(90, ChronoUnit.DAYS)))
+                .applyTo(ApplyTo.BRAND)
+                .brandIds(List.of(1L))
+                .build();
+
+        PromotionDetailVm result = promotionService.createPromotion(postVm);
+        assertEquals("promotion-brand", result.slug());
+    }
+
+    @Test
+    void createPromotion_ApplyToCategory_ThenSuccess() {
+        PromotionPostVm postVm = PromotionPostVm.builder()
+                .name("Promotion Cat")
+                .slug("promotion-cat")
+                .description("Description")
+                .couponCode("catcode")
+                .discountType(DiscountType.FIXED)
+                .discountAmount(300L)
+                .discountPercentage(30L)
+                .isActive(true)
+                .startDate(Date.from(Instant.now().plus(60, ChronoUnit.DAYS)))
+                .endDate(Date.from(Instant.now().plus(90, ChronoUnit.DAYS)))
+                .applyTo(ApplyTo.CATEGORY)
+                .categoryIds(List.of(1L))
+                .build();
+
+        PromotionDetailVm result = promotionService.createPromotion(postVm);
+        assertEquals("promotion-cat", result.slug());
     }
 
     @Test
@@ -246,6 +288,20 @@ class PromotionServiceTest {
     }
 
     @Test
+    void getPromotion_ApplyToProduct_ThenSuccess() {
+        Promotion promotion2 = promotionRepository.findByCouponCodeAndIsActiveTrue("code2").get();
+        PromotionDetailVm result = promotionService.getPromotion(promotion2.getId());
+        assertEquals("promotion-2", result.slug());
+    }
+
+    @Test
+    void getPromotion_ApplyToCategory_ThenSuccess() {
+        Promotion promotion3 = promotionRepository.findByCouponCodeAndIsActiveTrue("code3").get();
+        PromotionDetailVm result = promotionService.getPromotion(promotion3.getId());
+        assertEquals("promotion-3", result.slug());
+    }
+
+    @Test
     void testVerifyPromotion_PromotionNotFound() {
         var promotionVerifyVm = new PromotionVerifyVm("COUPON123", 150L, List.of(1L, 2L, 3L));
 
@@ -292,6 +348,28 @@ class PromotionServiceTest {
         });
 
         assertEquals("Not found product to apply promotion", exception.getMessage());
+    }
+
+    @Test
+    void testVerifyPromotion_NoCommonProductFound() {
+        var promotionVerifyVm = new PromotionVerifyVm("code2", 1000L, List.of(99L));
+        Mockito.when(productService.getProductByIds(ArgumentMatchers.anyList()))
+            .thenReturn(createProductVms());
+        
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            promotionService.verifyPromotion(promotionVerifyVm);
+        });
+
+        assertEquals("Not found product to apply promotion", exception.getMessage());
+    }
+
+    @Test
+    void testVerifyPromotion_OrderPriceIsZero() {
+        var promotionVerifyVm = new PromotionVerifyVm("code2", 0L, List.of(1L));
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            promotionService.verifyPromotion(promotionVerifyVm);
+        });
+        assertEquals("Invalid minimum order purchase amount", exception.getMessage());
     }
 
     @Test
@@ -346,6 +424,25 @@ class PromotionServiceTest {
     }
 
     @Test
+    void verifyPromotion_MultipleProducts_ThenReturnLowestPrice() {
+        PromotionVerifyVm promotionVerifyData = new PromotionVerifyVm(
+            "code2",
+            1000000L,
+            List.of(1L, 2L, 3L)
+        );
+        ProductVm p1 = new ProductVm(1L, "Product 01", "product-01", true, true, false, true, 1000.0, ZonedDateTime.now(), 2L);
+        ProductVm p2 = new ProductVm(2L, "Product 02", "product-02", true, true, false, true, 500.0, ZonedDateTime.now(), 2L);
+        
+        Mockito.when(productService.getProductByIds(ArgumentMatchers.anyList()))
+            .thenReturn(List.of(p1, p2));
+            
+        var result = promotionService.verifyPromotion(promotionVerifyData);
+
+        assertEquals(true, result.isValid());
+        assertEquals(2L, result.productId());
+    }
+
+    @Test
     void verifyPromotion_applyToEmpty_ThenSuccess() {
         // We modify promotion1 to have an invalid ApplyTo value temporarily if possible,
         // or create a new one with ApplyTo null or default if applicable.
@@ -378,6 +475,50 @@ class PromotionServiceTest {
         assertEquals("UPDATEDCODE", result.couponCode());
         assertEquals(DiscountType.FIXED, result.discountType());
         assertEquals(500L, result.discountAmount());
+    }
+
+    @Test
+    void updatePromotion_ApplyToBrand_ThenSuccess() {
+        PromotionPutVm putVm = PromotionPutVm.builder()
+                .id(promotion1.getId())
+                .name("Updated Promotion")
+                .slug("updated-promotion")
+                .description("Updated Description")
+                .couponCode("UPDATEDCODE")
+                .discountType(DiscountType.FIXED)
+                .discountAmount(500L)
+                .discountPercentage(0L)
+                .isActive(true)
+                .startDate(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
+                .endDate(Date.from(Instant.now().plus(10, ChronoUnit.DAYS)))
+                .applyTo(ApplyTo.BRAND)
+                .brandIds(List.of(10L))
+                .build();
+
+        PromotionDetailVm result = promotionService.updatePromotion(putVm);
+        assertEquals("Updated Promotion", result.name());
+    }
+
+    @Test
+    void updatePromotion_ApplyToCategory_ThenSuccess() {
+        PromotionPutVm putVm = PromotionPutVm.builder()
+                .id(promotion1.getId())
+                .name("Updated Promotion")
+                .slug("updated-promotion")
+                .description("Updated Description")
+                .couponCode("UPDATEDCODE")
+                .discountType(DiscountType.FIXED)
+                .discountAmount(500L)
+                .discountPercentage(0L)
+                .isActive(true)
+                .startDate(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
+                .endDate(Date.from(Instant.now().plus(10, ChronoUnit.DAYS)))
+                .applyTo(ApplyTo.CATEGORY)
+                .categoryIds(List.of(10L))
+                .build();
+
+        PromotionDetailVm result = promotionService.updatePromotion(putVm);
+        assertEquals("Updated Promotion", result.name());
     }
 
     @Test
