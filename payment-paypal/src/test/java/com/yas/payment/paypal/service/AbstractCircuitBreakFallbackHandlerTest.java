@@ -37,6 +37,111 @@ class AbstractCircuitBreakFallbackHandlerTest {
         logger.detachAppender(listAppender);
     }
 
+
+    @Test
+    @DisplayName("[handleTypedFallback] Should rethrow RuntimeException, log error and return null (never reached)")
+    void testHandleTypedFallback_WithRuntimeException() {
+        // GIVEN - Tạo RuntimeException
+        RuntimeException testException = new RuntimeException("Typed fallback runtime error");
+
+        // WHEN + THEN - Phải throw exception (không bao giờ reach tới return null)
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            String result = handler.handleTypedFallback(testException);
+            fail("Should not reach this line because exception should be thrown");
+        });
+        
+        assertEquals("Typed fallback runtime error", thrown.getMessage());
+        
+        // Verify log được ghi
+        assertFalse(listAppender.list.isEmpty());
+        ILoggingEvent logEvent = listAppender.list.get(0);
+        assertEquals(Level.ERROR, logEvent.getLevel());
+        assertTrue(logEvent.getFormattedMessage().contains("Circuit breaker records an error"));
+        assertTrue(logEvent.getFormattedMessage().contains("Typed fallback runtime error"));
+    }
+
+
+    @Test
+    @DisplayName("[handleTypedFallback] Should rethrow Error and log error")
+    void testHandleTypedFallback_WithError() {
+        // GIVEN - Tạo Error
+        Error testError = new StackOverflowError("Stack overflow error");
+
+        // WHEN + THEN - Phải throw Error
+        Error thrown = assertThrows(Error.class, () -> {
+            handler.handleTypedFallback(testError);
+        });
+        
+        assertEquals("Stack overflow error", thrown.getMessage());
+        assertFalse(listAppender.list.isEmpty());
+    }
+
+
+    @Test
+    @DisplayName("[handleTypedFallback] Should rethrow IllegalArgumentException")
+    void testHandleTypedFallback_WithIllegalArgumentException() {
+        // GIVEN - Tạo IllegalArgumentException
+        IllegalArgumentException testException = new IllegalArgumentException("Invalid parameter");
+
+        // WHEN + THEN - Phải throw đúng exception type
+        assertThrows(IllegalArgumentException.class, () -> {
+            handler.handleTypedFallback(testException);
+        });
+    }
+
+
+
+    @Test
+    @DisplayName("[handleBodilessFallback] Should rethrow RuntimeException and log error")
+    void testHandleBodilessFallback_WithRuntimeException() {
+        // GIVEN - Tạo một RuntimeException với message cụ thể
+        RuntimeException testException = new RuntimeException("Circuit breaker runtime error");
+
+        // WHEN - Gọi handleBodilessFallback với RuntimeException
+        // THEN - Phải throw ra đúng exception đó
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            handler.handleBodilessFallback(testException);
+        });
+        
+        // Verify exception message được giữ nguyên
+        assertEquals("Circuit breaker runtime error", thrown.getMessage());
+        
+        // Verify log đã được ghi nhận
+        assertFalse(listAppender.list.isEmpty());
+        ILoggingEvent logEvent = listAppender.list.get(0);
+        assertEquals(Level.ERROR, logEvent.getLevel());
+        assertTrue(logEvent.getFormattedMessage().contains("Circuit breaker records an error"));
+        assertTrue(logEvent.getFormattedMessage().contains("Circuit breaker runtime error"));
+    }
+
+
+    @Test
+    @DisplayName("[handleBodilessFallback] Should rethrow Error and log error")
+    void testHandleBodilessFallback_WithError() {
+        // GIVEN - Tạo một Error
+        Error testError = new OutOfMemoryError("Out of memory error");
+
+        // WHEN + THEN - Phải throw ra đúng Error đó
+        Error thrown = assertThrows(Error.class, () -> {
+            handler.handleBodilessFallback(testError);
+        });
+        
+        assertEquals("Out of memory error", thrown.getMessage());
+        assertFalse(listAppender.list.isEmpty());
+    }
+
+    @Test
+    @DisplayName("[handleBodilessFallback] Should rethrow IllegalArgumentException")
+    void testHandleBodilessFallback_WithIllegalArgumentException() {
+        // GIVEN - Tạo IllegalArgumentException
+        IllegalArgumentException testException = new IllegalArgumentException("Invalid argument");
+
+        // WHEN + THEN - Phải throw ra đúng exception type
+        assertThrows(IllegalArgumentException.class, () -> {
+            handler.handleBodilessFallback(testException);
+        });
+    }
+
     @Test
     @DisplayName("Should handle bodiless fallback and rethrow exception")
     void testHandleBodilessFallback_ShouldRethrowException() {
