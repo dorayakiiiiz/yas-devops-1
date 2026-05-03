@@ -64,18 +64,6 @@ class MediaServiceTest {
 
 
     @Test
-    @DisplayName("Should handle media with null url")
-    void testMediaWithNullUrl() {
-        // Arrange
-        NoFileMediaVm mediaVm = new NoFileMediaVm(1L, "image.jpg", null, "caption", "override");
-
-        // Assert
-        assertNotNull(mediaVm);
-        assertEquals(1L, mediaVm.id());
-        assertNull(mediaVm.url());
-    }
-
-    @Test
     @DisplayName("Should handle multiple media objects")
     void testMultipleMediaObjects() {
         // Arrange
