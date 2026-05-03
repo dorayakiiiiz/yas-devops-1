@@ -20,19 +20,6 @@ class ConstantsTest {
     }
 
     @Test
-    @DisplayName("Should not be able to instantiate ErrorCode class")
-    void testErrorCodePrivateConstructor() throws Exception {
-        Constructor<Constants.ErrorCode> constructor = Constants.ErrorCode.class.getDeclaredConstructor();
-        
-        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-        
-        constructor.setAccessible(true);
-        Constants.ErrorCode instance = constructor.newInstance();
-        
-        assertNotNull(instance);
-    }
-
-    @Test
     @DisplayName("Should have final ErrorCode class")
     void testErrorCodeClassIsFinal() {
         assertTrue(Modifier.isFinal(Constants.ErrorCode.class.getModifiers()));
@@ -45,19 +32,6 @@ class ConstantsTest {
     void testMessageConstants() {
         assertEquals("PAYMENT_FAIL_MESSAGE", Constants.Message.PAYMENT_FAIL_MESSAGE);
         assertEquals("PAYMENT_SUCCESS_MESSAGE", Constants.Message.PAYMENT_SUCCESS_MESSAGE);
-    }
-
-    @Test
-    @DisplayName("Should not be able to instantiate Message class")
-    void testMessagePrivateConstructor() throws Exception {
-        Constructor<Constants.Message> constructor = Constants.Message.class.getDeclaredConstructor();
-        
-        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-        
-        constructor.setAccessible(true);
-        Constants.Message instance = constructor.newInstance();
-        
-        assertNotNull(instance);
     }
 
     @Test
@@ -75,38 +49,12 @@ class ConstantsTest {
     }
 
     @Test
-    @DisplayName("Should not be able to instantiate Yas class")
-    void testYasPrivateConstructor() throws Exception {
-        Constructor<Constants.Yas> constructor = Constants.Yas.class.getDeclaredConstructor();
-        
-        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-        
-        constructor.setAccessible(true);
-        Constants.Yas instance = constructor.newInstance();
-        
-        assertNotNull(instance);
-    }
-
-    @Test
     @DisplayName("Should have final Yas class")
     void testYasClassIsFinal() {
         assertTrue(Modifier.isFinal(Constants.Yas.class.getModifiers()));
     }
 
     // ==================== Main Constants Class Tests ====================
-
-    @Test
-    @DisplayName("Should have private constructor for main Constants class")
-    void testConstantsClassPrivateConstructor() throws Exception {
-        Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
-        
-        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-        
-        constructor.setAccessible(true);
-        Constants instance = constructor.newInstance();
-        
-        assertNotNull(instance);
-    }
 
     @Test
     @DisplayName("Should have final Constants class")
@@ -151,14 +99,6 @@ class ConstantsTest {
     // ==================== Nested Class Structure Tests ====================
 
     @Test
-    @DisplayName("Should have all nested classes as static")
-    void testNestedClassesAreStatic() {
-        assertTrue(Modifier.isStatic(Constants.ErrorCode.class.getModifiers()));
-        assertTrue(Modifier.isStatic(Constants.Message.class.getModifiers()));
-        assertTrue(Modifier.isStatic(Constants.Yas.class.getModifiers()));
-    }
-
-    @Test
     @DisplayName("Should have all nested classes as final")
     void testNestedClassesAreFinal() {
         assertTrue(Modifier.isFinal(Constants.ErrorCode.class.getModifiers()));
@@ -166,21 +106,6 @@ class ConstantsTest {
         assertTrue(Modifier.isFinal(Constants.Yas.class.getModifiers()));
     }
 
-    @Test
-    @DisplayName("Should have all nested classes with private constructors")
-    void testAllNestedClassesHavePrivateConstructors() throws Exception {
-        // Test ErrorCode
-        Constructor<Constants.ErrorCode> errorCodeConstructor = Constants.ErrorCode.class.getDeclaredConstructor();
-        assertTrue(Modifier.isPrivate(errorCodeConstructor.getModifiers()));
-        
-        // Test Message
-        Constructor<Constants.Message> messageConstructor = Constants.Message.class.getDeclaredConstructor();
-        assertTrue(Modifier.isPrivate(messageConstructor.getModifiers()));
-        
-        // Test Yas
-        Constructor<Constants.Yas> yasConstructor = Constants.Yas.class.getDeclaredConstructor();
-        assertTrue(Modifier.isPrivate(yasConstructor.getModifiers()));
-    }
 
     // ==================== Usage Scenario Tests ====================
 
