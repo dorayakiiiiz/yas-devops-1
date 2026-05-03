@@ -365,6 +365,59 @@ class PromotionControllerTest {
         assertEquals(expectedResult, response.getBody());
     }
 
+    @Test
+    void testListPromotions_whenValidRequestWithoutDates_thenReturnPromotionListVm() throws Exception {
+        PromotionListVm promotionList = PromotionListVm.builder()
+            .promotionDetailVmList(List.of())
+            .pageNo(0)
+            .pageSize(5)
+            .totalElements(0)
+            .totalPages(0)
+            .build();
+
+        when(promotionService.getPromotions(0, 5, "", "", null, null)).thenReturn(promotionList);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/backoffice/promotions")
+                .param("pageNo", "0")
+                .param("pageSize", "5")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().json(objectWriter.writeValueAsString(promotionList)));
+    }
+
+    @Test
+    void testVerifyPromotion_MockMvc() throws Exception {
+        PromotionVerifyVm promotionVerifyInfo = new PromotionVerifyVm(
+            "coupon-code-1",
+            100000L,
+            List.of(1L)
+        );
+        PromotionVerifyResultDto expectedResult = new PromotionVerifyResultDto(
+            true, 1L, "coupon-code-1", DiscountType.FIXED, 10000L
+        );
+        when(promotionService.verifyPromotion(any())).thenReturn(expectedResult);
+
+        mockMvc.perform(post("/storefront/promotions/verify")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectWriter.writeValueAsString(promotionVerifyInfo)))
+            .andExpect(status().isOk())
+            .andExpect(content().json(objectWriter.writeValueAsString(expectedResult)));
+    }
+
+    @Test
+    void testUpdateUsagePromotion() throws Exception {
+        com.yas.promotion.viewmodel.PromotionUsageVm usageVm = 
+            new com.yas.promotion.viewmodel.PromotionUsageVm("code1", 1L, "user1", 1L);
+            
+        doNothing().when(promotionService).updateUsagePromotion(anyList());
+
+        mockMvc.perform(post("/storefront/promotions/updateUsage")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectWriter.writeValueAsString(List.of(usageVm))))
+            .andExpect(status().isOk());
+    }
+
     private static @NotNull PromotionPutVm getPromotionPutVm() {
         PromotionPutVm promotionPutVm = new PromotionPutVm();
         promotionPutVm.setId(1L);
