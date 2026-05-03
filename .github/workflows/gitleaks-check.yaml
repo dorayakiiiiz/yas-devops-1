@@ -1,3 +1,6 @@
+#File này dùng để thiết lập một GitHub Action 
+#để tự động kiểm tra xem mã nguồn có bị lộ các thông tin nhạy cảm hay không
+
 name: GitLeaks check nightly
 
 on:
