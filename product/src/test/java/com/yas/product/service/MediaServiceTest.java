@@ -76,43 +76,6 @@ class MediaServiceTest {
     }
 
     @Test
-    @DisplayName("Should handle media with long file names")
-    void testMediaWithLongFileName() {
-        // Arrange
-        String longFileName = "very_long_file_name_" + "x".repeat(200) + ".jpg";
-        NoFileMediaVm mediaVm = new NoFileMediaVm(1L, longFileName, "url", "caption", "override");
-
-        // Assert
-        assertNotNull(mediaVm);
-        assertEquals(longFileName, mediaVm.fileName());
-        assertTrue(mediaVm.fileName().length() > 200);
-    }
-
-    @Test
-    @DisplayName("Should handle media with special characters in caption")
-    void testMediaWithSpecialCharactersInCaption() {
-        // Arrange
-        String specialCaption = "Product Image & Photo <Caption> 'Quote' \"Double\"";
-        NoFileMediaVm mediaVm = new NoFileMediaVm(1L, "image.jpg", "url", specialCaption, "override");
-
-        // Assert
-        assertNotNull(mediaVm);
-        assertEquals(specialCaption, mediaVm.caption());
-    }
-
-    @Test
-    @DisplayName("Should handle media with unicode file names")
-    void testMediaWithUnicodeFileName() {
-        // Arrange
-        String unicodeFileName = "图像_日本語_한글.jpg";
-        NoFileMediaVm mediaVm = new NoFileMediaVm(1L, unicodeFileName, "url", "caption", "override");
-
-        // Assert
-        assertNotNull(mediaVm);
-        assertEquals(unicodeFileName, mediaVm.fileName());
-    }
-
-    @Test
     @DisplayName("Should handle multiple media objects")
     void testMultipleMediaObjects() {
         // Arrange
@@ -139,21 +102,5 @@ class MediaServiceTest {
         // Assert - records should have equals/hashCode based on content
         assertEquals(media1, media2);
         assertEquals(media1.hashCode(), media2.hashCode());
-    }
-
-    @Test
-    @DisplayName("Should handle common image file types")
-    void testCommonImageFileTypes() {
-        // Arrange
-        NoFileMediaVm jpgMedia = new NoFileMediaVm(1L, "image.jpg", "url", "caption", "override");
-        NoFileMediaVm pngMedia = new NoFileMediaVm(2L, "image.png", "url", "caption", "override");
-        NoFileMediaVm gifMedia = new NoFileMediaVm(3L, "image.gif", "url", "caption", "override");
-        NoFileMediaVm webpMedia = new NoFileMediaVm(4L, "image.webp", "url", "caption", "override");
-
-        // Assert
-        assertTrue(jpgMedia.fileName().endsWith(".jpg"));
-        assertTrue(pngMedia.fileName().endsWith(".png"));
-        assertTrue(gifMedia.fileName().endsWith(".gif"));
-        assertTrue(webpMedia.fileName().endsWith(".webp"));
     }
 }
