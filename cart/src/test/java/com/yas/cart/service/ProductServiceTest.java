@@ -87,4 +87,97 @@ class ProductServiceTest {
 
         return List.of(product1, product2, product3);
     }
+
+    @Test
+    void getProductById_whenProductExists_returnProduct() {
+        Long id = 1L;
+        URI url = UriComponentsBuilder
+            .fromUriString("http://api.yas.local/media")
+            .path("/storefront/products/list-featured")
+            .queryParam("productId", List.of(id))
+            .build()
+            .toUri();
+
+        ProductThumbnailVm expectedProduct = new ProductThumbnailVm(id, "Product 1", "product-1", "http://example.com/img.jpg");
+
+        when(serviceUrlConfig.product()).thenReturn("http://api.yas.local/media");
+        when(restClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(url)).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductThumbnailVm>>() {}))
+            .thenReturn(ResponseEntity.ok(List.of(expectedProduct)));
+
+        ProductThumbnailVm result = productService.getProductById(id);
+
+        assertThat(result).isNotNull();
+        assertThat(result.id()).isEqualTo(id);
+    }
+
+    @Test
+    void getProductById_whenProductNotFound_returnNull() {
+        Long id = 99L;
+        URI url = UriComponentsBuilder
+            .fromUriString("http://api.yas.local/media")
+            .path("/storefront/products/list-featured")
+            .queryParam("productId", List.of(id))
+            .build()
+            .toUri();
+
+        when(serviceUrlConfig.product()).thenReturn("http://api.yas.local/media");
+        when(restClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(url)).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductThumbnailVm>>() {}))
+            .thenReturn(ResponseEntity.ok(List.of()));
+
+        ProductThumbnailVm result = productService.getProductById(id);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void existsById_whenProductExists_returnTrue() {
+        Long id = 1L;
+        URI url = UriComponentsBuilder
+            .fromUriString("http://api.yas.local/media")
+            .path("/storefront/products/list-featured")
+            .queryParam("productId", List.of(id))
+            .build()
+            .toUri();
+
+        ProductThumbnailVm product = new ProductThumbnailVm(id, "Product 1", "product-1", "http://example.com/img.jpg");
+
+        when(serviceUrlConfig.product()).thenReturn("http://api.yas.local/media");
+        when(restClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(url)).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductThumbnailVm>>() {}))
+            .thenReturn(ResponseEntity.ok(List.of(product)));
+
+        boolean result = productService.existsById(id);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void existsById_whenProductNotFound_returnFalse() {
+        Long id = 99L;
+        URI url = UriComponentsBuilder
+            .fromUriString("http://api.yas.local/media")
+            .path("/storefront/products/list-featured")
+            .queryParam("productId", List.of(id))
+            .build()
+            .toUri();
+
+        when(serviceUrlConfig.product()).thenReturn("http://api.yas.local/media");
+        when(restClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(url)).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.toEntity(new ParameterizedTypeReference<List<ProductThumbnailVm>>() {}))
+            .thenReturn(ResponseEntity.ok(List.of()));
+
+        boolean result = productService.existsById(id);
+
+        assertThat(result).isFalse();
+    }
 }
