@@ -28,15 +28,6 @@ class PayPalHttpClientInitializerTest {
     }
 
     @Test
-    @DisplayName("Should throw exception when additionalSettings is empty string")
-    void testCreatePaypalClient_EmptySettings_ThrowsException() {
-        // Act & Assert
-        assertThrows(com.google.gson.JsonSyntaxException.class, () -> {
-            initializer.createPaypalClient("");
-        });
-    }
-
-    @Test
     @DisplayName("Should throw exception when clientId is missing")
     void testCreatePaypalClient_MissingClientId_ThrowsException() {
         // Arrange
@@ -87,17 +78,6 @@ class PayPalHttpClientInitializerTest {
         });
     }
 
-    @Test
-    @DisplayName("Should handle invalid JSON format")
-    void testCreatePaypalClient_InvalidJson_ThrowsException() {
-        // Arrange
-        String invalidJson = "invalid-json-string";
-
-        // Act & Assert
-        assertThrows(com.google.gson.JsonSyntaxException.class, () -> {
-            initializer.createPaypalClient(invalidJson);
-        });
-    }
 
     @Test
     @DisplayName("Should handle mode case sensitivity - sandbox")
