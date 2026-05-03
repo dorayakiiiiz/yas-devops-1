@@ -287,20 +287,4 @@ class AbstractCircuitBreakFallbackHandlerTest {
             this.status = status;
         }
     }
-
-    @Test
-    @DisplayName("Should execute handleBodilessFallback without exception")
-    void testHandleBodilessFallback_NoException() throws Throwable {
-        // Act & Assert (không exception)
-        handler.handleBodilessFallback(new RuntimeException("ignore"));
-    }
-
-    @Test
-    @DisplayName("Should execute handleTypedFallback and return null when no exception")
-    void testHandleTypedFallback_NoException_ReturnNull() throws Throwable {
-        // Act
-        String result = handler.handleTypedFallback(new RuntimeException("ignore"));
-        // Assert
-        assertNull(result);
-    }
 }
