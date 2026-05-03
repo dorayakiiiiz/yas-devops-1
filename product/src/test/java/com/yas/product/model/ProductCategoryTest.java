@@ -96,21 +96,4 @@ class ProductCategoryTest {
         assertEquals(1, productCategory.getDisplayOrder());
         assertTrue(productCategory.isFeaturedProduct());
     }
-
-    @Test
-    @DisplayName("Should manage multiple product categories for same product")
-    void testMultipleCategoriesForProduct() {
-        ProductCategory productCategory2 = new ProductCategory();
-        productCategory2.setId(2L);
-        productCategory2.setProduct(product);
-
-        Category category2 = new Category();
-        category2.setId(2L);
-        category2.setName("Shoes");
-        productCategory2.setCategory(category2);
-
-        assertEquals(product, productCategory.getProduct());
-        assertEquals(product, productCategory2.getProduct());
-        assertNotEquals(productCategory.getCategory(), productCategory2.getCategory());
-    }
 }

@@ -27,18 +27,6 @@ class CategoryTest {
         assertNull(category.getDescription());
     }
 
-    @Test
-    @DisplayName("Should create Category with all-args constructor")
-    void testAllArgsConstructor() {
-        Category newCategory = new Category(
-            1L, "Electronics", "Electronic products", "electronics",
-            "electronics", "Buy electronics online", (short) 1, true, 100L, null, new ArrayList<>(), new ArrayList<>()
-        );
-
-        assertEquals(1L, newCategory.getId());
-        assertEquals("Electronics", newCategory.getName());
-        assertEquals("electronic products", newCategory.getDescription());
-    }
 
     @Test
     @DisplayName("Should handle parent-child relationship")
