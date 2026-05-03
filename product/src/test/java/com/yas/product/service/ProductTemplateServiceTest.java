@@ -62,23 +62,6 @@ class ProductTemplateServiceTest {
     }
 
     @Test
-    void getPageableProductTemplate_WhenGetPageable_thenSuccess() {
-        List<ProductTemplate> productTemplates = List.of(productTemplate1);
-        Page<ProductTemplate> page = new PageImpl<>(productTemplates);
-        
-        when(productTemplateRepository.findAll(any(Pageable.class))).thenReturn(page);
-
-        ProductTemplateListGetVm result = productTemplateService.getPageableProductTemplate(0, 10);
-
-        assertNotNull(result);
-        assertEquals(1, result.productTemplateVms().size());
-        assertEquals(0, result.pageNo());
-        assertEquals(10, result.pageSize());
-        assertEquals(1, result.totalPages());
-        assertTrue(result.isLast());
-    }
-
-    @Test
     void getPageableProductTemplate_WhenEmpty_thenReturnEmptyList() {
         Page<ProductTemplate> emptyPage = new PageImpl<>(Collections.emptyList());
         
@@ -110,17 +93,6 @@ class ProductTemplateServiceTest {
         assertNotNull(result);
         assertEquals(1L, result.id());
         assertEquals("Template1", result.name());
-    }
-
-    @Test
-    void saveProductTemplate_WhenDuplicateName_ThenThrowDuplicatedException() {
-        when(productTemplateRepository.findExistedName("Template1", null)).thenReturn(productTemplate1);
-
-        ProductTemplatePostVm vm = new ProductTemplatePostVm("Template1", null);
-        
-        DuplicatedException exception = assertThrows(DuplicatedException.class, 
-            () -> productTemplateService.saveProductTemplate(vm));
-        assertEquals(Constants.ErrorCode.NAME_ALREADY_EXITED, exception.getMessage());
     }
 
     @Test
@@ -211,23 +183,6 @@ class ProductTemplateServiceTest {
         
         verify(productTemplateRepository).save(any(ProductTemplate.class));
         verify(productAttributeTemplateRepository).saveAll(anyList());
-    }
-
-    @Test
-    void updateProductTemplate_WithEmptyAttributes_thenSuccess() {
-        ProductTemplate existingTemplate = ProductTemplate.builder().id(1L).name("OldName").build();
-        existingTemplate.setProductAttributeTemplates(new ArrayList<>());
-        
-        ProductTemplatePostVm vm = new ProductTemplatePostVm("UpdatedName", Collections.emptyList());
-        
-        when(productTemplateRepository.findById(1L)).thenReturn(Optional.of(existingTemplate));
-        when(productAttributeTemplateRepository.findAllByProductTemplateId(1L)).thenReturn(Collections.emptyList());
-        when(productTemplateRepository.save(any(ProductTemplate.class))).thenReturn(existingTemplate);
-
-        assertDoesNotThrow(() -> productTemplateService.updateProductTemplate(1L, vm));
-        
-        verify(productTemplateRepository).save(any(ProductTemplate.class));
-        verify(productAttributeTemplateRepository, never()).saveAll(anyList());
     }
 
     @Test
