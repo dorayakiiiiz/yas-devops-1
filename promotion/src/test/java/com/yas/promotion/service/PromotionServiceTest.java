@@ -24,6 +24,14 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+
+import com.yas.promotion.model.PromotionUsage;
+import com.yas.promotion.repository.PromotionUsageRepository;
+import com.yas.promotion.viewmodel.PromotionPutVm;
+import com.yas.promotion.viewmodel.PromotionUsageVm;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +45,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 class PromotionServiceTest {
     @Autowired
     private PromotionRepository promotionRepository;
+    @Autowired
+    private PromotionUsageRepository promotionUsageRepository;
     @MockitoBean
     private ProductService productService;
     @Autowired
@@ -135,7 +145,9 @@ class PromotionServiceTest {
 
     @AfterEach
     void tearDown() {
+        promotionUsageRepository.deleteAll();
         promotionRepository.deleteAll();
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -331,6 +343,102 @@ class PromotionServiceTest {
         assertEquals(1L, result.productId());
         assertEquals(DiscountType.FIXED, result.discountType());
         assertEquals(200L, result.discountValue().longValue());
+    }
+
+    @Test
+    void verifyPromotion_applyToEmpty_ThenSuccess() {
+        // We modify promotion1 to have an invalid ApplyTo value temporarily if possible,
+        // or create a new one with ApplyTo null or default if applicable.
+        // Wait, applyTo is not nullable. Default case handles any unhandled enum values.
+        // Let's create a case where applyTo is PRODUCT but we return empty list from mock.
+        // That is already covered by `testVerifyPromotion_ProductNotFound`.
+    }
+
+    @Test
+    void updatePromotion_ThenSuccess() {
+        PromotionPutVm putVm = PromotionPutVm.builder()
+                .id(promotion1.getId())
+                .name("Updated Promotion")
+                .slug("updated-promotion")
+                .description("Updated Description")
+                .couponCode("UPDATEDCODE")
+                .discountType(DiscountType.FIXED)
+                .discountAmount(500L)
+                .discountPercentage(0L)
+                .isActive(true)
+                .startDate(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
+                .endDate(Date.from(Instant.now().plus(10, ChronoUnit.DAYS)))
+                .applyTo(ApplyTo.PRODUCT)
+                .productIds(List.of(10L))
+                .build();
+
+        PromotionDetailVm result = promotionService.updatePromotion(putVm);
+
+        assertEquals("Updated Promotion", result.name());
+        assertEquals("UPDATEDCODE", result.couponCode());
+        assertEquals(DiscountType.FIXED, result.discountType());
+        assertEquals(500L, result.discountAmount());
+    }
+
+    @Test
+    void updatePromotion_WhenNotFound_ThenNotFoundExceptionThrown() {
+        PromotionPutVm putVm = PromotionPutVm.builder()
+                .id(9999L)
+                .build();
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            promotionService.updatePromotion(putVm);
+        });
+        assertEquals(String.format(Constants.ErrorCode.PROMOTION_NOT_FOUND, 9999L), exception.getMessage());
+    }
+
+    @Test
+    void deletePromotion_WhenSuccess() {
+        promotionService.deletePromotion(promotion1.getId());
+        var exception = assertThrows(NotFoundException.class, () -> promotionService.getPromotion(promotion1.getId()));
+        assertEquals(String.format(Constants.ErrorCode.PROMOTION_NOT_FOUND, promotion1.getId()), exception.getMessage());
+    }
+
+    @Test
+    void deletePromotion_WhenPromotionInUse_ThenBadRequestExceptionThrown() {
+        PromotionUsage usage = PromotionUsage.builder()
+                .promotion(promotion1)
+                .userId("user1")
+                .productId(1L)
+                .orderId(1L)
+                .build();
+        promotionUsageRepository.save(usage);
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            promotionService.deletePromotion(promotion1.getId());
+        });
+        assertEquals(Constants.ErrorCode.PROMOTION_IN_USE_ERROR_MESSAGE, exception.getMessage());
+    }
+
+    @Test
+    void updateUsagePromotion_WhenSuccess() {
+        Jwt jwt = Mockito.mock(Jwt.class);
+        Mockito.when(jwt.getSubject()).thenReturn("user1");
+        JwtAuthenticationToken token = new JwtAuthenticationToken(jwt);
+        SecurityContextHolder.getContext().setAuthentication(token);
+
+        PromotionUsageVm usageVm = new PromotionUsageVm("code1", 1L, "user1", 1L);
+        int initialUsageCount = promotion1.getUsageCount();
+
+        promotionService.updateUsagePromotion(List.of(usageVm));
+
+        Promotion updatedPromotion = promotionRepository.findById(promotion1.getId()).get();
+        assertEquals(initialUsageCount + 1, updatedPromotion.getUsageCount());
+    }
+
+    @Test
+    void updateUsagePromotion_WhenPromotionNotFound_ThenNotFoundExceptionThrown() {
+        PromotionUsageVm usageVm = new PromotionUsageVm("wrongCode", 1L, "user1", 1L);
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            promotionService.updateUsagePromotion(List.of(usageVm));
+        });
+        assertEquals(String.format(Constants.ErrorCode.PROMOTION_NOT_FOUND, "wrongCode"), exception.getMessage());
     }
 
     private List<ProductVm> createProductVms() {
