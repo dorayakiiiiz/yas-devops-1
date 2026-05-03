@@ -5,7 +5,7 @@ name: GitLeaks check nightly
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # Cài đặt tự động quét vào đúng 00:00 mỗi ngày
+    - cron: "0 0 * * *"  # Chạy vào đúng 00:00 mỗi ngày
   workflow_dispatch:      # Cho phép nhấn nút chạy thủ công khi cần
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 #lấy toàn bộ lịch sử commit để kiểm tra
+          fetch-depth: 0 
 
       - name: Gitleaks check
         run: |
