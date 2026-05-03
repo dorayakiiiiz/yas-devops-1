@@ -412,7 +412,7 @@ class PromotionServiceTest {
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
             promotionService.deletePromotion(promotion1.getId());
         });
-        assertEquals(Constants.ErrorCode.PROMOTION_IN_USE_ERROR_MESSAGE, exception.getMessage());
+        assertEquals("Can't delete promotion " + promotion1.getId() + " because it is in use", exception.getMessage());
     }
 
     @Test
