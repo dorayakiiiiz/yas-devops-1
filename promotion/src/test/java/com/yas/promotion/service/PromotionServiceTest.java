@@ -327,6 +327,31 @@ class PromotionServiceTest {
     }
 
     @Test
+    void testVerifyPromotion_ValidUsageQuantity() {
+        Promotion promotion = Promotion.builder()
+            .name("Promo Limited Valid")
+            .slug("promo-limited-valid")
+            .couponCode("codeLimitedValid")
+            .isActive(true)
+            .usageType(UsageType.LIMITED)
+            .usageCount(5)
+            .usageLimit(10)
+            .discountType(DiscountType.PERCENTAGE)
+            .applyTo(ApplyTo.PRODUCT)
+            .minimumOrderPurchaseAmount(0L)
+            .build();
+        PromotionApply apply = PromotionApply.builder().promotion(promotion).productId(1L).build();
+        promotion.setPromotionApplies(List.of(apply));
+        promotionRepository.save(promotion);
+
+        PromotionVerifyVm promotionVerifyData = new PromotionVerifyVm("codeLimitedValid", 1000L, List.of(1L));
+        Mockito.when(productService.getProductByIds(ArgumentMatchers.anyList())).thenReturn(createProductVms());
+        
+        var result = promotionService.verifyPromotion(promotionVerifyData);
+        assertEquals(true, result.isValid());
+    }
+
+    @Test
     void testVerifyPromotion_InvalidOrderPrice() {
         var promotionVerifyVm = new PromotionVerifyVm("code2", 10L, List.of(1L));
         // Expect a BadRequestException due to invalid order price
@@ -580,6 +605,12 @@ class PromotionServiceTest {
             promotionService.updateUsagePromotion(List.of(usageVm));
         });
         assertEquals(String.format(Constants.ErrorCode.PROMOTION_NOT_FOUND, "wrongCode"), exception.getMessage());
+    }
+
+    @Test
+    void updateUsagePromotion_EmptyList_ThenSuccess() {
+        promotionService.updateUsagePromotion(List.of());
+        // No exception thrown
     }
 
     private List<ProductVm> createProductVms() {

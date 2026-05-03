@@ -171,7 +171,7 @@ public class PromotionService {
     }
 
     private void validateIfPromotionEndDateIsBeforeStartDate(Instant startDate, Instant endDate) {
-        if (endDate != null && startDate != null && endDate.isBefore(startDate)) {
+        if (endDate.isBefore(startDate)) {
             throw new BadRequestException(String.format(Constants.ErrorCode.DATE_RANGE_INVALID));
         }
     }
