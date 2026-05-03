@@ -1,12 +1,12 @@
 package com.yas.product.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
+import com.yas.commonlibrary.exception.BadRequestException;
 import com.yas.commonlibrary.exception.DuplicatedException;
+import com.yas.commonlibrary.exception.NotFoundException;
 import com.yas.product.model.attribute.ProductAttribute;
 import com.yas.product.model.attribute.ProductAttributeGroup;
 import com.yas.product.repository.ProductAttributeGroupRepository;
@@ -37,13 +37,13 @@ class ProductAttributeServiceTest {
     @InjectMocks
     private ProductAttributeService productAttributeService;
 
-
-    // Retrieve pageable product attributes successfully
     @Test
     void test_retrieve_pageable_product_attributes_successfully() {
-
         List<ProductAttribute> productAttributes = new ArrayList<>();
-        productAttributes.add(new ProductAttribute(1L, "Attribute1", null, null, null));
+        ProductAttribute attribute = new ProductAttribute();
+        attribute.setId(1L);
+        attribute.setName("Attribute1");
+        productAttributes.add(attribute);
         Page<ProductAttribute> page = new PageImpl<>(productAttributes);
         when(productAttributeRepository.findAll(any(Pageable.class))).thenReturn(page);
 
@@ -53,7 +53,6 @@ class ProductAttributeServiceTest {
         assertEquals("Attribute1", result.productAttributeContent().get(0).name());
     }
 
-    // Save a new product attribute with a valid name and group ID
     @Test
     void test_save_new_product_attribute_with_valid_name_and_group_id() {
         ProductAttributeGroup group = new ProductAttributeGroup();
@@ -65,9 +64,9 @@ class ProductAttributeServiceTest {
         productAttribute.setName("Attribute1");
         productAttribute.setProductAttributeGroup(group);
 
+        when(productAttributeRepository.findExistedName(anyString(), isNull())).thenReturn(null);
         when(productAttributeGroupRepository.findById(1L)).thenReturn(Optional.of(group));
-        when(productAttributeRepository.save(any(ProductAttribute.class)))
-                .thenReturn(productAttribute);
+        when(productAttributeRepository.save(any(ProductAttribute.class))).thenReturn(productAttribute);
 
         ProductAttributePostVm postVm = new ProductAttributePostVm("Attribute1", 1L);
         ProductAttribute result = productAttributeService.save(postVm);
@@ -76,35 +75,14 @@ class ProductAttributeServiceTest {
         assertEquals(group, result.getProductAttributeGroup());
     }
 
-    // Update an existing product attribute with a valid name and group ID
     @Test
-    void test_update_existing_product_attribute_with_valid_name_and_group_id() {
-        ProductAttributeGroup group = new ProductAttributeGroup();
-        group.setId(1L);
-        group.setName("Group1");
+    void test_save_new_product_attribute_without_group() {
+        ProductAttribute productAttribute = new ProductAttribute();
+        productAttribute.setId(1L);
+        productAttribute.setName("New Attribute");
 
-        ProductAttribute existingAttr = new ProductAttribute();
-        existingAttr.setId(1L);
-        existingAttr.setName("Attribute1");
-        existingAttr.setProductAttributeGroup(group);
-
-        when(productAttributeRepository.findById(1L)).thenReturn(Optional.of(existingAttr));
-        when(productAttributeGroupRepository.findById(1L)).thenReturn(Optional.of(group));
-        when(productAttributeRepository.save(any(ProductAttribute.class)))
-                .thenReturn(existingAttr);
-
-        ProductAttributePostVm postVm = new ProductAttributePostVm("Updated Attribute", 1L);
-        ProductAttribute result = productAttributeService.update(postVm, 1L);
-
-        assertEquals("Updated Attribute", result.getName());
-        assertEquals(group, result.getProductAttributeGroup());
-    }
-
-    // Save a product attribute with a null group ID
-    @Test
-    void test_save_product_attribute_with_null_group_id() {
-        when(productAttributeRepository.save(any(ProductAttribute.class)))
-                .thenReturn(new ProductAttribute(1L, "New Attribute", null, null, null));
+        when(productAttributeRepository.findExistedName(anyString(), isNull())).thenReturn(null);
+        when(productAttributeRepository.save(any(ProductAttribute.class))).thenReturn(productAttribute);
 
         ProductAttributePostVm postVm = new ProductAttributePostVm("New Attribute", null);
         ProductAttribute result = productAttributeService.save(postVm);
@@ -113,22 +91,6 @@ class ProductAttributeServiceTest {
         assertNull(result.getProductAttributeGroup());
     }
 
-    // Update a product attribute with a null group ID
-    @Test
-    void test_update_product_attribute_with_null_group_id() {
-        ProductAttribute existingAttr = new ProductAttribute(1L, "Old Attribute", null, null, null);
-        when(productAttributeRepository.findById(1L)).thenReturn(Optional.of(existingAttr));
-        when(productAttributeRepository.save(any(ProductAttribute.class)))
-                .thenReturn(new ProductAttribute(1L, "Updated Attribute", null, null, null));
-
-        ProductAttributePostVm postVm = new ProductAttributePostVm("Updated Attribute", null);
-        ProductAttribute result = productAttributeService.update(postVm, 1L);
-
-        assertEquals("Updated Attribute", result.getName());
-        assertNull(result.getProductAttributeGroup());
-    }
-
-    // Save a product attribute with a duplicated name
     @Test
     void test_save_product_attribute_with_duplicated_name() {
         when(productAttributeRepository.findExistedName("Duplicate Name", null)).thenReturn(new ProductAttribute());
@@ -137,12 +99,85 @@ class ProductAttributeServiceTest {
         assertThrows(DuplicatedException.class, () -> productAttributeService.save(vm));
     }
 
-    // Update a product attribute with a duplicated name
+    @Test
+    void test_save_product_attribute_with_invalid_group_id_throws_bad_request() {
+        when(productAttributeRepository.findExistedName(anyString(), isNull())).thenReturn(null);
+        when(productAttributeGroupRepository.findById(999L)).thenReturn(Optional.empty());
+
+        ProductAttributePostVm vm = new ProductAttributePostVm("New Attribute", 999L);
+        assertThrows(BadRequestException.class, () -> productAttributeService.save(vm));
+    }
+
+    @Test
+    void test_update_existing_product_attribute() {
+        ProductAttributeGroup group = new ProductAttributeGroup();
+        group.setId(1L);
+        group.setName("Group1");
+
+        ProductAttribute existingAttr = new ProductAttribute();
+        existingAttr.setId(1L);
+        existingAttr.setName("Attribute1");
+
+        when(productAttributeRepository.findById(1L)).thenReturn(Optional.of(existingAttr));
+        when(productAttributeRepository.findExistedName("Updated Attribute", 1L)).thenReturn(null);
+        when(productAttributeGroupRepository.findById(1L)).thenReturn(Optional.of(group));
+        when(productAttributeRepository.save(any(ProductAttribute.class))).thenAnswer(invocation -> {
+            ProductAttribute saved = invocation.getArgument(0);
+            saved.setProductAttributeGroup(group);
+            return saved;
+        });
+
+        ProductAttributePostVm postVm = new ProductAttributePostVm("Updated Attribute", 1L);
+        ProductAttribute result = productAttributeService.update(postVm, 1L);
+
+        assertEquals("Updated Attribute", result.getName());
+        assertEquals(group, result.getProductAttributeGroup());
+    }
+
+    @Test
+    void test_update_product_attribute_without_group() {
+        ProductAttribute existingAttr = new ProductAttribute();
+        existingAttr.setId(1L);
+        existingAttr.setName("Old Attribute");
+
+        when(productAttributeRepository.findById(1L)).thenReturn(Optional.of(existingAttr));
+        when(productAttributeRepository.findExistedName("Updated Attribute", 1L)).thenReturn(null);
+        when(productAttributeRepository.save(any(ProductAttribute.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ProductAttributePostVm postVm = new ProductAttributePostVm("Updated Attribute", null);
+        ProductAttribute result = productAttributeService.update(postVm, 1L);
+
+        assertEquals("Updated Attribute", result.getName());
+        assertNull(result.getProductAttributeGroup());
+    }
+
     @Test
     void test_update_product_attribute_with_duplicated_name() {
         when(productAttributeRepository.findExistedName("Duplicate Name", 1L)).thenReturn(new ProductAttribute());
 
         ProductAttributePostVm vm = new ProductAttributePostVm("Duplicate Name", null);
         assertThrows(DuplicatedException.class, () -> productAttributeService.update(vm, 1L));
+    }
+
+    @Test
+    void test_update_nonexistent_product_attribute_throws_not_found() {
+        when(productAttributeRepository.findById(999L)).thenReturn(Optional.empty());
+
+        ProductAttributePostVm vm = new ProductAttributePostVm("New Name", null);
+        assertThrows(NotFoundException.class, () -> productAttributeService.update(vm, 999L));
+    }
+
+    @Test
+    void test_update_product_attribute_with_invalid_group_id_throws_bad_request() {
+        ProductAttribute existingAttr = new ProductAttribute();
+        existingAttr.setId(1L);
+        existingAttr.setName("Old Attribute");
+
+        when(productAttributeRepository.findById(1L)).thenReturn(Optional.of(existingAttr));
+        when(productAttributeRepository.findExistedName("Updated Attribute", 1L)).thenReturn(null);
+        when(productAttributeGroupRepository.findById(999L)).thenReturn(Optional.empty());
+
+        ProductAttributePostVm vm = new ProductAttributePostVm("Updated Attribute", 999L);
+        assertThrows(BadRequestException.class, () -> productAttributeService.update(vm, 1L));
     }
 }
