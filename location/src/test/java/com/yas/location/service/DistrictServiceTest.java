@@ -1,5 +1,6 @@
 package com.yas.location.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.yas.location.LocationApplication;
@@ -46,6 +47,24 @@ public class DistrictServiceTest {
             .build());
     }
 
+    private void generateOrderingData() {
+        country = countryRepository.save(Country.builder()
+            .name("country-1")
+            .build());
+        stateOrProvince = stateOrProvinceRepository.save(StateOrProvince.builder()
+            .name("state-or-province")
+            .country(country)
+            .build());
+        districtRepository.save(District.builder()
+            .name("B District")
+            .stateProvince(stateOrProvince)
+            .build());
+        districtRepository.save(District.builder()
+            .name("A District")
+            .stateProvince(stateOrProvince)
+            .build());
+    }
+
     @AfterEach
     void tearDown() {
         districtRepository.deleteAll();
@@ -58,5 +77,16 @@ public class DistrictServiceTest {
         generateTestData();
         List<DistrictGetVm> districtGetVm = districtService.getList(district1.getId());
         assertNotNull(districtGetVm);
+    }
+
+    @Test
+    void getDistrict_shouldReturnSortedByNameAsc() {
+        generateOrderingData();
+
+        List<DistrictGetVm> districtGetVms = districtService.getList(stateOrProvince.getId());
+        assertNotNull(districtGetVms);
+        assertEquals(2, districtGetVms.size());
+        assertEquals("A District", districtGetVms.getFirst().name());
+        assertEquals("B District", districtGetVms.getLast().name());
     }
 }
