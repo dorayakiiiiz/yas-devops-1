@@ -29,7 +29,7 @@ jobs:
       - uses: ./.github/workflows/actions
       - name: Run Maven Test
         run: mvn -pl customer -am verify  # Chạy test và sinh JaCoCo report
-      - name: Install Dependencies  # Thêm step này để install JARs cho job build
+      - name: Install Dependencies  # Install JARs cho job build
         run: mvn -pl customer -am install -DskipTests
       - name: Test Results
         uses: dorny/test-reporter@v1
@@ -53,6 +53,9 @@ jobs:
         with:
           name: customer-coverage-report
           path: ${{github.workspace}}/customer/target/site/jacoco/
+      - name: Gitleaks check (Service Level)
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/work -w /work zricethezav/gitleaks:v8.18.4 detect --source="./customer" --no-git --verbose
 
   build:
     runs-on: ubuntu-latest
@@ -85,6 +88,9 @@ jobs:
           project: 'yas'
           path: '.'
           format: 'HTML'
+          args: >
+            --disableCentral
+            --failOnCVSS 11
       - name: Upload OWASP Dependency Check results
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         uses: actions/upload-artifact@master
@@ -125,4 +131,4 @@ jobs:
         with:
           context: ./customer
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/yas-customer:latest  # Chỉnh namespace cho repo fork
+          tags: ghcr.io/${{ github.repository_owner }}/yas-customer:latest
