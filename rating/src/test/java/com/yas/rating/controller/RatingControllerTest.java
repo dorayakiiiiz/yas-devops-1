@@ -173,4 +173,87 @@ class RatingControllerTest {
             ).andExpect(status().isOk());
     }
 
+    // ----------------------------------------------------------------
+    // New test cases
+    // ----------------------------------------------------------------
+
+    @Test
+    void testGetLatestRatings_WithMultipleItems_ShouldReturnList() throws Exception {
+        List<RatingVm> ratingVms = List.of(ratingVm);
+        when(ratingService.getLatestRatings(5)).thenReturn(ratingVms);
+
+        this.mockMvc.perform(get("/backoffice/ratings/latest/5")
+                .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(1)));
+    }
+
+    @Test
+    void testCreateRating_WhenBodyMissing_ShouldReturn400() throws Exception {
+        this.mockMvc.perform(post("/storefront/ratings")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetRatingList_WithDefaultParams_ShouldReturnRatingListVm() throws Exception {
+        when(ratingService.getRatingListByProductId(anyLong(), anyInt(), anyInt()))
+                .thenReturn(new RatingListVm(List.of(ratingVm), 1, 1));
+
+        this.mockMvc.perform(get("/storefront/ratings/products/{productId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements", Matchers.is(1)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages", Matchers.is(1)));
+    }
+
+    @Test
+    void testGetAverageStarOfProduct_WhenHasRatings_ShouldReturnCorrectValue() throws Exception {
+        when(ratingService.calculateAverageStar(anyLong())).thenReturn(4.5D);
+
+        this.mockMvc.perform(get("/storefront/ratings/product/{productId}/average-star", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().string("4.5"));
+    }
+
+    @Test
+    void testGetRatingListWithFilter_WithDefaultDates_ShouldReturn200() throws Exception {
+        when(ratingService.getRatingListWithFilter(
+                anyString(), anyString(), anyString(),
+                any(ZonedDateTime.class), any(ZonedDateTime.class),
+                anyInt(), anyInt()))
+            .thenReturn(new RatingListVm(List.of(), 0, 0));
+
+        this.mockMvc.perform(get("/backoffice/ratings")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo", "0")
+                .param("pageSize", "5")
+        )
+            .andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements", Matchers.is(0)));
+    }
+
+    @Test
+    void testDeleteRating_ShouldReturnCorrectResponseBody() throws Exception {
+        when(ratingService.deleteRating(anyLong())).thenReturn(new ResponeStatusVm(
+                "Delete Rating",
+                Constants.Message.SUCCESS_MESSAGE,
+                HttpStatus.OK.toString())
+        );
+
+        this.mockMvc.perform(delete("/backoffice/ratings/{id}", 99L)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.title", Matchers.is("Delete Rating")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("SUCCESS")));
+
+        verify(ratingService, times(1)).deleteRating(99L);
+    }
+
 }

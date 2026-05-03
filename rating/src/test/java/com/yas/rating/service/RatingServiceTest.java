@@ -2,7 +2,9 @@ package com.yas.rating.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -240,5 +242,187 @@ class RatingServiceTest {
         ratingRepository.deleteAll();
         List<RatingVm>  newResponse = ratingService.getLatestRatings(5);
         assertEquals(0, newResponse.size());
+    }
+
+    // ----------------------------------------------------------------
+    // createRating — thêm cases
+    // ----------------------------------------------------------------
+
+    @Test
+    void createRating_CustomerIsNull_ShouldThrowNotFoundException() {
+        Jwt jwt = mock(Jwt.class);
+        JwtAuthenticationToken authentication = mock(JwtAuthenticationToken.class);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(authentication.getToken()).thenReturn(jwt);
+        when(authentication.getName()).thenReturn(userId);
+        when(jwt.getSubject()).thenReturn(userId);
+        when(orderService.checkOrderExistsByProductAndUserWithStatus(anyLong()))
+                .thenReturn(new OrderExistsByProductAndUserGetVm(true));
+        when(customerService.getCustomer()).thenReturn(null);
+
+        RatingPostVm ratingPostVm = RatingPostVm.builder()
+                .content("comment x")
+                .productName("product99")
+                .star(3)
+                .productId(99L)
+                .build();
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> ratingService.createRating(ratingPostVm));
+
+        assertTrue(exception.getMessage().contains(userId));
+    }
+
+    @Test
+    void createRating_ValidData_ShouldPersistCorrectStarAndContent() {
+        Jwt jwt = mock(Jwt.class);
+        JwtAuthenticationToken authentication = mock(JwtAuthenticationToken.class);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(authentication.getToken()).thenReturn(jwt);
+        when(authentication.getName()).thenReturn(userId);
+        when(jwt.getSubject()).thenReturn(userId);
+        when(orderService.checkOrderExistsByProductAndUserWithStatus(anyLong()))
+                .thenReturn(new OrderExistsByProductAndUserGetVm(true));
+        when(customerService.getCustomer())
+                .thenReturn(new CustomerVm(userId, null, "An", "Nguyen"));
+
+        RatingPostVm ratingPostVm = RatingPostVm.builder()
+                .content("great product")
+                .productName("product5")
+                .star(5)
+                .productId(5L)
+                .build();
+
+        RatingVm result = ratingService.createRating(ratingPostVm);
+
+        assertNotNull(result);
+        assertEquals(5, result.star());
+        assertEquals("great product", result.content());
+        assertEquals("product5", result.productName());
+        assertEquals("An", result.firstName());
+        assertEquals("Nguyen", result.lastName());
+    }
+
+    // ----------------------------------------------------------------
+    // getRatingListWithFilter — thêm cases
+    // ----------------------------------------------------------------
+
+    @Test
+    void getRatingListWithFilter_NoMatchingFilter_ShouldReturnEmpty() {
+        ZonedDateTime createdFrom = ZonedDateTime.now().minusDays(30);
+        ZonedDateTime createdTo = ZonedDateTime.now().plusDays(30);
+
+        RatingListVm result = ratingService.getRatingListWithFilter(
+                "nonexistent", "", "", createdFrom, createdTo, 0, 10);
+
+        assertEquals(0, result.totalElements());
+        assertEquals(0, result.ratingList().size());
+    }
+
+    @Test
+    void getRatingListWithFilter_DateRangeExcludesAll_ShouldReturnEmpty() {
+        // createdTo nằm trước khi tất cả ratings được tạo
+        ZonedDateTime createdFrom = ZonedDateTime.now().minusDays(60);
+        ZonedDateTime createdTo = ZonedDateTime.now().minusDays(30);
+
+        RatingListVm result = ratingService.getRatingListWithFilter(
+                "", "", "", createdFrom, createdTo, 0, 10);
+
+        assertEquals(0, result.totalElements());
+    }
+
+    @Test
+    void getRatingListWithFilter_PageSizeOne_ShouldReturnMultiplePages() {
+        ZonedDateTime createdFrom = ZonedDateTime.now().minusDays(30);
+        ZonedDateTime createdTo = ZonedDateTime.now().plusDays(30);
+
+        // pageSize=1, có 2 ratings cho product1 → totalPages = 2
+        RatingListVm result = ratingService.getRatingListWithFilter(
+                "product1", "", "", createdFrom, createdTo, 0, 1);
+
+        assertEquals(1, result.ratingList().size());
+        assertEquals(2, result.totalElements());
+        assertEquals(2, result.totalPages());
+    }
+
+    @Test
+    void getRatingListWithFilter_CaseInsensitiveProductName_ShouldReturnResult() {
+        ZonedDateTime createdFrom = ZonedDateTime.now().minusDays(30);
+        ZonedDateTime createdTo = ZonedDateTime.now().plusDays(30);
+
+        // filter bằng tên viết hoa — service toLowerCase trước khi query
+        RatingListVm result = ratingService.getRatingListWithFilter(
+                "PRODUCT2", "", "", createdFrom, createdTo, 0, 10);
+
+        assertEquals(1, result.totalElements());
+        assertEquals("product2", result.ratingList().getFirst().productName());
+    }
+
+    // ----------------------------------------------------------------
+    // getRatingListByProductId — thêm cases
+    // ----------------------------------------------------------------
+
+    @Test
+    void getRatingListByProductId_PageSizeOne_ShouldReturnCorrectPage() {
+        RatingListVm page0 = ratingService.getRatingListByProductId(1L, 0, 1);
+        RatingListVm page1 = ratingService.getRatingListByProductId(1L, 1, 1);
+
+        assertEquals(1, page0.ratingList().size());
+        assertEquals(1, page1.ratingList().size());
+        assertEquals(2, page0.totalPages());
+        assertEquals(2, page0.totalElements());
+        // Hai trang phải có nội dung khác nhau
+        assertFalse(page0.ratingList().getFirst().content()
+                .equals(page1.ratingList().getFirst().content()));
+    }
+
+    // ----------------------------------------------------------------
+    // calculateAverageStar — thêm cases
+    // ----------------------------------------------------------------
+
+    @Test
+    void calculateAverageStar_SingleRating_ShouldReturnExactStar() {
+        // product2 có 1 rating với star=3 → average = 3.0
+        Double avg = ratingService.calculateAverageStar(2L);
+        assertEquals(3.0, avg);
+    }
+
+    @Test
+    void calculateAverageStar_Product1_ShouldReturnCorrectAverage() {
+        // product1: star 4 + star 2 = 6 / 2 = 3.0
+        Double avg = ratingService.calculateAverageStar(1L);
+        assertEquals(3.0, avg);
+    }
+
+    // ----------------------------------------------------------------
+    // deleteRating — thêm cases
+    // ----------------------------------------------------------------
+
+    @Test
+    void deleteRating_ValidId_ShouldReturnSuccessStatus() {
+        Long id = ratingRepository.findAll().getFirst().getId();
+        var response = ratingService.deleteRating(id);
+
+        assertNotNull(response);
+        assertEquals("Delete Rating", response.title());
+        assertEquals("SUCCESS", response.message());
+    }
+
+    // ----------------------------------------------------------------
+    // getLatestRatings — thêm cases
+    // ----------------------------------------------------------------
+
+    @Test
+    void getLatestRatings_CountGreaterThanTotal_ShouldReturnAllRatings() {
+        // DB có 3 ratings, request count=100 → trả về tất cả 3
+        List<RatingVm> result = ratingService.getLatestRatings(100);
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    void getLatestRatings_CountOne_ShouldReturnLatestOne() {
+        List<RatingVm> result = ratingService.getLatestRatings(1);
+        assertEquals(1, result.size());
+        assertNotNull(result.getFirst().content());
     }
 }
