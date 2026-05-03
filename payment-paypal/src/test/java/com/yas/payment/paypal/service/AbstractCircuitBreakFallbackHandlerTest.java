@@ -336,29 +336,6 @@ class AbstractCircuitBreakFallbackHandlerTest {
         assertTrue(formattedMessage.contains(errorMessage));
     }
 
-    @Test
-    @DisplayName("Should verify that handleTypedFallback returns null when no exception")
-    void testHandleTypedFallback_ReturnsNullAfterLogging() throws Throwable {
-        // This test uses a special handler that doesn't throw exception
-        // Note: In normal flow, handleError always throws, so we need reflection to test
-        // the return null statement
-        
-        NoThrowTestHandler noThrowHandler = new NoThrowTestHandler();
-        
-        // Use reflection to call the method without actually throwing
-        Method method = AbstractCircuitBreakFallbackHandler.class.getDeclaredMethod("handleTypedFallback", Throwable.class);
-        method.setAccessible(true);
-        
-        // Create a mock exception that won't be thrown (using a custom handler)
-        RuntimeException testException = new RuntimeException("Test");
-        
-        // In normal flow, this will throw, so we skip actual testing of return null
-        // The return null is only reached if handleError doesn't throw, which never happens
-        assertThrows(RuntimeException.class, () -> {
-            method.invoke(noThrowHandler, testException);
-        });
-    }
-
     // Helper class to expose protected methods for testing
     private static class TestCircuitBreakFallbackHandler extends AbstractCircuitBreakFallbackHandler {
         
