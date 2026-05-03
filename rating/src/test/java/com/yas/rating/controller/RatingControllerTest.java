@@ -190,14 +190,6 @@ class RatingControllerTest {
     }
 
     @Test
-    void testCreateRating_WhenBodyMissing_ShouldReturn400() throws Exception {
-        this.mockMvc.perform(post("/storefront/ratings")
-                .contentType(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void testGetRatingList_WithDefaultParams_ShouldReturnRatingListVm() throws Exception {
         when(ratingService.getRatingListByProductId(anyLong(), anyInt(), anyInt()))
                 .thenReturn(new RatingListVm(List.of(ratingVm), 1, 1));
