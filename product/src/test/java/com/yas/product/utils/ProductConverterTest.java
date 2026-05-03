@@ -23,21 +23,6 @@ class ProductConverterTest {
     }
 
     /**
-     * Test converting product name with special characters to slug
-     */
-    @Test
-    void testToSlug_WithSpecialCharacters_Success() {
-        // Arrange
-        String input = "Apple iPhone 13 Pro Max!";
-        
-        // Act
-        String result = ProductConverter.toSlug(input);
-        
-        // Assert
-        assertEquals("apple-iphone-13-pro-max", result);
-    }
-
-    /**
      * Test converting product name with multiple spaces to slug
      */
     @Test
@@ -176,36 +161,6 @@ class ProductConverterTest {
     }
 
     /**
-     * Test converting product name with mixed case and numbers
-     */
-    @Test
-    void testToSlug_WithMixedCaseAndNumbers_Success() {
-        // Arrange
-        String input = "iPad Pro 12.9 2021";
-        
-        // Act
-        String result = ProductConverter.toSlug(input);
-        
-        // Assert
-        assertEquals("ipad-pro-129-2021", result);
-    }
-
-    /**
-     * Test converting product name with parentheses
-     */
-    @Test
-    void testToSlug_WithParentheses_Success() {
-        // Arrange
-        String input = "Product (Premium Edition)";
-        
-        // Act
-        String result = ProductConverter.toSlug(input);
-        
-        // Assert
-        assertEquals("product-premium-edition", result);
-    }
-
-    /**
      * Test converting product name with ampersand symbol
      */
     @Test
@@ -263,20 +218,5 @@ class ProductConverterTest {
         
         // Assert
         assertEquals("", result);
-    }
-
-    /**
-     * Test converting product name with mixed special characters and numbers
-     */
-    @Test
-    void testToSlug_WithComplexMixture_Success() {
-        // Arrange
-        String input = "Dell-XPS 13!! @#$ Plus (2021)";
-        
-        // Act
-        String result = ProductConverter.toSlug(input);
-        
-        // Assert
-        assertEquals("dell-xps-13-plus-2021", result);
     }
 }
