@@ -1,7 +1,7 @@
 backend:
   image:
     repository: dorayakiiiiz/yas-customer
-    tag: 48837f3
+    tag: 8cc4a78
 
   nameOverride: customer
   fullnameOverride: customer
