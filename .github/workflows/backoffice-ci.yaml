@@ -197,7 +197,7 @@ jobs:
           cd yas-gitops
           git config --global user.email "bot@github.com"
           git config --global user.name "GitOps Bot"
-          sed -i 's/backoffice: { tag: .* }/backoffice: { tag: "${{ env.COMMIT_ID }}" }/g' values-dev.yaml
+          sed -i 's/backoffice-ui: { tag: .* }/backoffice-ui: { tag: "${{ env.COMMIT_ID }}" }/g' values-dev.yaml
           git add values-dev.yaml
           git commit -m "ArgoCD: Update backoffice dev tag to ${{ env.COMMIT_ID }}"
           git push origin main

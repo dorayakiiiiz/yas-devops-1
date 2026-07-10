@@ -58,7 +58,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/dorayakiiiiz/yas-gitops.git
-    targetRevision: main
+    targetRevision: staging
     path: .
     helm:
       valueFiles:
