@@ -148,3 +148,10 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# hostAliases adds /etc/hosts entries to ALL pods using this chart.
+# Ensures Netty DNS resolver resolves identity.yas.local.com → Keycloak ClusterIP.
+hostAliases:
+  - ip: "10.98.214.121"
+    hostnames:
+      - "identity.yas.local.com"
