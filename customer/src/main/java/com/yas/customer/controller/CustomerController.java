@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,13 +26,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 public class CustomerController {
 
     private final CustomerService customerService;
+    // ⚠️ Thêm JdbcTemplate để test Snyk
+    private final JdbcTemplate jdbcTemplate;
 
-    public CustomerController(CustomerService customerService) {
+    // ⚠️ Cập nhật constructor để inject JdbcTemplate
+    public CustomerController(CustomerService customerService, JdbcTemplate jdbcTemplate) {
         this.customerService = customerService;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @GetMapping("/backoffice/customers")
@@ -135,4 +143,11 @@ public class CustomerController {
         return customerService.createGuestUser();
     }
 
+    // 🚨 ENDPOINT CỐ TÌNH GÂY LỖI SQL INJECTION CHO SNYK QUÉT
+    @GetMapping("/backoffice/customers/search-unsafe")
+    public List<Map<String, Object>> searchCustomerUnsafe(@RequestParam String email) {
+        // Cộng chuỗi trực tiếp từ request params thẳng vào câu lệnh SQL
+        String sql = "SELECT * FROM customer WHERE email = '" + email + "'";
+        return jdbcTemplate.queryForList(sql);
+    }
 }
