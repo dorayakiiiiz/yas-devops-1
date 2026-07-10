@@ -42,7 +42,7 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          SERVICES="product cart order customer inventory tax media search storefront-bff storefront backoffice-bff backoffice swagger-ui sampledata"
+          SERVICES="product cart order customer inventory tax media search storefront-bff storefront-ui backoffice-bff backoffice-ui swagger-ui sampledata"
           
           for svc in $SERVICES; do
             echo "Deploying $svc..."
