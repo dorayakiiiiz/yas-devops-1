@@ -135,26 +135,4 @@ public class CustomerController {
         return customerService.createGuestUser();
     }
 
-    // 🟡 ENDPOINT CỐ TÌNH TẠO CODE SMELL & BUG CHO SONARCLOUD QUÉT
-    @GetMapping("/backoffice/customers/test-sonar")
-    public String testSonarQube(@RequestParam String role) {
-        
-        // ❌ LỖI 1 (Code Smell): Khai báo biến nhưng KHÔNG BAO GIỜ sử dụng
-        // Sonar sẽ báo: "Remove this unused local variable."
-        int unusedDummyVariable = 999;
-
-        // ❌ LỖI 2 (Bug): So sánh chuỗi bằng toán tử '==' thay vì hàm '.equals()'
-        // Sonar sẽ báo Bug chí mạng: "Strings should be compared using equals(), not =="
-        if (role == "admin") {
-            
-            // ❌ LỖI 3 (Code Smell): Dùng System.out.println trong Spring Boot
-            // Sonar sẽ báo: "Replace this use of System.out or System.err by a logger."
-            System.out.println("Người dùng là Admin!");
-            
-            return "Hello Admin";
-        }
-
-        return "Hello Guest";
-    }
-
 }
