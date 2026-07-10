@@ -1,2 +1,1 @@
 Test CI customer
-password: DFHSNFJcddjDBDDFFggf61f
