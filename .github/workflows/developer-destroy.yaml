@@ -26,7 +26,7 @@ jobs:
 
       - name: Uninstall Helm Releases
         run: |
-          SERVICES="product cart order customer inventory tax media search storefront-bff storefront-ui backoffice-bff backoffice-ui swagger-ui sampledata"
+          SERVICES="product cart order customer inventory tax media search storefront-bff storefront backoffice-bff backoffice swagger-ui sampledata"
           
           echo "Bắt đầu gỡ bỏ 14 microservices..."
           for svc in $SERVICES; do
