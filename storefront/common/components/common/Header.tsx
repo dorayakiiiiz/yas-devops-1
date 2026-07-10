@@ -100,7 +100,7 @@ const Header = ({ children }: Props) => {
       <div className="container-header">
         <nav className="top-bar">
           <div className="top-bar-container container">
-            <div className="left-top-bar">Free shipping for standard order over 100.000đ</div>
+            <div className="left-top-bar">Free shipping for standard order over 500.000đ</div>
 
             <div className="right-top-bar d-flex h-full">
               {data_menu_top_no_login.map((item) => (
