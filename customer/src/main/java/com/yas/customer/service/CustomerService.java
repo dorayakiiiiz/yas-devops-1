@@ -123,6 +123,19 @@ public class CustomerService {
         }
     }
 
+    public String buildFullName(String firstName, String lastName) {
+        String normalizedFirstName = firstName == null ? "" : firstName.trim();
+        String normalizedLastName = lastName == null ? "" : lastName.trim();
+
+        if (normalizedFirstName.isEmpty()) {
+            return normalizedLastName;
+        }
+        if (normalizedLastName.isEmpty()) {
+            return normalizedFirstName;
+        }
+        return normalizedFirstName + " " + normalizedLastName;
+    }
+
     public GuestUserVm createGuestUser() {
         // Get realm
         RealmResource realmResource = keycloak.realm(keycloakPropsConfig.getRealm());

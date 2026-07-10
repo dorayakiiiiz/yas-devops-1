@@ -410,4 +410,15 @@ class CustomerServiceTest {
             org.junit.jupiter.api.Assertions.fail("Reflection failed: " + e.getMessage());
         }
     }
+
+    @Test
+    void testBuildFullName_trimAndJoinNames() {
+        assertThat(customerService.buildFullName("  John  ", "  Doe  ")).isEqualTo("John Doe");
+    }
+
+    @Test
+    void testBuildFullName_whenOnePartIsBlank_returnOtherPart() {
+        assertThat(customerService.buildFullName("John", "   ")).isEqualTo("John");
+        assertThat(customerService.buildFullName(null, "Doe")).isEqualTo("Doe");
+    }
 }
