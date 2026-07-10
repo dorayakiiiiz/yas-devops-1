@@ -97,6 +97,12 @@ jobs:
         with:
           name: OWASP Dependency Check Report
           path: ${{github.workspace}}/reports
+      - name: Download coverage artifact from Test Job
+        if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: customer-coverage-report
+          path: ${{github.workspace}}/customer/target/site/jacoco/
       - name: Analyze with sonar cloud
         if: ${{ env.FROM_ORIGINAL_REPOSITORY == 'true' }}
         env:
