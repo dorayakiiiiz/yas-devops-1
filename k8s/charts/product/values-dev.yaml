@@ -8,6 +8,9 @@
   databaseName: product
   ingress:
     enabled: false
+  extraEnvs:
+    - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+      value: "file:/opt/yas/product/"
   extraVolumes:
     - name: product-application-config
       configMap:
