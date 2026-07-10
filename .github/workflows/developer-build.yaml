@@ -58,10 +58,20 @@ jobs:
             
             helm dependency build ./k8s/charts/$CHART_DIR
             
-            helm upgrade --install $svc ./k8s/charts/$CHART_DIR \
-              --namespace yas \
-              --create-namespace \
-              --set backend.image.repository=${{ secrets.DOCKERHUB_USERNAME }}/yas-$svc \
-              --set backend.image.tag=$TAG \
-              --wait=false
+            if [[ "$svc" == *-ui ]]; then
+              IMAGE_SVC=${svc%-ui}
+              helm upgrade --install $svc ./k8s/charts/$CHART_DIR \
+                --namespace yas \
+                --create-namespace \
+                --set ui.image.repository=${{ secrets.DOCKERHUB_USERNAME }}/yas-$IMAGE_SVC \
+                --set ui.image.tag=$TAG \
+                --wait=false
+            else
+              helm upgrade --install $svc ./k8s/charts/$CHART_DIR \
+                --namespace yas \
+                --create-namespace \
+                --set backend.image.repository=${{ secrets.DOCKERHUB_USERNAME }}/yas-$svc \
+                --set backend.image.tag=$TAG \
+                --wait=false
+            fi
           done
