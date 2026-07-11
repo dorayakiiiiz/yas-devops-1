@@ -3,6 +3,7 @@ name: storefront-bff service ci
 on:
   push:
     branches: ["**"]
+    tags: ["storefront-bff-v*"]
     paths:
       - "storefront-bff/**"
       - ".github/workflows/actions/action.yaml"
@@ -159,4 +160,15 @@ jobs:
           sed -i 's/storefront-bff: { tag: .* }/storefront-bff: { tag: "${{ env.COMMIT_ID }}" }/g' values-dev.yaml
           git add values-dev.yaml
           git commit -m "ArgoCD: Update storefront-bff dev tag to ${{ env.COMMIT_ID }}"
+          git push origin main
+      - name: Update GitOps Repository for STAGING
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/storefront-bff-v')
+        run: |
+          git clone https://x-access-token:${{ secrets.GITOPS_PAT }}@github.com/${{ github.repository_owner }}/yas-gitops.git
+          cd yas-gitops
+          git config --global user.email "bot@github.com"
+          git config --global user.name "GitOps Bot"
+          sed -i 's/storefront-bff: { tag: .* }/storefront-bff: { tag: "${{ env.COMMIT_ID }}" }/g' values-staging.yaml
+          git add values-staging.yaml
+          git commit -m "ArgoCD: Deploy Release ${{ env.TAG }} to STAGING (Commit ${{ env.COMMIT_ID }})"
           git push origin main

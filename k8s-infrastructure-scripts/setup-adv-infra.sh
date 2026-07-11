@@ -97,6 +97,9 @@ kubectl apply -f https://cdn.jsdelivr.net/gh/keycloak/keycloak-k8s-resources@26.
 helm upgrade --install keycloak ../k8s/deploy/keycloak/keycloak --namespace dev --create-namespace
 
 echo "9. Installing yas-configuration & Keycloak for STAGING environment..."
+helm repo add stakater https://stakater.github.io/stakater-charts
+helm repo update
+helm dependency build ../k8s/charts/yas-configuration
 helm upgrade --install yas-configuration ../k8s/charts/yas-configuration --namespace staging --create-namespace
 kubectl apply -f https://cdn.jsdelivr.net/gh/keycloak/keycloak-k8s-resources@26.0.2/kubernetes/kubernetes.yml -n staging
 helm upgrade --install keycloak ../k8s/deploy/keycloak/keycloak --namespace staging --create-namespace

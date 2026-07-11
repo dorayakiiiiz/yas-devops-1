@@ -8,6 +8,7 @@ backend:
   databaseName: product
   ingress:
     enabled: false
+  extraEnvs: []
   extraVolumes:
     - name: product-application-config
       configMap:
