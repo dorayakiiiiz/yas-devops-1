@@ -197,4 +197,5 @@ class UserAddressControllerTest {
                 .accept("application/json"))
             .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+    //Test comment: The test cases cover the main functionalities of the UserAddressController, including retrieving user addresses, getting the default address, creating a new address, deleting an address, and choosing a default address. Additional tests handle edge cases such as missing request bodies and non-existent IDs.
 }
